@@ -1,0 +1,87 @@
+<aside class="sidebar">
+
+  <div class="sidebar-brand">
+    <span class="brand-icon">⚡</span>
+    <span class="brand-name">JTING</span>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    @if (menuService.loading()) {
+      <div class="menu-skeleton">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="skeleton-item"></div>
+        }
+      </div>
+    } @else {
+
+      @for (menu of menuService.menus(); track menu.menuId) {
+
+        <div class="nav-item-wrapper">
+
+          <!-- 🔷 Parent with children -->
+          @if (menu.children && menu.children.length > 0) {
+
+            <button
+              type="button"
+              class="nav-item has-children"
+              [class.expanded]="isExpanded(menu.menuId)"
+              (click)="toggleExpand(menu.menuId)"
+            >
+              <span class="nav-icon">{{ menu.icon }}</span>
+              <span class="nav-label">{{ menu.menuName }}</span>
+              <span class="chevron">
+                {{ isExpanded(menu.menuId) ? '▾' : '▸' }}
+              </span>
+            </button>
+
+            @if (isExpanded(menu.menuId)) {
+              <div class="sub-menu">
+
+                @for (child of menu.children; track child.menuId) {
+                  <a
+                    class="sub-item"
+                    [routerLink]="child.menuUrl"
+                    routerLinkActive="active"
+                  >
+                    <span class="nav-icon">{{ child.icon }}</span>
+                    <span>{{ child.menuName }}</span>
+                  </a>
+                }
+
+              </div>
+            }
+
+          }
+
+          <!-- 🔷 Single menu item -->
+          @else {
+            <a
+              class="nav-item"
+              [routerLink]="menu.menuUrl"
+              routerLinkActive="active"
+            >
+              <span class="nav-icon">{{ menu.icon }}</span>
+              <span class="nav-label">{{ menu.menuName }}</span>
+            </a>
+          }
+
+        </div>
+
+      }
+
+    }
+
+  </nav>
+
+  <div class="sidebar-footer">
+    <span class="user-name">
+      {{ authService.isLoggedIn() ? 'Hello 👋' : '' }}
+    </span>
+
+    <button class="logout-btn" (click)="logout()">
+      Logout
+    </button>
+  </div>
+
+</aside>

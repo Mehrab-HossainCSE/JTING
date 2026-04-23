@@ -1,0 +1,44 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>
+      Products <span class="badge">{{ products().length }}</span>
+    </h1>
+    <p>Manage your product inventory</p>
+  </div>
+  <button class="btn btn-primary" (click)="openForm()">
+    + Add Product
+  </button>
+</div>
+
+<div class="search-bar">
+  <input
+    type="text"
+    placeholder="Search products..."
+    [value]="searchQuery()"
+    (input)="searchQuery.set($any($event.target).value)"
+  />
+</div>
+
+<div class="products-grid">
+<div class="products-grid">
+  <!-- @for (product of filteredProducts(); track product.id) {
+    <app-product-card
+      [product]="product"
+      (onEdit)="openForm($event)"
+      (onDelete)="deleteProduct($event)"
+    />
+  } @empty {
+    <div class="empty-state">
+      <span>📦</span>
+      <p>No products found</p>
+    </div>
+  }
+</div>
+
+@if (showForm()) {
+  <app-product-form
+    [product]="editingProduct()"
+    (onSave)="saveProduct($event)"
+    (onCancel)="closeForm()"
+  /> 
+}-->
