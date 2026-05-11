@@ -20,7 +20,7 @@ export class SidebarComponent {
 
   constructor() {
     // Load menus when component initializes
-    this.menuService.loadMenus().subscribe();
+   // this.menuService.loadMenus().subscribe();
   }
 
   toggleExpand(menuId: number) {

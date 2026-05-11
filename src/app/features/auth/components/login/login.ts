@@ -16,7 +16,6 @@ export class Login {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  terminal = signal('T-001');
   userName = signal('foysal');
   password = signal('123');
   error = signal('');
@@ -25,24 +24,36 @@ export class Login {
 
   login() {
     console.log('Login button clicked!');
-    this.loading.set(true);
-    
-    // Set a dummy token so the auth guard lets us in for static UI/UX testing
-    localStorage.setItem('token', 'dummy-token-for-ui-testing');
-    localStorage.setItem('userName', 'James Admin');
 
-    setTimeout(() => {
-        console.log('Navigating to dashboard...');
-        this.router.navigate(['/dashboard']).then(success => {
-            if (success) {
-                console.log('Navigation successful!');
-            } else {
-                console.error('Navigation failed!');
-                // Fallback
-                window.location.href = '/dashboard';
-            }
-            this.loading.set(false);
-        });
-    }, 500);
+    this.loading.set(true);
+    this.error.set('');
+
+    this.auth
+      .login({
+        userName: this.userName(),
+        password: this.password(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.loading.set(false);
+
+          if (!res.success) {
+            this.error.set(res.message || 'Login failed');
+            return;
+          }
+
+         
+          
+          this.router.navigate(['/dashboard']);
+        },
+
+        error: (err) => {
+          console.error(err);
+
+          this.loading.set(false);
+
+          this.error.set(err?.error?.message || 'Login failed');
+        },
+      });
   }
 }
