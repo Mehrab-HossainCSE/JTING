@@ -21,15 +21,21 @@
         </div>
 
         <div class="form-body">
-          <div class="field-wrapper">
-            <label>Terminal</label>
-            <input 
-              type="text" 
-              [ngModel]="terminal()" 
-              (ngModelChange)="terminal.set($event)"
-              placeholder="Enter Terminal"
+           @if (error()) {
+            <div
+              style="
+                background:#ffe5e5;
+                color:#d10000;
+                padding:12px;
+                border-radius:8px;
+                margin-bottom:16px;
+                font-size:14px;
+                font-weight:500;
+              "
             >
-          </div>
+              {{ error() }}
+            </div>
+          }
 
           <div class="field-wrapper">
             <label>User Name</label>
@@ -62,7 +68,9 @@
           <button class="submit-btn" (click)="login()" [disabled]="loading()">
             @if (loading()) {
               <span class="spinner"></span>
-            } @else {
+            } 
+            
+            @else {
               LOG IN
             }
           </button>
