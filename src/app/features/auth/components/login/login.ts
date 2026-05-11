@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';       // ← ADD THIS
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { concatAll } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -25,35 +24,25 @@ export class Login {
   showPassword = signal(false);
 
   login() {
-    this.router.navigate(['/dashboard']);
-    // if (!this.userName() || !this.password()) {
-    //   this.error.set('Please fill in all fields');
-    //   return;
-    // }
+    console.log('Login button clicked!');
+    this.loading.set(true);
+    
+    // Set a dummy token so the auth guard lets us in for static UI/UX testing
+    localStorage.setItem('token', 'dummy-token-for-ui-testing');
+    localStorage.setItem('userName', 'James Admin');
 
-    // this.loading.set(true);
-    // this.error.set('');
-
-    // this.auth.login({
-    //   userName: this.userName(),
-    //   password: this.password()
-    // }).subscribe({
-    //   next: () => {
-    //     debugger;
-    //     this.loading.set(false);
-    //     this.router.navigate(['/dashboard']);
-    //   },
-    //   error: (err) => {
-    //     console.error('Login error:', err);
-    //     this.loading.set(false);
-    //     this.error.set(
-    //       err.status === 401
-    //         ? 'Invalid username or password'
-    //         : err.status === 0
-    //         ? 'Cannot connect to server'
-    //         : 'Something went wrong. Try again.'
-    //     );
-    //   }
-    // });
+    setTimeout(() => {
+        console.log('Navigating to dashboard...');
+        this.router.navigate(['/dashboard']).then(success => {
+            if (success) {
+                console.log('Navigation successful!');
+            } else {
+                console.error('Navigation failed!');
+                // Fallback
+                window.location.href = '/dashboard';
+            }
+            this.loading.set(false);
+        });
+    }, 500);
   }
 }
