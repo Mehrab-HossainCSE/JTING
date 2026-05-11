@@ -19,7 +19,6 @@ export const routes: Routes = [
         .then(m => m.AUTH_ROUTES)
   },
 
-  // 🔐 Protected layout wrapper
   {
     path: 'dashboard',
     loadComponent: () =>
@@ -27,22 +26,46 @@ export const routes: Routes = [
         .then(m => m.MainLayoutComponent),
     canActivate: [authGuard],
     children: [
-      {
-        path: '',
-        redirectTo: 'products',
-        pathMatch: 'full'
+      { path: '', redirectTo: 'main', pathMatch: 'full' },
+      { 
+        path: 'main', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Dashboard' }
       },
-      {
-        path: 'products',
-        loadChildren: () =>
-          import('./features/products/products.routes')
-            .then(m => m.PRODUCTS_ROUTES)
+      { 
+        path: 'users', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'User Management' }
       },
-      {
-        path: 'employees',
-        loadChildren: () =>
-          import('./features/Employee/employee.routes')
-            .then(m => m.EMPLOYEE_ROUTES)
+      { 
+        path: 'master', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Master Setup' }
+      },
+      { 
+        path: 'receive', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Receive Module' }
+      },
+      { 
+        path: 'picking', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Picking Module' }
+      },
+      { 
+        path: 'delivery', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Delivery Module' }
+      },
+      { 
+        path: 'report', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Report' }
+      },
+      { 
+        path: 'help', 
+        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        data: { title: 'Help' }
       }
     ]
   },

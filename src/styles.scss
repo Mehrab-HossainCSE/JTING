@@ -1,9 +1,9 @@
 /* Global Styles and CSS Variables */
 
 // 1. Abstracts (Variables, Mixins, Typography)
-@import "styles/abstracts/variables";
-@import "styles/abstracts/typography";
-@import "styles/abstracts/mixins";
+@import "./styles/abstracts/variables";
+@import "./styles/abstracts/typography";
+@import "./styles/abstracts/mixins";
 
 // CSS Custom Properties for Runtime (Optional but good to keep)
 :root {

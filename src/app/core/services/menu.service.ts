@@ -1,88 +1,86 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { MenuItem } from '../models/menu.model';
-import { environment } from '../../../environments/environment.development';
-
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-  private http = inject(HttpClient);
-  private readonly API_URL = environment.apiUrl;
-
-  // signals — auto UI update, no zone needed
-  private _menus = signal<MenuItem[]>([]);
+  private _menus = signal<MenuItem[]>([
+    {
+      id: 1,
+      menuId: 1,
+      menuName: 'Dashboard',
+      menuUrl: '/dashboard/main',
+      icon: '<i class="bi bi-grid-fill"></i>',
+      children: []
+    },
+    {
+      id: 2,
+      menuId: 2,
+      menuName: 'User Management',
+      menuUrl: '/dashboard/users',
+      icon: '<i class="bi bi-person-fill"></i>',
+      children: []
+    },
+    {
+      id: 3,
+      menuId: 3,
+      menuName: 'Master Setup',
+      menuUrl: '/dashboard/master',
+      icon: '<i class="bi bi-gear-fill"></i>',
+      children: []
+    },
+    {
+      id: 4,
+      menuId: 4,
+      menuName: 'Receive Module',
+      menuUrl: '/dashboard/receive',
+      icon: '<i class="bi bi-box-arrow-in-down"></i>',
+      children: []
+    },
+    {
+      id: 5,
+      menuId: 5,
+      menuName: 'Picking Module',
+      menuUrl: '/dashboard/picking',
+      icon: '<i class="bi bi-box-seam"></i>',
+      children: []
+    },
+    {
+      id: 6,
+      menuId: 6,
+      menuName: 'Delivery Module',
+      menuUrl: '/dashboard/delivery',
+      icon: '<i class="bi bi-truck"></i>',
+      children: []
+    },
+    {
+      id: 7,
+      menuId: 7,
+      menuName: 'Report',
+      menuUrl: '/dashboard/report',
+      icon: '<i class="bi bi-bar-chart-line-fill"></i>',
+      children: []
+    },
+    {
+      id: 8,
+      menuId: 8,
+      menuName: 'Help',
+      menuUrl: '/dashboard/help',
+      icon: '<i class="bi bi-question-circle-fill"></i>',
+      children: []
+    }
+  ]);
   
   private _loading = signal(false);
 
   readonly menus = this._menus.asReadonly();
   readonly loading = this._loading.asReadonly();
 
-loadMenus() {
-  this._loading.set(true);
-
-  return this.http.get<MenuItem[]>(`${this.API_URL}/NavMenus`).pipe(
-    tap({
-      next: (res) => {
-        this._menus.set(this.buildTree(res));
-        this._loading.set(false);
-      },
-      error: () => this._loading.set(false)
-    })
-  );
-}
- 
-  // loadMenus(): Observable<MenuItem[]> {
-  //   const menus = this.buildTree(this.DEFAULT_MENUS);
-  //   this._menus.set(menus);
-
-  //   return of(menus); // ✅ IMPORTANT: return observable
-  // }
-  
+  loadMenus() {
+    // Static data already set
+    this._loading.set(false);
+  }
 
   clearMenus() {
     this._menus.set([]);
   }
-
-  // Transform backend response and build parent → children tree
- private buildTree(menus: MenuItem[]): MenuItem[] {
-  if (!menus || menus.length === 0) return [];
-
-  // Map backend properties to template properties
-  menus.forEach(menu => {
-    // Ensure all required properties are assigned
-    menu.menuId = menu.id;
-    menu.menuName = menu.name || '';
-    menu.icon = menu.navIcon || '';
-
-    // Generate URL based on menu name if not provided
-    if (!menu.url || menu.url === '') {
-      const baseUrl = menu.name?.toLowerCase() || '';
-      menu.menuUrl = baseUrl ? `/dashboard/${baseUrl}` : '';
-    } else {
-      menu.menuUrl = `/dashboard${menu.url.startsWith('/') ? '' : '/'}${menu.url}`;
-    }
-
-    menu.children = [];
-  });
-
-  const map = new Map<number, MenuItem>();
-  const roots: MenuItem[] = [];
-
-  menus.forEach(menu => {
-    map.set(menu.id, menu);
-  });
-
-  menus.forEach(menu => {
-    if (menu.parentMenuId) {
-      const parent = map.get(menu.parentMenuId);
-      parent?.children?.push(menu);
-    } else {
-      roots.push(menu);
-    }
-  });
-
-  return roots;
-}
-
 }

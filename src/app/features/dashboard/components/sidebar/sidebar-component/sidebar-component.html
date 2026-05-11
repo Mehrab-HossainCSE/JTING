@@ -1,87 +1,33 @@
 <aside class="sidebar">
 
   <div class="sidebar-brand">
-    <span class="brand-icon">⚡</span>
-    <span class="brand-name">JTING</span>
+    <div class="brand-name">JTI</div>
+    <div class="sub-brand">WAREHOUSE MANAGEMENT</div>
   </div>
 
   <nav class="sidebar-nav">
-
-    @if (menuService.loading()) {
-      <div class="menu-skeleton">
-        @for (i of [1,2,3,4]; track i) {
-          <div class="skeleton-item"></div>
-        }
+    @for (menu of menuService.menus(); track menu.menuId!) {
+      <div class="nav-item-wrapper">
+        <a
+          class="nav-item"
+          [routerLink]="menu.menuUrl"
+          routerLinkActive="active"
+        >
+          <span class="nav-icon" [innerHTML]="menu.icon"></span>
+          <span class="nav-label">{{ menu.menuName }}</span>
+        </a>
       </div>
-    } @else {
-
-      @for (menu of menuService.menus(); track menu.menuId!) {
-
-        <div class="nav-item-wrapper">
-
-          <!-- 🔷 Parent with children -->
-          @if (menu.children && menu.children.length > 0) {
-
-            <button
-              type="button"
-              class="nav-item has-children"
-              [class.expanded]="isExpanded(menu.menuId!)"
-              (click)="toggleExpand(menu.menuId!)"
-            >
-              <span class="nav-icon" [innerHTML]="menu.icon"></span>
-              <span class="nav-label">{{ menu.menuName }}</span>
-              <span class="chevron">
-                {{ isExpanded(menu.menuId!) ? '▾' : '▸' }}
-              </span>
-            </button>
-
-            @if (isExpanded(menu.menuId!)) {
-              <div class="sub-menu">
-
-                @for (child of menu.children; track child.menuId!) {
-                  <a
-                    class="sub-item"
-                    [routerLink]="child.menuUrl"
-                    routerLinkActive="active"
-                  >
-                    <span class="nav-icon" [innerHTML]="child.icon"></span>
-                    <span>{{ child.menuName }}</span>
-                  </a>
-                }
-
-              </div>
-            }
-
-          }
-
-          <!-- 🔷 Single menu item -->
-          @else {
-            <a
-              class="nav-item"
-              [routerLink]="menu.menuUrl"
-              routerLinkActive="active"
-            >
-              <span class="nav-icon" [innerHTML]="menu.icon"></span>
-              <span class="nav-label">{{ menu.menuName }}</span>
-            </a>
-          }
-
-        </div>
-
-      }
-
     }
-
   </nav>
 
   <div class="sidebar-footer">
-    <span class="user-name">
-      {{ authService.isLoggedIn() ? 'Hello 👋' : '' }}
-    </span>
-
-    <button class="logout-btn" (click)="logout()">
-      Logout
-    </button>
+    <div class="profile-card">
+      <div class="avatar">JA</div>
+      <div class="info">
+        <span class="name">James Admin</span>
+        <span class="email">admin@jti.com</span>
+      </div>
+    </div>
   </div>
 
 </aside>
