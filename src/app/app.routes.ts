@@ -11,6 +11,7 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
 
+  // 🔓 Public routes (no layout)
   {
     path: '',
     loadChildren: () =>
@@ -18,20 +19,34 @@ export const routes: Routes = [
         .then(m => m.AUTH_ROUTES)
   },
 
+  // 🔐 Protected layout wrapper
   {
-    path: '',
-    loadChildren: () =>
-      import('./features/products/products.routes')
-        .then(m => m.PRODUCTS_ROUTES),
-    canActivate: [authGuard]   // 🔐 protected
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/layout/main-layout.component')
+        .then(m => m.MainLayoutComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'products',
+        pathMatch: 'full'
+      },
+      {
+        path: 'products',
+        loadChildren: () =>
+          import('./features/products/products.routes')
+            .then(m => m.PRODUCTS_ROUTES)
+      },
+      {
+        path: 'employees',
+        loadChildren: () =>
+          import('./features/Employee/employee.routes')
+            .then(m => m.EMPLOYEE_ROUTES)
+      }
+    ]
   },
- {
-    path: '',
-    loadChildren: () =>
-      import('./features/Employee/employee.routes')
-        .then(m => m.EMPLOYEE_ROUTES),
-    canActivate: [authGuard]   // 🔐 protected
-  },
+
   {
     path: '**',
     redirectTo: 'login'

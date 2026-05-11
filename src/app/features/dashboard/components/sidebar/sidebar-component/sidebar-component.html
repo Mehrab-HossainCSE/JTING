@@ -15,7 +15,7 @@
       </div>
     } @else {
 
-      @for (menu of menuService.menus(); track menu.menuId) {
+      @for (menu of menuService.menus(); track menu.menuId!) {
 
         <div class="nav-item-wrapper">
 
@@ -25,26 +25,26 @@
             <button
               type="button"
               class="nav-item has-children"
-              [class.expanded]="isExpanded(menu.menuId)"
-              (click)="toggleExpand(menu.menuId)"
+              [class.expanded]="isExpanded(menu.menuId!)"
+              (click)="toggleExpand(menu.menuId!)"
             >
-              <span class="nav-icon">{{ menu.icon }}</span>
+              <span class="nav-icon" [innerHTML]="menu.icon"></span>
               <span class="nav-label">{{ menu.menuName }}</span>
               <span class="chevron">
-                {{ isExpanded(menu.menuId) ? '▾' : '▸' }}
+                {{ isExpanded(menu.menuId!) ? '▾' : '▸' }}
               </span>
             </button>
 
-            @if (isExpanded(menu.menuId)) {
+            @if (isExpanded(menu.menuId!)) {
               <div class="sub-menu">
 
-                @for (child of menu.children; track child.menuId) {
+                @for (child of menu.children; track child.menuId!) {
                   <a
                     class="sub-item"
                     [routerLink]="child.menuUrl"
                     routerLinkActive="active"
                   >
-                    <span class="nav-icon">{{ child.icon }}</span>
+                    <span class="nav-icon" [innerHTML]="child.icon"></span>
                     <span>{{ child.menuName }}</span>
                   </a>
                 }
@@ -61,7 +61,7 @@
               [routerLink]="menu.menuUrl"
               routerLinkActive="active"
             >
-              <span class="nav-icon">{{ menu.icon }}</span>
+              <span class="nav-icon" [innerHTML]="menu.icon"></span>
               <span class="nav-label">{{ menu.menuName }}</span>
             </a>
           }

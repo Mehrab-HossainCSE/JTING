@@ -17,8 +17,8 @@ export class Login {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  userName = signal('');
-  password = signal('');
+  userName = signal('foysal');
+  password = signal('123');
   error = signal('');
   loading = signal(false);
   showPassword = signal(false);
@@ -39,7 +39,7 @@ export class Login {
       next: () => {
         debugger;
         this.loading.set(false);
-        this.router.navigate(['/Employee']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('Login error:', err);

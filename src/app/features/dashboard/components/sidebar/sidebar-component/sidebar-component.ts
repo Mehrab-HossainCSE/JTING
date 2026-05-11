@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, effect } from '@angular/core';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { MenuService } from '../../../../../core/services/menu.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -17,6 +17,11 @@ export class SidebarComponent {
   authService = inject(AuthService);
 
   expandedMenus = signal<Set<number>>(new Set());
+
+  constructor() {
+    // Load menus when component initializes
+    this.menuService.loadMenus().subscribe();
+  }
 
   toggleExpand(menuId: number) {
     this.expandedMenus.update(set => {

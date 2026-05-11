@@ -3,7 +3,7 @@ import { EmployeeComponent } from "./component/employee-component/employee-compo
 
 export const EMPLOYEE_ROUTES: Routes = [
   {
-    path: 'Employee',
+    path: '',
     component: EmployeeComponent
   }
 ];
