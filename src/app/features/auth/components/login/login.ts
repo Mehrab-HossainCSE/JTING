@@ -9,7 +9,7 @@ import { concatAll } from 'rxjs';
   selector: 'app-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -17,6 +17,7 @@ export class Login {
   private auth = inject(AuthService);
   private router = inject(Router);
 
+  terminal = signal('T-001');
   userName = signal('foysal');
   password = signal('123');
   error = signal('');

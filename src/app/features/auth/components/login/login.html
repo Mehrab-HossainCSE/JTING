@@ -1,68 +1,78 @@
-<div class="login-page">
-  <div class="login-card">
+<div class="login-wrapper">
 
-    <div class="brand">
-      <div class="brand-icon">⚡</div>
-      <h1>JTING</h1>
-      <p>Sign in to your account</p>
-    </div>
-
-    <div class="form-group">
-      <label>Username</label>
-      <div class="input-wrapper">
-        <span class="input-icon">👤</span>
-        <input
-          type="text"
-          placeholder="Enter username"
-          [ngModel]="userName()"
-          (ngModelChange)="userName.set($event)"
-          [class.has-error]="error()"
-          autocomplete="username"
-        />
+  <div class="login-container">
+    <div class="login-card">
+      
+      <!-- Left Side -->
+      <div class="card-left">
+        <div class="logo-container">
+          <!-- Scalable SVG Logo -->
+          <svg viewBox="0 0 100 50" preserveAspectRatio="xMidYMid meet" class="jti-logo">
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Outfit" font-weight="900" font-size="28" fill="#00b84d">JTI</text>
+            <rect x="0" y="0" width="100" height="50" fill="none" stroke="#00b84d" stroke-width="0.1"/>
+          </svg>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label>Password</label>
-      <div class="input-wrapper">
-        <span class="input-icon">🔒</span>
-        <input
-          [type]="showPassword() ? 'text' : 'password'"
-          placeholder="Enter password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          [class.has-error]="error()"
-          autocomplete="current-password"
-          (keydown.enter)="login()"
-        />
-        <button
-          type="button"
-          class="toggle-password"
-          (click)="showPassword.set(!showPassword())"
-        >
-          {{ showPassword() ? '🙈' : '👁️' }}
-        </button>
+      <!-- Right Side -->
+      <div class="card-right">
+        <div class="form-header">
+          <h2>LOG IN</h2>
+        </div>
+
+        <div class="form-body">
+          <div class="field-wrapper">
+            <label>Terminal</label>
+            <input 
+              type="text" 
+              [ngModel]="terminal()" 
+              (ngModelChange)="terminal.set($event)"
+              placeholder="Enter Terminal"
+            >
+          </div>
+
+          <div class="field-wrapper">
+            <label>User Name</label>
+            <input 
+              type="text" 
+              [ngModel]="userName()" 
+              (ngModelChange)="userName.set($event)"
+              placeholder="Enter User Name"
+            >
+          </div>
+
+          <div class="field-wrapper password-field">
+            <label>Password</label>
+            <input 
+              [type]="showPassword() ? 'text' : 'password'" 
+              [ngModel]="password()" 
+              (ngModelChange)="password.set($event)"
+              placeholder="Enter Password"
+              (keydown.enter)="login()"
+            >
+            <button class="toggle-btn" (click)="showPassword.set(!showPassword())" type="button">
+              @if (showPassword()) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              }
+            </button>
+          </div>
+
+          <button class="submit-btn" (click)="login()" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              LOG IN
+            }
+          </button>
+        </div>
+
+        <div class="form-footer">
+          <p class="version">Version 0.1</p>
+        </div>
       </div>
+
     </div>
-
-    @if (error()) {
-      <div class="error-banner">
-        ⚠️ {{ error() }}
-      </div>
-    }
-
-    <button
-      class="login-btn"
-      (click)="login()"
-      [disabled]="loading()"
-      [class.loading]="loading()"
-    >
-      @if (loading()) {
-        <span class="spinner"></span> Signing in...
-      } @else {
-        Sign In →
-      }
-    </button>
-
   </div>
 </div>
