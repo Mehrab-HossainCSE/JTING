@@ -1,0 +1,41 @@
+// Flexbox Center
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Card Style from Dashboard Screenshot
+@mixin dashboard-card {
+  background: $bg-white;
+  border-radius: 16px;
+  border: 1px solid rgba($border-color, 0.5);
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: $transition-normal;
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// Sidebar Active Item
+@mixin active-menu-item {
+  background: $primary-green;
+  color: $bg-white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba($primary-green, 0.3);
+}
+
+// Media Queries
+@mixin mobile {
+  @media (max-width: 576px) { @content; }
+}
+
+@mixin tablet {
+  @media (max-width: 768px) { @content; }
+}
+
+@mixin desktop {
+  @media (max-width: 1024px) { @content; }
+}

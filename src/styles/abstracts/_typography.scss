@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+$font-primary: 'Outfit', sans-serif;
+
+// Font Sizes
+$font-sx: 0.75rem;
+$font-sm: 0.875rem;
+$font-base: 1rem;
+$font-md: 1.125rem;
+$font-lg: 1.25rem;
+$font-xl: 1.5rem;
+$font-2xl: 2rem;
+
+// Mixins for Typography
+@mixin heading-style {
+  font-family: $font-primary;
+  font-weight: 600;
+  color: $text-dark;
+  line-height: 1.2;
+}
+
+@mixin body-style {
+  font-family: $font-primary;
+  font-weight: 400;
+  color: $text-gray;
+  line-height: 1.6;
+}

@@ -1,51 +1,18 @@
 /* Global Styles and CSS Variables */
 
-// CSS Custom Properties (Variables)
+// 1. Abstracts (Variables, Mixins, Typography)
+@import "styles/abstracts/variables";
+@import "styles/abstracts/typography";
+@import "styles/abstracts/mixins";
+
+// CSS Custom Properties for Runtime (Optional but good to keep)
 :root {
-  // Color Palette
-  --primary-color: #ffd700;
-  --primary-dark: #ffed4e;
-  --secondary-color: #ff4757;
-  --accent-color: #3742fa;
-
-  // Background Colors
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #1a1a2e;
-  --bg-tertiary: #16213e;
-  --bg-card: rgba(255, 255, 255, 0.05);
-
-  // Text Colors
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.8);
-  --text-muted: rgba(255, 255, 255, 0.6);
-
-  // Border Colors
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 215, 0, 0.2);
-
-  // Shadows
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.15);
-
-  // Spacing
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-
-  // Border Radius
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 20px;
-
-  // Transitions
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --primary-color: #{$primary-green};
+  --primary-dark: #{$primary-dark};
+  --bg-primary: #{$bg-light};
+  --bg-card: #{$bg-white};
+  --text-primary: #{$text-dark};
+  --text-secondary: #{$text-gray};
 }
 
 // Global Reset and Base Styles
@@ -57,13 +24,14 @@
 
 html, body {
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  @include body-style;
+  background: $bg-light;
+  color: $text-dark;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 // Scrollbar Styling
 ::-webkit-scrollbar {

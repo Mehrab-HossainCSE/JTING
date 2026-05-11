@@ -24,34 +24,35 @@ export class Login {
   showPassword = signal(false);
 
   login() {
-    if (!this.userName() || !this.password()) {
-      this.error.set('Please fill in all fields');
-      return;
-    }
+    this.router.navigate(['/dashboard']);
+    // if (!this.userName() || !this.password()) {
+    //   this.error.set('Please fill in all fields');
+    //   return;
+    // }
 
-    this.loading.set(true);
-    this.error.set('');
+    // this.loading.set(true);
+    // this.error.set('');
 
-    this.auth.login({
-      userName: this.userName(),
-      password: this.password()
-    }).subscribe({
-      next: () => {
-        debugger;
-        this.loading.set(false);
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        console.error('Login error:', err);
-        this.loading.set(false);
-        this.error.set(
-          err.status === 401
-            ? 'Invalid username or password'
-            : err.status === 0
-            ? 'Cannot connect to server'
-            : 'Something went wrong. Try again.'
-        );
-      }
-    });
+    // this.auth.login({
+    //   userName: this.userName(),
+    //   password: this.password()
+    // }).subscribe({
+    //   next: () => {
+    //     debugger;
+    //     this.loading.set(false);
+    //     this.router.navigate(['/dashboard']);
+    //   },
+    //   error: (err) => {
+    //     console.error('Login error:', err);
+    //     this.loading.set(false);
+    //     this.error.set(
+    //       err.status === 401
+    //         ? 'Invalid username or password'
+    //         : err.status === 0
+    //         ? 'Cannot connect to server'
+    //         : 'Something went wrong. Try again.'
+    //     );
+    //   }
+    // });
   }
 }
