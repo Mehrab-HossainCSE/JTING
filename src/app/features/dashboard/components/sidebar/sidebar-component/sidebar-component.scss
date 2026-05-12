@@ -11,76 +11,160 @@
   border-right: 1px solid rgba($border-color, 0.8);
   position: relative;
   z-index: 100;
+  transition: width $transition-normal;
+
+  &.collapsed {
+    width: 80px;
+
+    .sidebar-brand {
+      align-items: center;
+      padding: 1.5rem 0.5rem;
+      
+      .brand-logo {
+        height: 30px;
+        margin-bottom: 0;
+      }
+    }
+
+    .sidebar-nav {
+      padding: 0 0.75rem;
+
+      .nav-item {
+        justify-content: center;
+        padding: 12px 0;
+
+        .nav-icon {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .sidebar-footer {
+      padding: 1rem 0.5rem;
+      .profile-card {
+        justify-content: center;
+        padding: 8px;
+        gap: 0;
+      }
+    }
+  }
+}
+
+.toggle-btn {
+  position: absolute;
+  top: 35px;
+  right: -15px;
+  width: 30px;
+  height: 30px;
+  background: white;
+  border: 1px solid $border-color;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 110;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: $text-gray;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $primary-green;
+    border-color: $primary-green;
+    box-shadow: 0 4px 12px rgba($primary-green, 0.2);
+  }
+
+  i {
+    font-size: 0.8rem;
+  }
 }
 
 .sidebar-brand {
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 1rem;
+  transition: all $transition-normal;
 
-  .brand-name {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: $primary-green;
-    line-height: 1;
-    letter-spacing: -2px;
+  .brand-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+    transition: all $transition-normal;
   }
 
   .sub-brand {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: $text-gray;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     margin-top: -2px;
-    opacity: 0.8;
+    opacity: 0.7;
+    white-space: nowrap;
   }
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 0 1rem;
+  padding: 0 1.25rem;
   overflow-y: auto;
+  overflow-x: hidden;
 
   .nav-item-wrapper {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
+    padding: 14px 16px;
     color: $text-gray;
     text-decoration: none;
-    border-radius: 12px;
-    font-weight: 500;
+    border-radius: 14px;
+    font-weight: 600;
     font-size: 0.95rem;
-    transition: all 0.2s ease;
+    transition: all $transition-fast;
     border: none;
     background: transparent;
     width: 100%;
     cursor: pointer;
+    white-space: nowrap;
 
     .nav-icon {
-      margin-right: 12px;
-      font-size: 1.2rem;
-      color: $text-light;
+      margin-right: 14px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
+      justify-content: center;
+      transition: all $transition-fast;
+      
+      ::ng-deep svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2;
+      }
     }
 
     &:hover {
-      background: rgba($primary-green, 0.05);
+      background: $secondary-green;
       color: $primary-green;
       
-      .nav-icon { color: $primary-green; }
+      .nav-icon { 
+        color: $primary-green;
+      }
     }
 
     &.active {
-      @include active-menu-item; // Our custom mixin from earlier
+      background: $primary-green;
+      color: white;
+      box-shadow: 0 8px 16px rgba($primary-green, 0.25);
       
-      .nav-icon { color: white; }
+      .nav-icon { 
+        color: white;
+      }
     }
   }
 }
@@ -94,26 +178,40 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #f8f9fa;
-    padding: 12px;
-    border-radius: 12px;
+    background: #f8faf9;
+    padding: 14px;
+    border-radius: 16px;
+    transition: all $transition-normal;
 
     .avatar {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       background: $primary-green;
       color: white;
-      border-radius: 10px;
+      border-radius: 12px;
       @include flex-center;
       font-weight: 700;
+      flex-shrink: 0;
     }
 
     .info {
       display: flex;
       flex-direction: column;
+      overflow: hidden;
       
-      .name { font-size: 0.85rem; font-weight: 600; color: $text-dark; }
-      .email { font-size: 0.75rem; color: $text-gray; }
+      .name { 
+        font-size: 0.9rem; 
+        font-weight: 700; 
+        color: $text-dark;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .email { 
+        font-size: 0.75rem; 
+        color: $text-gray;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
     }
   }
 }

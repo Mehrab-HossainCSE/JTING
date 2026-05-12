@@ -50,10 +50,11 @@
     width: 220px;
     max-width: 100%;
     
-    .jti-logo {
+    .login-logo {
       width: 100%;
       height: auto;
-      max-height: 150px;
+      max-height: 180px;
+      object-fit: contain;
     }
   }
 

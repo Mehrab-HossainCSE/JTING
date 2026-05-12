@@ -1,8 +1,13 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.collapsed]="isCollapsed()">
+  
+  <!-- Toggle Button -->
+  <button class="toggle-btn" (click)="toggleSidebar()">
+    <i class="bi" [class.bi-chevron-left]="!isCollapsed()" [class.bi-chevron-right]="isCollapsed()"></i>
+  </button>
 
   <div class="sidebar-brand">
-    <div class="brand-name">JTI</div>
-    <div class="sub-brand">WAREHOUSE MANAGEMENT</div>
+    <img src="/images/logo/jti-logo.png" alt="JTI Logo" class="brand-logo">
+    <div class="sub-brand" *ngIf="!isCollapsed()">WAREHOUSE MANAGEMENT</div>
   </div>
 
   <nav class="sidebar-nav">
@@ -12,13 +17,13 @@
           class="nav-item"
           [routerLink]="menu.url"
           routerLinkActive="active"
-          
-            [routerLinkActiveOptions]="{
-          exact: menu.url == '/dashboard'
-        }"
+          [title]="isCollapsed() ? menu.displayName : ''"
+          [routerLinkActiveOptions]="{
+            exact: menu.url == '/dashboard'
+          }"
         >
-          <span class="nav-icon" [innerHTML]="menu.navIcon"></span>
-          <span class="nav-label">{{ menu.displayName }}</span>
+          <span class="nav-icon" [innerHTML]="getIcon(menu.displayName)"></span>
+          <span class="nav-label" *ngIf="!isCollapsed()">{{ menu.displayName }}</span>
         </a>
       </div>
     }
@@ -27,7 +32,7 @@
   <div class="sidebar-footer">
     <div class="profile-card">
       <div class="avatar">JA</div>
-      <div class="info">
+      <div class="info" *ngIf="!isCollapsed()">
         <span class="name">James Admin</span>
         <span class="email">admin@jti.com</span>
       </div>
