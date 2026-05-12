@@ -4,48 +4,36 @@
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: $bg-white;
-  color: $text-dark;
+  background: white;
+  color: #333;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba($border-color, 0.8);
+  border-right: 1px solid #eee;
   position: relative;
   z-index: 100;
   transition: width $transition-normal;
 
   &.collapsed {
-    width: 80px;
+    width: 85px;
 
     .sidebar-brand {
-      align-items: center;
       padding: 1.5rem 0.5rem;
-      
-      .brand-logo {
-        height: 30px;
-        margin-bottom: 0;
-      }
+      align-items: center;
+      .brand-logo { height: 32px; margin-bottom: 0; }
     }
 
     .sidebar-nav {
       padding: 0 0.75rem;
-
       .nav-item {
+        padding: 12px;
         justify-content: center;
-        padding: 12px 0;
-
-        .nav-icon {
-          margin-right: 0;
-        }
+        .nav-icon { margin-right: 0; }
       }
     }
 
     .sidebar-footer {
       padding: 1rem 0.5rem;
-      .profile-card {
-        justify-content: center;
-        padding: 8px;
-        gap: 0;
-      }
+      .profile-card { padding: 8px; justify-content: center; }
     }
   }
 }
@@ -54,115 +42,100 @@
   position: absolute;
   top: 35px;
   right: -15px;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background: white;
-  border: 1px solid $border-color;
+  border: 1px solid #eee;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 110;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  color: $text-gray;
-  transition: all $transition-fast;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #666;
+  transition: all 0.2s;
 
   &:hover {
-    color: $primary-green;
-    border-color: $primary-green;
-    box-shadow: 0 4px 12px rgba($primary-green, 0.2);
-  }
-
-  i {
-    font-size: 0.8rem;
+    color: #009639;
+    border-color: #009639;
+    box-shadow: 0 4px 12px rgba(0, 150, 57, 0.15);
   }
 }
 
 .sidebar-brand {
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  transition: all $transition-normal;
+  margin-bottom: 0.5rem;
 
   .brand-logo {
-    height: 42px;
+    height: 48px;
     width: auto;
     object-fit: contain;
-    margin-bottom: 0.5rem;
-    transition: all $transition-normal;
   }
 
   .sub-brand {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    color: $text-gray;
-    letter-spacing: 1px;
-    margin-top: -2px;
-    opacity: 0.7;
-    white-space: nowrap;
+    color: #888;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+    text-transform: uppercase;
   }
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 0 1.25rem;
+  padding: 0 1rem;
   overflow-y: auto;
-  overflow-x: hidden;
 
   .nav-item-wrapper {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
-    padding: 14px 16px;
-    color: $text-gray;
+    padding: 10px 14px;
+    color: #444;
     text-decoration: none;
-    border-radius: 14px;
-    font-weight: 600;
+    border-radius: 16px;
+    font-weight: 500;
     font-size: 0.95rem;
-    transition: all $transition-fast;
-    border: none;
-    background: transparent;
-    width: 100%;
+    transition: all 0.2s ease;
     cursor: pointer;
-    white-space: nowrap;
 
     .nav-icon {
-      margin-right: 14px;
-      width: 24px;
-      height: 24px;
+      width: 40px;
+      height: 40px;
+      background: #f0fdf4; // Very light green
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all $transition-fast;
-      
+      margin-right: 12px;
+      color: #333;
+      transition: all 0.2s;
+
       ::ng-deep svg {
         width: 20px;
         height: 20px;
-        stroke-width: 2;
       }
     }
 
     &:hover {
-      background: $secondary-green;
-      color: $primary-green;
-      
-      .nav-icon { 
-        color: $primary-green;
-      }
+      background: #f8f9fa;
+      .nav-icon { background: #e6f7ec; }
     }
 
     &.active {
-      background: $primary-green;
+      background: #009639;
       color: white;
-      box-shadow: 0 8px 16px rgba($primary-green, 0.25);
-      
-      .nav-icon { 
+      box-shadow: 0 8px 20px rgba(0, 150, 57, 0.2);
+
+      .nav-icon {
+        background: rgba(255, 255, 255, 0.2);
         color: white;
       }
     }
@@ -170,26 +143,26 @@
 }
 
 .sidebar-footer {
-  padding: 1.5rem;
-  margin-top: auto;
-  border-top: 1px solid rgba($border-color, 0.5);
+  padding: 1.25rem;
+  border-top: 1px solid #f5f5f5;
 
   .profile-card {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #f8faf9;
-    padding: 14px;
+    background: #f8f9fa;
+    padding: 12px;
     border-radius: 16px;
-    transition: all $transition-normal;
 
     .avatar {
-      width: 42px;
-      height: 42px;
-      background: $primary-green;
+      width: 38px;
+      height: 38px;
+      background: #009639;
       color: white;
-      border-radius: 12px;
-      @include flex-center;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 700;
       flex-shrink: 0;
     }
@@ -200,17 +173,15 @@
       overflow: hidden;
       
       .name { 
-        font-size: 0.9rem; 
-        font-weight: 700; 
-        color: $text-dark;
+        font-size: 0.85rem; 
+        font-weight: 600; 
+        color: #333;
         white-space: nowrap;
-        text-overflow: ellipsis;
       }
       .email { 
         font-size: 0.75rem; 
-        color: $text-gray;
+        color: #888;
         white-space: nowrap;
-        text-overflow: ellipsis;
       }
     }
   }

@@ -2,7 +2,8 @@
   
   <!-- Toggle Button -->
   <button class="toggle-btn" (click)="toggleSidebar()">
-    <i class="bi" [class.bi-chevron-left]="!isCollapsed()" [class.bi-chevron-right]="isCollapsed()"></i>
+    <svg *ngIf="!isCollapsed()" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    <svg *ngIf="isCollapsed()" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
   </button>
 
   <div class="sidebar-brand">
@@ -11,7 +12,7 @@
   </div>
 
   <nav class="sidebar-nav">
-    @for (menu of menus(); track menu.id!) {
+    @for (menu of sanitizedMenus(); track menu.id!) {
       <div class="nav-item-wrapper">
         <a
           class="nav-item"
@@ -19,7 +20,7 @@
           routerLinkActive="active"
           [title]="isCollapsed() ? menu.displayName : ''"
           [routerLinkActiveOptions]="{
-            exact: menu.url == '/dashboard'
+            exact: menu.url === '/dashboard' || menu.url === '/dashboard/main'
           }"
         >
           <span class="nav-icon" [innerHTML]="getIcon(menu.displayName)"></span>
@@ -33,7 +34,7 @@
     <div class="profile-card">
       <div class="avatar">JA</div>
       <div class="info" *ngIf="!isCollapsed()">
-        <span class="name">James Admin</span>
+        <span class="name">Admin User</span>
         <span class="email">admin@jti.com</span>
       </div>
     </div>

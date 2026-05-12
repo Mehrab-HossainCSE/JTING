@@ -29,42 +29,42 @@ export const routes: Routes = [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { 
         path: 'main', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/dashboard/dashboard.component').then(m => m.DashboardPageComponent),
         data: { title: 'Dashboard' }
       },
       { 
         path: 'users', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/users/user-management.component').then(m => m.UserManagementComponent),
         data: { title: 'User Management' }
       },
       { 
         path: 'master', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/master/master-setup.component').then(m => m.MasterSetupComponent),
         data: { title: 'Master Setup' }
       },
       { 
         path: 'receive', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/receive/receive-module.component').then(m => m.ReceiveModuleComponent),
         data: { title: 'Receive Module' }
       },
       { 
         path: 'picking', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/picking/picking-module.component').then(m => m.PickingModuleComponent),
         data: { title: 'Picking Module' }
       },
       { 
         path: 'delivery', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/delivery/delivery-module.component').then(m => m.DeliveryModuleComponent),
         data: { title: 'Delivery Module' }
       },
       { 
         path: 'report', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/report/report.component').then(m => m.ReportComponent),
         data: { title: 'Report' }
       },
       { 
         path: 'help', 
-        loadComponent: () => import('./shared/components/tab-placeholder/tab-placeholder.component').then(m => m.TabPlaceholderComponent),
+        loadComponent: () => import('./features/dashboard/pages/help/help.component').then(m => m.HelpComponent),
         data: { title: 'Help' }
       }
     ]
