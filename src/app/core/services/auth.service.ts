@@ -56,4 +56,9 @@ export class AuthService {
   checkAuth(): boolean {
     return !!this.getToken();
   }
+  getLocalStorageUserName(): string | null {
+  const userName = localStorage.getItem('userName');
+
+  return userName?.trim() ? userName.trim() : null;
+}
 }
