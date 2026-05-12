@@ -1,5 +1,4 @@
 .master-setup-container {
-  padding: 1rem 1.5rem; // Reduced from 1.5rem 2rem
   background: #f4f7f6;
   min-height: calc(100vh - 70px);
   font-family: 'Inter', sans-serif;
@@ -16,7 +15,7 @@
   flex-wrap: wrap;
   gap: 10px; // Slightly reduced gap
 
-  .tab-btn {
+    .tab-btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -31,20 +30,11 @@
     transition: all 0.2s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
-    .tab-icon {
-      display: flex;
-      align-items: center;
-      color: #8395a7;
-    }
-
     &.active {
       background: #00BB31;
       border-color: #00BB31;
       color: white;
       box-shadow: 0 4px 12px rgba(0, 187, 49, 0.2);
-      .tab-icon {
-        color: white;
-      }
     }
 
     &:hover:not(.active) {
