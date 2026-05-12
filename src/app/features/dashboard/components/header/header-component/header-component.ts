@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -12,6 +12,26 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent {
   private router = inject(Router);
+
+  isProfileDropdownOpen = false;
+
+  toggleProfileDropdown() {
+    this.isProfileDropdownOpen = !this.isProfileDropdownOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeDropdown(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-profile-dropdown')) {
+      this.isProfileDropdownOpen = false;
+    }
+  }
+
+  logout() {
+    // Implement logout logic here
+    console.log('Logging out...');
+    this.router.navigate(['/auth/login']);
+  }
 
   getPageTitle(): string {
     const url = this.router.url;

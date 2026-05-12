@@ -20,14 +20,46 @@
       </button>
     </div>
 
-    <!-- User Profile -->
-    <div class="user-profile">
-      <div class="user-info">
-        <span class="name">James Admin</span>
-        <span class="role">Administrator</span>
+    <!-- User Profile Dropdown -->
+    <div class="user-profile-dropdown" [class.active]="isProfileDropdownOpen">
+      <div class="user-profile" (click)="toggleProfileDropdown()">
+        <div class="user-avatar">
+          JA
+        </div>
+        <div class="user-info">
+          <span class="name">James Admin</span>
+          <span class="role">Administrator</span>
+        </div>
+        <i class="bi bi-chevron-down ms-2 toggle-icon"></i>
       </div>
-      <div class="user-avatar">
-        JA
+
+      <!-- Dropdown Menu -->
+      <div class="dropdown-menu-custom" *ngIf="isProfileDropdownOpen">
+        <div class="dropdown-header">
+          <div class="user-avatar large">JA</div>
+          <div class="user-details">
+            <span class="full-name">James Admin</span>
+            <span class="email">james.admin@jti.com</span>
+          </div>
+        </div>
+        
+        <div class="dropdown-divider"></div>
+        
+        <a class="dropdown-item">
+          <i class="bi bi-person"></i>
+          <span>Profile Settings</span>
+        </a>
+        <a class="dropdown-item">
+          <i class="bi bi-gear"></i>
+          <span>Preferences</span>
+        </a>
+        
+        <div class="dropdown-divider"></div>
+        
+        <a class="dropdown-item logout-item" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Sign Out</span>
+        </a>
       </div>
     </div>
   </div>
