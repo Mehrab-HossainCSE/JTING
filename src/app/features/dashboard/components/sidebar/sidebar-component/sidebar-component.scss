@@ -130,9 +130,9 @@
     }
 
     &.active {
-      background: #009639;
+      background: $primary-green;
       color: white;
-      box-shadow: 0 8px 20px rgba(0, 150, 57, 0.2);
+      box-shadow: 0 8px 20px rgba($primary-green, 0.2);
 
       .nav-icon {
         background: rgba(255, 255, 255, 0.2);
