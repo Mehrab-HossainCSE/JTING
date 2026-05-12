@@ -6,15 +6,19 @@
   </div>
 
   <nav class="sidebar-nav">
-    @for (menu of menuService.menus(); track menu.menuId!) {
+    @for (menu of menus(); track menu.id!) {
       <div class="nav-item-wrapper">
         <a
           class="nav-item"
-          [routerLink]="menu.menuUrl"
+          [routerLink]="menu.url"
           routerLinkActive="active"
+          
+            [routerLinkActiveOptions]="{
+          exact: menu.url == '/dashboard'
+        }"
         >
-          <span class="nav-icon" [innerHTML]="menu.icon"></span>
-          <span class="nav-label">{{ menu.menuName }}</span>
+          <span class="nav-icon" [innerHTML]="menu.navIcon"></span>
+          <span class="nav-label">{{ menu.displayName }}</span>
         </a>
       </div>
     }

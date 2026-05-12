@@ -1,84 +1,75 @@
 import { Injectable, signal } from '@angular/core';
-import { MenuItem } from '../models/menu.model';
+import { environment } from '../../../environments/environment';
+import { MenuResponse, ApiMenuResponse } from '../models/MenuResponse';
+import { HttpClient } from '@angular/common/http';
+import { finalize } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-  private _menus = signal<MenuItem[]>([
-    {
-      id: 1,
-      menuId: 1,
-      menuName: 'Dashboard',
-      menuUrl: '/dashboard/main',
-      icon: '<i class="bi bi-grid-fill"></i>',
-      children: []
-    },
-    {
-      id: 2,
-      menuId: 2,
-      menuName: 'User Management',
-      menuUrl: '/dashboard/users',
-      icon: '<i class="bi bi-person-fill"></i>',
-      children: []
-    },
-    {
-      id: 3,
-      menuId: 3,
-      menuName: 'Master Setup',
-      menuUrl: '/dashboard/master',
-      icon: '<i class="bi bi-gear-fill"></i>',
-      children: []
-    },
-    {
-      id: 4,
-      menuId: 4,
-      menuName: 'Receive Module',
-      menuUrl: '/dashboard/receive',
-      icon: '<i class="bi bi-box-arrow-in-down"></i>',
-      children: []
-    },
-    {
-      id: 5,
-      menuId: 5,
-      menuName: 'Picking Module',
-      menuUrl: '/dashboard/picking',
-      icon: '<i class="bi bi-box-seam"></i>',
-      children: []
-    },
-    {
-      id: 6,
-      menuId: 6,
-      menuName: 'Delivery Module',
-      menuUrl: '/dashboard/delivery',
-      icon: '<i class="bi bi-truck"></i>',
-      children: []
-    },
-    {
-      id: 7,
-      menuId: 7,
-      menuName: 'Report',
-      menuUrl: '/dashboard/report',
-      icon: '<i class="bi bi-bar-chart-line-fill"></i>',
-      children: []
-    },
-    {
-      id: 8,
-      menuId: 8,
-      menuName: 'Help',
-      menuUrl: '/dashboard/help',
-      icon: '<i class="bi bi-question-circle-fill"></i>',
-      children: []
-    }
-  ]);
   
+  private _menus = signal<MenuResponse[]>([]);
   private _loading = signal(false);
 
   readonly menus = this._menus.asReadonly();
   readonly loading = this._loading.asReadonly();
+  private readonly API_URL = environment.apiUrl; 
+  constructor(private http: HttpClient) {}
 
-  loadMenus() {
-    // Static data already set
-    this._loading.set(false);
-  }
+loadMenus(userName: string) {
+  this._loading.set(true);
+
+  const url = `${this.API_URL}/NavMenus/children/username/${userName}`;
+
+  this.http.get<ApiMenuResponse>(url)
+    .pipe(
+      finalize(() => this._loading.set(false))
+    )
+    .subscribe({
+      next: (res) => {
+
+        if (res.success && res.data) {
+
+          // ✅ Sort parent menus
+          const sortedMenus = [...res.data].sort(
+            (a, b) => a.displayOrder - b.displayOrder
+          );
+
+          // ✅ Sort child menus
+          sortedMenus.forEach(menu => {
+
+            if (menu.children?.length) {
+
+              menu.children = [...menu.children].sort(
+                (a, b) => a.displayOrder - b.displayOrder
+              );
+
+            }
+
+          });
+
+            this._menus.set(sortedMenus);
+            localStorage.setItem('menus', JSON.stringify(sortedMenus));
+        } else {
+
+          console.warn(
+            'Menu API returned unsuccessful response',
+            res.message
+          );
+
+          this._menus.set([]);
+        }
+
+      },
+
+      error: (err) => {
+
+        console.error('Menu load failed', err);
+
+        this._menus.set([]);
+
+      }
+    });
+}
 
   clearMenus() {
     this._menus.set([]);

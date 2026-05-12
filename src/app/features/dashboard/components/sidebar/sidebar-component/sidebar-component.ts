@@ -15,14 +15,39 @@ import { CommonModule } from '@angular/common';
 export class SidebarComponent {
   menuService = inject(MenuService);
   authService = inject(AuthService);
+  menus = this.menuService.menus;
 
+  // ✅ Track expanded parent menus
   expandedMenus = signal<Set<number>>(new Set());
 
-  constructor() {
-    // Load menus when component initializes
-   // this.menuService.loadMenus().subscribe();
+  // constructor(
+  //   private menuService: MenuService,
+  //   private authService: AuthService
+  // ) {}
+
+  ngOnInit(): void {
+    const userName = this.authService.getLocalStorageUserName();
+
+    if (userName) {
+      this.menuService.loadMenus(userName);
+    }
   }
 
+  toggleMenu(menuId: number): void {
+    const current = new Set(this.expandedMenus());
+
+    if (current.has(menuId)) {
+      current.delete(menuId);
+    } else {
+      current.add(menuId);
+    }
+
+    this.expandedMenus.set(current);
+  }
+
+  isExpanded(menuId: number): boolean {
+    return this.expandedMenus().has(menuId);
+  }
   toggleExpand(menuId: number) {
     this.expandedMenus.update(set => {
       const next = new Set(set);
@@ -31,9 +56,7 @@ export class SidebarComponent {
     });
   }
 
-  isExpanded(menuId: number): boolean {
-    return this.expandedMenus().has(menuId);
-  }
+  
 
   logout() {
     this.authService.logout();

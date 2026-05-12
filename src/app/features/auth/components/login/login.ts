@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { MenuService } from '../../../../core/services/menu.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 })
 export class Login {
   private auth = inject(AuthService);
+  private menuService = inject(MenuService);
   private router = inject(Router);
 
   userName = signal('foysal');
@@ -42,7 +44,7 @@ export class Login {
             return;
           }
 
-         
+          this.menuService.loadMenus( this.userName());
           
           this.router.navigate(['/dashboard']);
         },
