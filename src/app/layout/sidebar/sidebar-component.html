@@ -7,7 +7,9 @@
   </button>
 
   <div class="sidebar-brand">
-    <img src="/images/logo/jti-logo.png" alt="JTI Logo" class="brand-logo">
+    <a routerLink="/dashboard" class="logo-link d-block">
+      <img src="/images/logo/jti-logo.png" alt="JTI Logo" class="brand-logo">
+    </a>
     <div class="sub-brand" *ngIf="!isCollapsed()">WAREHOUSE MANAGEMENT</div>
   </div>
 
