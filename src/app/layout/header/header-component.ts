@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, HostListener } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header-component.html',
   styleUrl: './header-component.scss'
 })
