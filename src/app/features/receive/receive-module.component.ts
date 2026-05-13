@@ -5,14 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-receive-module',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="page-container">
-      <h2>Receive Module Page</h2>
-    </div>
-  `,
-  styles: [`
-    .page-container { padding: 2rem; }
-    h2 { color: #333; font-weight: 600; }
-  `]
+  templateUrl: './receive-module.component.html',
+  styleUrl: './receive-module.component.scss'
 })
 export class ReceiveModuleComponent {}

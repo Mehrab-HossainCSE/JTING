@@ -5,14 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-delivery-module',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="page-container">
-      <h2>Delivery Module Page</h2>
-    </div>
-  `,
-  styles: [`
-    .page-container { padding: 2rem; }
-    h2 { color: #333; font-weight: 600; }
-  `]
+  templateUrl: './delivery-module.component.html',
+  styleUrl: './delivery-module.component.scss'
 })
 export class DeliveryModuleComponent {}

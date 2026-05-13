@@ -5,14 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-user-management',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="page-container">
-      <h2>User Management Page</h2>
-    </div>
-  `,
-  styles: [`
-    .page-container { padding: 2rem; }
-    h2 { color: #333; font-weight: 600; }
-  `]
+  templateUrl: './user-management.component.html',
+  styleUrl: './user-management.component.scss'
 })
 export class UserManagementComponent {}

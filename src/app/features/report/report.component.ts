@@ -5,14 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-report',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="page-container">
-      <h2>Report Page</h2>
-    </div>
-  `,
-  styles: [`
-    .page-container { padding: 2rem; }
-    h2 { color: #333; font-weight: 600; }
-  `]
+  templateUrl: './report.component.html',
+  styleUrl: './report.component.scss'
 })
 export class ReportComponent {}

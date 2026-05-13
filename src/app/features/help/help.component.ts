@@ -5,14 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-help',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="page-container">
-      <h2>Help Page</h2>
-    </div>
-  `,
-  styles: [`
-    .page-container { padding: 2rem; }
-    h2 { color: #333; font-weight: 600; }
-  `]
+  templateUrl: './help.component.html',
+  styleUrl: './help.component.scss'
 })
 export class HelpComponent {}

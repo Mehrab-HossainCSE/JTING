@@ -5,14 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-picking-module',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="page-container">
-      <h2>Picking Module Page</h2>
-    </div>
-  `,
-  styles: [`
-    .page-container { padding: 2rem; }
-    h2 { color: #333; font-weight: 600; }
-  `]
+  templateUrl: './picking-module.component.html',
+  styleUrl: './picking-module.component.scss'
 })
 export class PickingModuleComponent {}

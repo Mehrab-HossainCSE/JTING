@@ -1,0 +1,10 @@
+<div class="layout-wrapper" [class.collapsed]="isCollapsed()">
+  <app-sidebar-component />
+  
+  <div class="main-container">
+    <app-header />
+    <main class="content-area">
+      <router-outlet />
+    </main>
+  </div>
+</div>
