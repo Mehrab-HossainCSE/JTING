@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal, effect, computed } from '@angular/core';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { MenuService } from '../../../../../core/services/menu.service';
-import { UIStateService } from '../../../../../core/services/ui-state.service';
+import { AuthService } from '../../core/services/auth.service';
+import { MenuService } from '../../core/services/menu.service';
+import { UIStateService } from '../../core/services/ui-state.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -22,14 +22,14 @@ export class SidebarComponent {
   
   // ✅ Static menu list for consistent layout
   staticMenus = signal<any[]>([
-    { id: 1, displayName: 'Dashboard', url: '/dashboard/main' },
-    { id: 2, displayName: 'User Management', url: '/dashboard/users' },
-    { id: 3, displayName: 'Master Setup', url: '/dashboard/master' },
-    { id: 4, displayName: 'Receive Module', url: '/dashboard/receive' },
-    { id: 5, displayName: 'Picking Module', url: '/dashboard/picking' },
-    { id: 6, displayName: 'Delivery Module', url: '/dashboard/delivery' },
-    { id: 7, displayName: 'Report', url: '/dashboard/report' },
-    { id: 8, displayName: 'Help', url: '/dashboard/help' }
+    { id: 1, displayName: 'Dashboard', url: '/dashboard' },
+    { id: 2, displayName: 'User Management', url: '/users' },
+    { id: 3, displayName: 'Master Setup', url: '/master' },
+    { id: 4, displayName: 'Receive Module', url: '/receive' },
+    { id: 5, displayName: 'Picking Module', url: '/picking' },
+    { id: 6, displayName: 'Delivery Module', url: '/delivery' },
+    { id: 7, displayName: 'Report', url: '/report' },
+    { id: 8, displayName: 'Help', url: '/help' }
   ]);
 
   sanitizedMenus = computed(() => this.staticMenus());

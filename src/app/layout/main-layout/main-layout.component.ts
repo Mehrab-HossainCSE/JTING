@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from '../components/sidebar/sidebar-component/sidebar-component';
-import { HeaderComponent } from '../components/header/header-component/header-component';
-import { UIStateService } from '../../../core/services/ui-state.service';
+import { SidebarComponent } from '../sidebar/sidebar-component';
+import { HeaderComponent } from '../header/header-component';
+import { UIStateService } from '../../core/services/ui-state.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
