@@ -33,6 +33,7 @@
             "styles": [
               "bootstrap/dist/css/bootstrap.min.css",
               "bootstrap-icons/font/bootstrap-icons.css",
+                "node_modules/ngx-toastr/toastr.css",
               "src/styles.scss"
             ],
             "scripts": [

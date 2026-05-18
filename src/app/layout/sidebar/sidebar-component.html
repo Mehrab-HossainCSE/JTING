@@ -25,7 +25,7 @@
             exact: menu.url === '/dashboard' || menu.url === '/dashboard/main'
           }"
         >
-          <span class="nav-icon" [innerHTML]="getIcon(menu.displayName)"></span>
+          <span class="nav-icon" [innerHTML]="getIcon(menu.iconName)"></span>
           <span class="nav-label" *ngIf="!isCollapsed()">{{ menu.displayName }}</span>
         </a>
       </div>

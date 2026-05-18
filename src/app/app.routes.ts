@@ -36,10 +36,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/users/user-management.component').then(m => m.UserManagementComponent),
         data: { title: 'User Management' }
       },
-      { 
-        path: 'master', 
-        loadComponent: () => import('./features/master/master-setup.component').then(m => m.MasterSetupComponent),
-        data: { title: 'Master Setup' }
+     {
+        // ✅ Changed from loadComponent → loadChildren to support child routes
+        path: 'master',
+        loadChildren: () => import('./features/master/master.routes').then(m => m.MASTER_ROUTES),
       },
       { 
         path: 'receive', 
