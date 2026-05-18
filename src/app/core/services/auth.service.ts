@@ -54,6 +54,7 @@ export class AuthService {
   }
 
   checkAuth(): boolean {
+    
     return !!this.getToken();
   }
   getLocalStorageUserName(): string | null {
