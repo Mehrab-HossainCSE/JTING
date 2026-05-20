@@ -21,28 +21,18 @@ export class BrandComponent implements OnInit {
 
   protected Math = Math;
 
-  // ── Edit tracking ──────────────────────────────────────────────────────────
   editingBrandId = signal<string | null>(null);
-
-  // ── Search ─────────────────────────────────────────────────────────────────
   brandSearch = signal('');
-
-  // ── Loading ────────────────────────────────────────────────────────────────
   isLoading = signal(false);
-
-  // ── Pagination ─────────────────────────────────────────────────────────────
   currentPage = signal(1);
   pageSize    = signal(5);
 
-  // ── Data ───────────────────────────────────────────────────────────────────
   brandList = signal<Brand[]>([]);
 
-  // ── Reactive Form ──────────────────────────────────────────────────────────
   brandForm: FormGroup = this.fb.group({
     brandName: ['', [Validators.required, Validators.minLength(2)]],
   });
 
-  // ── Permission state ───────────────────────────────────────────────────────────
   permissions = signal({
     canView: false,
     canCreate: false,
@@ -56,7 +46,6 @@ export class BrandComponent implements OnInit {
   canDelete = computed(() => this.permissions().canDelete);
   canSave = computed(() => (this.editingBrandId() ? this.canUpdate() : this.canCreate()));
 
-  // ── Computed ───────────────────────────────────────────────────────────────
   filteredBrandList = computed(() => {
     const q = this.brandSearch().toLowerCase();
     return this.brandList().filter((b) =>
@@ -78,7 +67,6 @@ export class BrandComponent implements OnInit {
     return this.filteredBrandList().slice(start, start + this.pageSize());
   });
 
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
   private storageService = inject(StorageService);
 
   ngOnInit(): void {
@@ -131,7 +119,6 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  // ── Pagination ─────────────────────────────────────────────────────────────
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.currentPage.set(page);
@@ -148,7 +135,6 @@ export class BrandComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  // ── Form helpers ───────────────────────────────────────────────────────────
   resetForm(): void {
     this.brandForm.reset();
     this.editingBrandId.set(null);
@@ -167,7 +153,6 @@ export class BrandComponent implements OnInit {
     return '';
   }
 
-  // ── Brand CRUD ─────────────────────────────────────────────────────────────
   saveBrand(): void {
     if (!this.canSave()) {
       return;
@@ -181,7 +166,6 @@ export class BrandComponent implements OnInit {
     const editing = this.editingBrandId();
 
     if (editing) {
-      // Pass full Brand object — brandId is required by the .NET update signature
       const payload: Brand = { brandId: editing, brandName };
 
       this.brandService.update(payload).subscribe({ 
@@ -194,7 +178,7 @@ export class BrandComponent implements OnInit {
             );
             this.toastr.success('Brand updated successfully.', 'Success');
             this.resetForm();
-            this.loadBrands(); // Refresh to get any server-side changes
+            this.loadBrands(); 
           } else {
             this.toastr.error(res.message, 'Error');
           }
@@ -202,7 +186,6 @@ export class BrandComponent implements OnInit {
         error: () => this.toastr.error('Update failed.', 'Error'),
       });
     } else {
-      // Create only requires the name, backend generates the ID
       const payload = { brandName };
 
       this.brandService.create(payload).subscribe({
@@ -214,7 +197,7 @@ export class BrandComponent implements OnInit {
             ]);
             this.toastr.success('Brand created successfully.', 'Success');
             this.resetForm();
-            this.loadBrands(); // Refresh to get any server-side changes
+            this.loadBrands();
           } else {
             this.toastr.error(res.message, 'Error');
           }
@@ -238,7 +221,7 @@ export class BrandComponent implements OnInit {
             this.currentPage.update((p) => p - 1);
           }
           this.toastr.success('Brand deleted successfully.', 'Success');
-          this.loadBrands(); // Refresh to get any server-side changes
+          this.loadBrands(); 
         } else {
           this.toastr.error(res.message, 'Error');
         }
@@ -247,7 +230,6 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  // ── Export ─────────────────────────────────────────────────────────────────
   exportToExcel(): void {
     const rows = this.filteredBrandList().map((b) => ({
       'Brand ID':   b.brandId,
