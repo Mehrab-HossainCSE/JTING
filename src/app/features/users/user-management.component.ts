@@ -17,6 +17,10 @@ export class UserManagementComponent {
     {
       title: 'Home',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'Quick Access', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -29,6 +33,10 @@ export class UserManagementComponent {
     {
       title: 'Settings',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'Category', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -50,6 +58,10 @@ export class UserManagementComponent {
     {
       title: 'Inventory Tracking System',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'InvPrepareSeason', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -62,6 +74,10 @@ export class UserManagementComponent {
     {
       title: 'Dashboard',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'Sales Overview', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -76,6 +92,10 @@ export class UserManagementComponent {
     {
       title: 'Inventory',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'Reprint', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -97,6 +117,10 @@ export class UserManagementComponent {
     {
       title: 'Promotion',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'Discount Promotion', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -109,6 +133,10 @@ export class UserManagementComponent {
     {
       title: 'CRM',
       isSelected: false,
+      allView: false,
+      allAdd: false,
+      allEdit: false,
+      allDelete: false,
       isOpen: true,
       items: [
         { name: 'Customer Entry', isSelected: false, view: false, add: false, edit: false, delete: false },
@@ -124,6 +152,11 @@ export class UserManagementComponent {
 
   onSectionToggle(section: any) {
     const isSelected = section.isSelected;
+    section.allView = isSelected;
+    section.allAdd = isSelected;
+    section.allEdit = isSelected;
+    section.allDelete = isSelected;
+    
     section.items.forEach((item: any) => {
       item.isSelected = isSelected;
       item.view = isSelected;
@@ -133,8 +166,15 @@ export class UserManagementComponent {
     });
   }
 
+  onPermissionToggle(section: any, permission: string) {
+    const propName = 'all' + permission.charAt(0).toUpperCase() + permission.slice(1);
+    const isSelected = section[propName];
+    section.items.forEach((item: any) => {
+      item[permission] = isSelected;
+    });
+  }
+
   onItemToggle(section: any, item: any) {
-    // Optional: Update section.isSelected based on children
     item.view = item.isSelected;
     item.add = item.isSelected;
     item.edit = item.isSelected;

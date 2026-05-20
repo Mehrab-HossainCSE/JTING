@@ -16,11 +16,39 @@
   <div class="menu-distribution-flex">
     <div class="menu-card" *ngFor="let section of menuSections">
       <div class="card-header">
-        <label class="checkbox-container main-header">
-          <input type="checkbox" [(ngModel)]="section.isSelected" (change)="onSectionToggle(section)">
-          <span class="checkmark"></span>
-          <span class="label-text">{{ section.title }}</span>
-        </label>
+        <div class="header-left">
+          <label class="checkbox-container main-header">
+            <input type="checkbox" [(ngModel)]="section.isSelected" (change)="onSectionToggle(section)">
+            <span class="checkmark"></span>
+            <span class="label-text">{{ section.title }}</span>
+          </label>
+        </div>
+
+        <div class="header-right">
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All View">
+            <input type="checkbox" [(ngModel)]="section.allView" (change)="onPermissionToggle(section, 'view')">
+            <span class="checkmark small"></span>
+            <span class="action-label">View</span>
+          </label>
+
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All Add">
+            <input type="checkbox" [(ngModel)]="section.allAdd" (change)="onPermissionToggle(section, 'add')">
+            <span class="checkmark small"></span>
+            <span class="action-label">Add</span>
+          </label>
+
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All Edit">
+            <input type="checkbox" [(ngModel)]="section.allEdit" (change)="onPermissionToggle(section, 'edit')">
+            <span class="checkmark small"></span>
+            <span class="action-label">Edit</span>
+          </label>
+
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All Delete">
+            <input type="checkbox" [(ngModel)]="section.allDelete" (change)="onPermissionToggle(section, 'delete')">
+            <span class="checkmark small"></span>
+            <span class="action-label">Delete</span>
+          </label>
+        </div>
       </div>
       
       <div class="card-body" *ngIf="section.items.length > 0">

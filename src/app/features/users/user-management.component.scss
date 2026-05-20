@@ -89,9 +89,31 @@
 
     .card-header {
       background: #f8fafc;
-      padding: 12px 16px;
+      padding: 10px 16px;
       border-bottom: 1px solid $border-color;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
+      .header-right {
+        display: flex;
+        gap: 10px;
+
+        .header-action {
+          .action-label {
+            font-size: 0.85rem;
+            color: $text-gray;
+            font-weight: 600;
+            margin-left: 6px;
+          }
+
+          &:hover {
+            .action-label {
+              color: $primary-green;
+            }
+          }
+        }
+      }
     }
 
     .card-body {
