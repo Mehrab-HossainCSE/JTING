@@ -22,7 +22,15 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       border: 1px solid $border-color;
-      max-width: 400px;
+      width: 100%;
+      max-width: calc(33.333% - 14px); // Match 1 column width
+
+      @media (max-width: 1200px) {
+        max-width: calc(50% - 10px); // Match 2 columns
+      }
+      @media (max-width: 768px) {
+        max-width: 100%; // full width
+      }
 
       .form-group {
         label {
@@ -93,11 +101,18 @@
 
       // Custom Scrollbar
       &::-webkit-scrollbar {
-        width: 5px;
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent; // Remove background color
       }
       &::-webkit-scrollbar-thumb {
-        background: #ccc;
+        background: #e1e8ed; // Lighter, more subtle color
         border-radius: 10px;
+
+        &:hover {
+          background: $primary-green;
+        }
       }
 
       .menu-item {
