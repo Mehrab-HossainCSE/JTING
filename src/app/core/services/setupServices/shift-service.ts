@@ -18,14 +18,17 @@ export class ShiftService {
   }
 
   getById(id: string): Observable<ApiResponse<Shift>> {
+    debugger;
     return this.http.get<ApiResponse<Shift>>(`${this.apiUrl}/GetById/${id}`);
   }
 
   create(shift: any): Observable<ApiResponse<Shift>> {
+    debugger;
     return this.http.post<ApiResponse<Shift>>(`${this.apiUrl}/Create`, shift);
   }
 
   update(shift: Shift): Observable<ApiResponse<Shift>> {
+    debugger;
     return this.http.put<ApiResponse<Shift>>(`${this.apiUrl}/Update`, shift);
   }
 

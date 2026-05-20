@@ -18,6 +18,7 @@ export class ShiftComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private fb = inject(FormBuilder);
   private toastr = inject(ToastrService);
+  private storageService = inject(StorageService);
 
   protected Math = Math;
 
@@ -30,28 +31,28 @@ export class ShiftComponent implements OnInit {
   shiftList = signal<Shift[]>([]);
 
   shiftForm: FormGroup = this.fb.group({
-    shiftName: ['', [Validators.required, Validators.minLength(2)]],
+    shiftName: ['', [Validators.required, Validators.minLength(1)]],
     startTime: ['', Validators.required],
-    endTime: ['', Validators.required],
+    endTime:   ['', Validators.required],
   });
 
   permissions = signal({
-    canView: false,
+    canView:   false,
     canCreate: false,
     canUpdate: false,
     canDelete: false,
   });
 
-  canView = computed(() => this.permissions().canView);
+  canView   = computed(() => this.permissions().canView);
   canCreate = computed(() => this.permissions().canCreate);
   canUpdate = computed(() => this.permissions().canUpdate);
   canDelete = computed(() => this.permissions().canDelete);
-  canSave = computed(() => (this.editingShiftId() ? this.canUpdate() : this.canCreate()));
+  canSave   = computed(() => (this.editingShiftId() ? this.canUpdate() : this.canCreate()));
 
   filteredShiftList = computed(() => {
     const q = this.shiftSearch().toLowerCase();
     return this.shiftList().filter((s) =>
-      s.shiftId?.toLowerCase().includes(q) ||
+      s.shiftID?.toLowerCase().includes(q) ||
       s.shiftName.toLowerCase().includes(q)
     );
   });
@@ -69,8 +70,6 @@ export class ShiftComponent implements OnInit {
     return this.filteredShiftList().slice(start, start + this.pageSize());
   });
 
-  private storageService = inject(StorageService);
-
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
     if (this.canView()) {
@@ -83,7 +82,7 @@ export class ShiftComponent implements OnInit {
     const masterMenu = menus?.find(
       (menu) => menu.name?.toUpperCase() === 'MASTER_SETUP' || menu.url?.toLowerCase() === '/master'
     );
-    const currentUrl = '/shift';
+    const currentUrl = '/shifts';
     const shiftMenu = masterMenu?.children?.find(
       (child) => child.url?.toLowerCase() === currentUrl || child.name?.toUpperCase() === 'SHIFT_SETUP'
     );
@@ -94,7 +93,7 @@ export class ShiftComponent implements OnInit {
     }
 
     this.permissions.set({
-      canView: !!shiftMenu.canView,
+      canView:   !!shiftMenu.canView,
       canCreate: !!shiftMenu.canCreate,
       canUpdate: !!shiftMenu.canUpdate,
       canDelete: !!shiftMenu.canDelete,
@@ -107,7 +106,12 @@ export class ShiftComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.shiftList.set(
-            res.data.map((s) => ({ shiftId: s.shiftId, shiftName: s.shiftName, startTime: s.startTime, endTime: s.endTime }))
+            res.data.map((s) => ({
+              shiftID:   s.shiftID,
+              shiftName: s.shiftName,
+              startTime: s.startTime,
+              endTime:   s.endTime,
+            }))
           );
         } else {
           this.toastr.error(res.message, 'Error');
@@ -150,32 +154,31 @@ export class ShiftComponent implements OnInit {
   getError(field: string): string {
     const ctrl = this.shiftForm.get(field);
     if (!ctrl || !ctrl.errors) return '';
-    if (ctrl.errors['required']) return 'This field is required.';
+    if (ctrl.errors['required'])  return 'This field is required.';
     if (ctrl.errors['minlength']) return `Minimum ${ctrl.errors['minlength'].requiredLength} characters.`;
     return '';
   }
 
   saveShift(): void {
-    if (!this.canSave()) {
-      return;
-    }
     if (this.shiftForm.invalid) {
       this.shiftForm.markAllAsTouched();
       return;
     }
 
-    const { shiftName, startTime, endTime } = this.shiftForm.getRawValue();
     const editing = this.editingShiftId();
+    const { shiftName, startTime, endTime } = this.shiftForm.getRawValue();
 
     if (editing) {
-      const payload: Shift = { shiftId: editing, shiftName, startTime, endTime };
+      const payload: Shift = { shiftID: editing, shiftName, startTime, endTime };
 
       this.shiftService.update(payload).subscribe({
         next: (res) => {
           if (res.success) {
             this.shiftList.update((list) =>
               list.map((s) =>
-                s.shiftId === editing ? { shiftId: s.shiftId, shiftName, startTime, endTime } : s
+                s.shiftID === editing
+                  ? { shiftID: s.shiftID, shiftName, startTime, endTime }
+                  : s
               )
             );
             this.toastr.success('Shift updated successfully.', 'Success');
@@ -188,6 +191,7 @@ export class ShiftComponent implements OnInit {
         error: () => this.toastr.error('Update failed.', 'Error'),
       });
     } else {
+      if (!this.canCreate()) return;
       const payload = { shiftName, startTime, endTime };
 
       this.shiftService.create(payload).subscribe({
@@ -195,7 +199,12 @@ export class ShiftComponent implements OnInit {
           if (res.success) {
             this.shiftList.update((list) => [
               ...list,
-              { shiftId: res.data.shiftId, shiftName: res.data.shiftName, startTime: res.data.startTime, endTime: res.data.endTime },
+              {
+                shiftID:   res.data.shiftID,
+                shiftName: res.data.shiftName,
+                startTime: res.data.startTime,
+                endTime:   res.data.endTime,
+              },
             ]);
             this.toastr.success('Shift created successfully.', 'Success');
             this.resetForm();
@@ -209,16 +218,27 @@ export class ShiftComponent implements OnInit {
     }
   }
 
+  // ← THIS is the fix: log shiftId to confirm it's not undefined
   editShift(item: Shift): void {
-    this.editingShiftId.set(item.shiftId || null);
-    this.shiftForm.setValue({ shiftName: item.shiftName, startTime: item.startTime, endTime: item.endTime });
+    debugger;
+    const id = item.shiftID;
+    if (!id) {
+      this.toastr.error('Cannot edit: shift ID is missing.', 'Error');
+      return;
+    }
+    this.editingShiftId.set(id);
+    this.shiftForm.patchValue({
+      shiftName: item.shiftName,
+      startTime: item.startTime,
+      endTime:   item.endTime,
+    });
   }
 
   deleteShift(id: string): void {
     this.shiftService.delete(id).subscribe({
       next: (res) => {
         if (res.success) {
-          this.shiftList.update((list) => list.filter((s) => s.shiftId !== id));
+          this.shiftList.update((list) => list.filter((s) => s.shiftID !== id));
           if (this.paginatedShiftList().length === 0 && this.currentPage() > 1) {
             this.currentPage.update((p) => p - 1);
           }
@@ -234,10 +254,10 @@ export class ShiftComponent implements OnInit {
 
   exportToExcel(): void {
     const rows = this.filteredShiftList().map((s) => ({
-      'Shift ID': s.shiftId,
+      'Shift ID':   s.shiftID,
       'Shift Name': s.shiftName,
       'Start Time': s.startTime,
-      'End Time': s.endTime,
+      'End Time':   s.endTime,
     }));
 
     if (!rows.length) return;

@@ -118,7 +118,7 @@
 
     .card-body {
       padding: 0 16px;
-      max-height: 420px; // Keep the scroll for very long lists
+      height: 350px; // Keep the scroll for very long lists
       overflow-y: auto;
 
       // Custom Scrollbar

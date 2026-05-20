@@ -208,6 +208,7 @@ export class BrandComponent implements OnInit {
   }
 
   editBrand(item: Brand): void {
+    debugger;
     this.editingBrandId.set(item.brandId);
     this.brandForm.setValue({ brandName: item.brandName });
   }
