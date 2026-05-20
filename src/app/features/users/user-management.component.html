@@ -1,3 +1,93 @@
-<div class="page-container">
-  <h2>User Management Page</h2>
+<div class="user-management-page">
+  <div class="header-section">
+    <h1 class="page-title">User Menu Distribution</h1>
+    
+    <div class="user-selector-card">
+      <div class="form-group">
+        <label for="userSelect">User Name</label>
+        <select id="userSelect" [(ngModel)]="selectedUser" class="form-control">
+          <option value="" disabled>-- Select a User --</option>
+          <option *ngFor="let user of users" [value]="user">{{user}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-distribution-flex">
+    <div class="menu-card" *ngFor="let section of menuSections">
+      <div class="card-header">
+        <div class="header-left">
+          <label class="checkbox-container main-header">
+            <input type="checkbox" [(ngModel)]="section.isSelected" (change)="onSectionToggle(section)">
+            <span class="checkmark"></span>
+            <span class="label-text">{{ section.title }}</span>
+          </label>
+        </div>
+
+        <div class="header-right">
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All View">
+            <input type="checkbox" [(ngModel)]="section.allView" (change)="onPermissionToggle(section, 'view')">
+            <span class="checkmark small"></span>
+            <span class="action-label">View</span>
+          </label>
+
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All Add">
+            <input type="checkbox" [(ngModel)]="section.allAdd" (change)="onPermissionToggle(section, 'add')">
+            <span class="checkmark small"></span>
+            <span class="action-label">Add</span>
+          </label>
+
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All Edit">
+            <input type="checkbox" [(ngModel)]="section.allEdit" (change)="onPermissionToggle(section, 'edit')">
+            <span class="checkmark small"></span>
+            <span class="action-label">Edit</span>
+          </label>
+
+          <label class="checkbox-container action-checkbox header-action" title="Toggle All Delete">
+            <input type="checkbox" [(ngModel)]="section.allDelete" (change)="onPermissionToggle(section, 'delete')">
+            <span class="checkmark small"></span>
+            <span class="action-label">Delete</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="card-body" *ngIf="section.items.length > 0">
+        <div class="menu-item" *ngFor="let item of section.items">
+          <div class="item-main">
+            <label class="checkbox-container">
+              <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(section, item)">
+              <span class="checkmark"></span>
+              <span class="item-name">{{ item.name }}</span>
+            </label>
+          </div>
+          
+          <div class="item-actions">
+            <label class="checkbox-container action-checkbox">
+              <input type="checkbox" [(ngModel)]="item.view">
+              <span class="checkmark small"></span>
+              <span class="action-label">View</span>
+            </label>
+
+            <label class="checkbox-container action-checkbox">
+              <input type="checkbox" [(ngModel)]="item.add">
+              <span class="checkmark small"></span>
+              <span class="action-label">Add</span>
+            </label>
+
+            <label class="checkbox-container action-checkbox">
+              <input type="checkbox" [(ngModel)]="item.edit">
+              <span class="checkmark small"></span>
+              <span class="action-label">Edit</span>
+            </label>
+            
+            <label class="checkbox-container action-checkbox">
+              <input type="checkbox" [(ngModel)]="item.delete">
+              <span class="checkmark small"></span>
+              <span class="action-label">Delete</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

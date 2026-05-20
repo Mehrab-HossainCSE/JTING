@@ -14,18 +14,18 @@
   </div>
 
   <nav class="sidebar-nav">
-    @for (menu of sanitizedMenus(); track menu.id!) {
+    @for (menu of menuService.menus(); track menu.id) {
       <div class="nav-item-wrapper">
         <a
           class="nav-item"
-          [routerLink]="menu.url"
+          [routerLink]="getParentRoute(menu)"
           routerLinkActive="active"
           [title]="isCollapsed() ? menu.displayName : ''"
           [routerLinkActiveOptions]="{
-            exact: menu.url === '/dashboard' || menu.url === '/dashboard/main'
+            exact: getParentRoute(menu) === '/dashboard' || getParentRoute(menu) === '/dashboard/main'
           }"
         >
-          <span class="nav-icon" [innerHTML]="getIcon(menu.iconName)"></span>
+          <span class="nav-icon" [innerHTML]="getIcon(menu.navIcon || menu.name)"></span>
           <span class="nav-label" *ngIf="!isCollapsed()">{{ menu.displayName }}</span>
         </a>
       </div>

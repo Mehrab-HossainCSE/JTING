@@ -25,6 +25,7 @@ export class Login {
   showPassword = signal(false);
 
   login() {
+    debugger;
     console.log('Login button clicked!');
 
     this.loading.set(true);
@@ -44,7 +45,7 @@ export class Login {
             return;
           }
 
-          this.menuService.loadMenus( this.userName());
+          this.menuService.loadMenus(res.data.name);
           
           this.router.navigate(['/dashboard']);
         },

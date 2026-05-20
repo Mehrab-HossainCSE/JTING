@@ -5,6 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import * as XLSX from 'xlsx';
 import { BrandService } from '../../../../core/services/setupServices/brand-service';
 import { Brand } from '../../../../core/models/setups/brand/brand';
+import { StorageService } from '../../../../core/services/storage.service';
+import { MenuResponse } from '../../../../core/models/MenuResponse';
 
 @Component({
   selector: 'app-brand-component',
@@ -19,28 +21,31 @@ export class BrandComponent implements OnInit {
 
   protected Math = Math;
 
-  // ── Edit tracking ──────────────────────────────────────────────────────────
   editingBrandId = signal<string | null>(null);
-
-  // ── Search ─────────────────────────────────────────────────────────────────
   brandSearch = signal('');
-
-  // ── Loading ────────────────────────────────────────────────────────────────
   isLoading = signal(false);
-
-  // ── Pagination ─────────────────────────────────────────────────────────────
   currentPage = signal(1);
   pageSize    = signal(5);
 
-  // ── Data ───────────────────────────────────────────────────────────────────
   brandList = signal<Brand[]>([]);
 
-  // ── Reactive Form ──────────────────────────────────────────────────────────
   brandForm: FormGroup = this.fb.group({
     brandName: ['', [Validators.required, Validators.minLength(2)]],
   });
 
-  // ── Computed ───────────────────────────────────────────────────────────────
+  permissions = signal({
+    canView: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false,
+  });
+
+  canView = computed(() => this.permissions().canView);
+  canCreate = computed(() => this.permissions().canCreate);
+  canUpdate = computed(() => this.permissions().canUpdate);
+  canDelete = computed(() => this.permissions().canDelete);
+  canSave = computed(() => (this.editingBrandId() ? this.canUpdate() : this.canCreate()));
+
   filteredBrandList = computed(() => {
     const q = this.brandSearch().toLowerCase();
     return this.brandList().filter((b) =>
@@ -62,9 +67,36 @@ export class BrandComponent implements OnInit {
     return this.filteredBrandList().slice(start, start + this.pageSize());
   });
 
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
+  private storageService = inject(StorageService);
+
   ngOnInit(): void {
-    this.loadBrands();
+    this.loadPermissionsFromStorage();
+    if (this.canView()) {
+      this.loadBrands();
+    }
+  }
+
+  private loadPermissionsFromStorage(): void {
+    const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
+    const masterMenu = menus?.find(
+      (menu) => menu.name?.toUpperCase() === 'MASTER_SETUP' || menu.url?.toLowerCase() === '/master'
+    );
+    const currentUrl = '/brand';
+    const brandMenu = masterMenu?.children?.find(
+      (child) => child.url?.toLowerCase() === currentUrl || child.name?.toUpperCase() === 'BRAND_SETUP'
+    );
+
+    if (!brandMenu) {
+      this.permissions.set({ canView: false, canCreate: false, canUpdate: false, canDelete: false });
+      return;
+    }
+
+    this.permissions.set({
+      canView: !!brandMenu.canView,
+      canCreate: !!brandMenu.canCreate,
+      canUpdate: !!brandMenu.canUpdate,
+      canDelete: !!brandMenu.canDelete,
+    });
   }
 
   loadBrands(): void {
@@ -87,7 +119,6 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  // ── Pagination ─────────────────────────────────────────────────────────────
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.currentPage.set(page);
@@ -104,7 +135,6 @@ export class BrandComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  // ── Form helpers ───────────────────────────────────────────────────────────
   resetForm(): void {
     this.brandForm.reset();
     this.editingBrandId.set(null);
@@ -123,8 +153,10 @@ export class BrandComponent implements OnInit {
     return '';
   }
 
-  // ── Brand CRUD ─────────────────────────────────────────────────────────────
   saveBrand(): void {
+    if (!this.canSave()) {
+      return;
+    }
     if (this.brandForm.invalid) {
       this.brandForm.markAllAsTouched();
       return;
@@ -134,7 +166,6 @@ export class BrandComponent implements OnInit {
     const editing = this.editingBrandId();
 
     if (editing) {
-      // Pass full Brand object — brandId is required by the .NET update signature
       const payload: Brand = { brandId: editing, brandName };
 
       this.brandService.update(payload).subscribe({ 
@@ -147,7 +178,7 @@ export class BrandComponent implements OnInit {
             );
             this.toastr.success('Brand updated successfully.', 'Success');
             this.resetForm();
-            this.loadBrands(); // Refresh to get any server-side changes
+            this.loadBrands(); 
           } else {
             this.toastr.error(res.message, 'Error');
           }
@@ -155,7 +186,6 @@ export class BrandComponent implements OnInit {
         error: () => this.toastr.error('Update failed.', 'Error'),
       });
     } else {
-      // Create only requires the name, backend generates the ID
       const payload = { brandName };
 
       this.brandService.create(payload).subscribe({
@@ -167,7 +197,7 @@ export class BrandComponent implements OnInit {
             ]);
             this.toastr.success('Brand created successfully.', 'Success');
             this.resetForm();
-            this.loadBrands(); // Refresh to get any server-side changes
+            this.loadBrands();
           } else {
             this.toastr.error(res.message, 'Error');
           }
@@ -178,6 +208,7 @@ export class BrandComponent implements OnInit {
   }
 
   editBrand(item: Brand): void {
+    debugger;
     this.editingBrandId.set(item.brandId);
     this.brandForm.setValue({ brandName: item.brandName });
   }
@@ -191,7 +222,7 @@ export class BrandComponent implements OnInit {
             this.currentPage.update((p) => p - 1);
           }
           this.toastr.success('Brand deleted successfully.', 'Success');
-          this.loadBrands(); // Refresh to get any server-side changes
+          this.loadBrands(); 
         } else {
           this.toastr.error(res.message, 'Error');
         }
@@ -200,7 +231,6 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  // ── Export ─────────────────────────────────────────────────────────────────
   exportToExcel(): void {
     const rows = this.filteredBrandList().map((b) => ({
       'Brand ID':   b.brandId,

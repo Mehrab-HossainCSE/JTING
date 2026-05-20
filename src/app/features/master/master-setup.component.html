@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="tabs-grid">
-      @for (tab of tabs; track tab.id) {
+      @for (tab of tabs(); track tab.id) {
         <button
           class="tab-btn"
           [class.active]="activeTabId() === tab.id"
