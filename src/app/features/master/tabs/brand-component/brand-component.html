@@ -2,32 +2,40 @@
 <div class="content-body">
   <div class="grid-layout">
 
-    <!-- ── Left Card: Form ────────────────────────────────────────────────── -->
-    <div class="card form-card">
-      <div class="card-header">
-        <h3>{{ editingBrandId() ? 'Edit Brand' : 'Add New Brand' }}</h3>
-        <p>Register a new JTI brand</p>
+    <div *ngIf="!canView()" class="no-permission-card">
+      <div class="card">
+        <div class="card-body">
+          <h3>Access Denied</h3>
+          <p>You do not have permission to view brands.</p>
+        </div>
       </div>
+    </div>
 
-      <div class="card-body">
-        <div class="operations-tag">OPERATIONS</div>
+    <div *ngIf="canView()">
+      <!-- ── Left Card: Form ────────────────────────────────────────────────── -->
+      <div class="card form-card">
+        <div class="card-header">
+          <h3>{{ editingBrandId() ? 'Edit Brand' : 'Add New Brand' }}</h3>
+          <p>Register a new JTI brand</p>
+        </div>
 
-        <form [formGroup]="brandForm">
-          <div class="input-group">
-            <label>BRAND NAME<span class="req">*</span></label>
-            <input type="text"
-                   placeholder="e.g. Marlboro"
-                   formControlName="brandName"
-                   [class.input-error]="isInvalid('brandName')" />
-            @if (isInvalid('brandName')) {
-              <span class="field-error">{{ getError('brandName') }}</span>
-            }
-          </div>
-        </form>
-      </div>
+        <div class="card-body">
+          <div class="operations-tag">OPERATIONS</div>
 
-      <div class="card-footer">
-        <button class="btn btn-reset" (click)="resetForm()">
+          <form [formGroup]="brandForm">
+            <div class="input-group">
+              <label>BRAND NAME<span class="req">*</span></label>
+              <input type="text"
+                     placeholder="e.g. Marlboro"
+                     formControlName="brandName"
+                     [class.input-error]="isInvalid('brandName')" />
+              <span class="field-error" *ngIf="isInvalid('brandName')">{{ getError('brandName') }}</span>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-reset" (click)="resetForm()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
@@ -37,16 +45,19 @@
           </svg>
           Reset
         </button>
-        <button class="btn btn-save" (click)="saveBrand()" [disabled]="isLoading()">
+        <button class="btn btn-save" *ngIf="canSave()" (click)="saveBrand()" [disabled]="isLoading()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-            <polyline points="17 21 17 13 7 13 7 21"/>
-            <polyline points="7 3 7 8 15 8"/>
-          </svg>
-          {{ editingBrandId() ? 'Update Brand' : 'Save Brand' }}
-        </button>
-      </div>
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            {{ editingBrandId() ? 'Update Brand' : 'Save Brand' }}
+          </button>
+        </div>
+    </div>
+
+    
     </div>
 
     <!-- ── Right Card: Data List ──────────────────────────────────────────── -->
@@ -80,9 +91,7 @@
         </div>
       </div>
 
-      @if (isLoading()) {
-        <div class="loading-state">Loading...</div>
-      }
+      <div *ngIf="isLoading()" class="loading-state">Loading...</div>
 
       <!-- ── Table with scrollbar ──────────────────────────────────────────── -->
       <div class="table-outer">
@@ -95,21 +104,20 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of paginatedBrandList(); track item.brandId) {
-              <tr class="table-row">
-                <td><span class="id-pill">{{ item.brandId }}</span></td>
-                <td>{{ item.brandName }}</td>
-                <td>
-                  <div class="row-actions">
-                    <button class="action-btn edit-btn" title="Edit"
-                            (click)="editBrand(item)">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </button>
-                    <button class="action-btn delete-btn" title="Delete"
+            <tr *ngFor="let item of paginatedBrandList()" class="table-row">
+              <td><span class="id-pill">{{ item.brandId }}</span></td>
+              <td>{{ item.brandName }}</td>
+              <td>
+                <div class="row-actions">
+                  <button *ngIf="canUpdate()" class="action-btn edit-btn" title="Edit"
+                          (click)="editBrand(item)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    <button *ngIf="canDelete()" class="action-btn delete-btn" title="Delete"
                             (click)="deleteBrand(item.brandId)">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                            stroke="currentColor" stroke-width="2">
@@ -122,11 +130,9 @@
                   </div>
                 </td>
               </tr>
-            } @empty {
-              <tr>
-                <td colspan="3" class="empty-row">No brands found.</td>
-              </tr>
-            }
+            <tr *ngIf="paginatedBrandList().length === 0">
+              <td colspan="3" class="empty-row">No brands found.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -166,13 +172,11 @@
           </button>
 
           <!-- Page numbers -->
-          @for (page of pageNumbers(); track page) {
-            <span class="page-num"
-                  [class.active]="page === currentPage()"
-                  (click)="goToPage(page)">
-              {{ page }}
-            </span>
-          }
+          <span *ngFor="let page of pageNumbers()" class="page-num"
+                [class.active]="page === currentPage()"
+                (click)="goToPage(page)">
+            {{ page }}
+          </span>
 
           <!-- Next -->
           <button class="page-btn" title="Next page"

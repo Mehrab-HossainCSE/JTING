@@ -22,7 +22,7 @@ export class NavMenuService {
   }
 
   getNavMenusByUserName(userName: string): Observable<ApiResponse<NavMenu[]>> {
-    return this.http.get<ApiResponse<NavMenu[]>>(`${this.apiUrl}/children/username?userName=${userName}`);
+    return this.http.get<ApiResponse<NavMenu[]>>(`${this.apiUrl}/children/username/${encodeURIComponent(userName)}`);
   }
 
   getNavMenusByRoleId(roleId: string): Observable<ApiResponse<NavMenu[]>> {
@@ -33,3 +33,5 @@ export class NavMenuService {
     return this.http.post<ApiResponse<NavMenu>>(`${this.apiUrl}/navmenupermission`, menu);
   }
 }
+
+

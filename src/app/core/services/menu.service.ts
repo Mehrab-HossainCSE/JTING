@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { MenuResponse, ApiMenuResponse } from '../models/MenuResponse';
-import { HttpClient } from '@angular/common/http';
+import { NavMenuService } from './navMenusServices/nav-menu-service';
+import { StorageService } from './storage.service';
 import { finalize } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -12,61 +12,49 @@ export class MenuService {
 
   readonly menus = this._menus.asReadonly();
   readonly loading = this._loading.asReadonly();
-  private readonly API_URL = environment.apiUrl; 
-  constructor(private http: HttpClient) {}
 
-loadMenus(userName: string) {
+  constructor(
+    private navMenuService: NavMenuService,
+    private storageService: StorageService,
+  ) {
+    const storedMenus = this.storageService.getAngularItem<MenuResponse[]>('menus');
+    if (storedMenus?.length) {
+      this._menus.set(storedMenus);
+    }
+  }
+
+  loadMenus(userName: string) {
+    debugger;
   this._loading.set(true);
 
-  const url = `${this.API_URL}/NavMenus/children/username/${userName}`;
-
-  this.http.get<ApiMenuResponse>(url)
+  this.navMenuService.getNavMenusByUserName(userName)
     .pipe(
       finalize(() => this._loading.set(false))
     )
     .subscribe({
       next: (res) => {
-
+        debugger;
         if (res.success && res.data) {
+          const sortedMenus = [...res.data].sort((a, b) => a.displayOrder - b.displayOrder);
 
-          // ✅ Sort parent menus
-          const sortedMenus = [...res.data].sort(
-            (a, b) => a.displayOrder - b.displayOrder
-          );
-
-          // ✅ Sort child menus
-          sortedMenus.forEach(menu => {
-
+          sortedMenus.forEach((menu) => {
             if (menu.children?.length) {
-
-              menu.children = [...menu.children].sort(
-                (a, b) => a.displayOrder - b.displayOrder
-              );
-
+              menu.children = [...menu.children].sort((a, b) => a.displayOrder - b.displayOrder);
             }
-
           });
 
-            this._menus.set(sortedMenus);
-            localStorage.setItem('menus', JSON.stringify(sortedMenus));
+          this._menus.set(sortedMenus);
+          this.storageService.setAngularItem('menus', sortedMenus);
         } else {
-
-          console.warn(
-            'Menu API returned unsuccessful response',
-            res.message
-          );
-
+          console.warn('Menu API returned unsuccessful response', res.message);
           this._menus.set([]);
+          this.storageService.removeItem('menus');
         }
-
       },
-
       error: (err) => {
-
         console.error('Menu load failed', err);
-
         this._menus.set([]);
-
+        this.storageService.removeItem('menus');
       }
     });
 }

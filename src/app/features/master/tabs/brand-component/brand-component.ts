@@ -5,6 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import * as XLSX from 'xlsx';
 import { BrandService } from '../../../../core/services/setupServices/brand-service';
 import { Brand } from '../../../../core/models/setups/brand/brand';
+import { StorageService } from '../../../../core/services/storage.service';
+import { MenuResponse } from '../../../../core/models/MenuResponse';
 
 @Component({
   selector: 'app-brand-component',
@@ -40,6 +42,20 @@ export class BrandComponent implements OnInit {
     brandName: ['', [Validators.required, Validators.minLength(2)]],
   });
 
+  // ── Permission state ───────────────────────────────────────────────────────────
+  permissions = signal({
+    canView: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false,
+  });
+
+  canView = computed(() => this.permissions().canView);
+  canCreate = computed(() => this.permissions().canCreate);
+  canUpdate = computed(() => this.permissions().canUpdate);
+  canDelete = computed(() => this.permissions().canDelete);
+  canSave = computed(() => (this.editingBrandId() ? this.canUpdate() : this.canCreate()));
+
   // ── Computed ───────────────────────────────────────────────────────────────
   filteredBrandList = computed(() => {
     const q = this.brandSearch().toLowerCase();
@@ -63,8 +79,36 @@ export class BrandComponent implements OnInit {
   });
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
+  private storageService = inject(StorageService);
+
   ngOnInit(): void {
-    this.loadBrands();
+    this.loadPermissionsFromStorage();
+    if (this.canView()) {
+      this.loadBrands();
+    }
+  }
+
+  private loadPermissionsFromStorage(): void {
+    const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
+    const masterMenu = menus?.find(
+      (menu) => menu.name?.toUpperCase() === 'MASTER_SETUP' || menu.url?.toLowerCase() === '/master'
+    );
+    const currentUrl = '/brand';
+    const brandMenu = masterMenu?.children?.find(
+      (child) => child.url?.toLowerCase() === currentUrl || child.name?.toUpperCase() === 'BRAND_SETUP'
+    );
+
+    if (!brandMenu) {
+      this.permissions.set({ canView: false, canCreate: false, canUpdate: false, canDelete: false });
+      return;
+    }
+
+    this.permissions.set({
+      canView: !!brandMenu.canView,
+      canCreate: !!brandMenu.canCreate,
+      canUpdate: !!brandMenu.canUpdate,
+      canDelete: !!brandMenu.canDelete,
+    });
   }
 
   loadBrands(): void {
@@ -125,6 +169,9 @@ export class BrandComponent implements OnInit {
 
   // ── Brand CRUD ─────────────────────────────────────────────────────────────
   saveBrand(): void {
+    if (!this.canSave()) {
+      return;
+    }
     if (this.brandForm.invalid) {
       this.brandForm.markAllAsTouched();
       return;

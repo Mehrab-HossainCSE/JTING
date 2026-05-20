@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal, effect, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { MenuService } from '../../core/services/menu.service';
 import { UIStateService } from '../../core/services/ui-state.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { MenuResponse } from '../../core/models/MenuResponse';
 
 @Component({
   selector: 'app-sidebar-component',
@@ -19,20 +20,6 @@ export class SidebarComponent {
   menuService = inject(MenuService);
   authService = inject(AuthService);
   sanitizer = inject(DomSanitizer);
-  
-  // ✅ Static menu list for consistent layout
-  staticMenus = signal<any[]>([
-    { id: 1,iconName: 'dashboard', displayName: 'Dashboard', url: '/dashboard' },
-    { id: 2,iconName: 'users', displayName: 'User Management', url: '/users' },
-    { id: 3,iconName: 'master', displayName: 'Master Setup', url: '/master' },
-    { id: 4,iconName: 'receive', displayName: 'Receive Module', url: '/receive' },
-    { id: 5,iconName: 'picking', displayName: 'Picking Module', url: '/picking' },
-    { id: 6,iconName: 'delivery', displayName: 'Delivery Module', url: '/delivery' },
-    { id: 7,iconName: 'report', displayName: 'Report', url: '/report' },
-    { id: 8,iconName: 'help', displayName: 'Help', url: '/help' }
-  ]);
-
-  sanitizedMenus = computed(() => this.staticMenus());
   isCollapsed = this.uiService.isSidebarCollapsed;
 
   toggleSidebar() {
@@ -40,8 +27,8 @@ export class SidebarComponent {
   }
 
   getIcon(label: string): SafeHtml {
-    const normalizedLabel = label.toLowerCase().trim();
-      const icons: { [key: string]: string } = {
+    const normalizedLabel = label?.toLowerCase().trim() ?? '';
+    const icons: { [key: string]: string } = {
       'dashboard': `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="var(--icon-accent, #00BB31)"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>`,
       'user': `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4" stroke="var(--icon-accent, #00BB31)"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
       'master': `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke="var(--icon-accent, #00BB31)"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>`,
@@ -65,14 +52,6 @@ export class SidebarComponent {
     return this.sanitizer.bypassSecurityTrustHtml(svgString);
   }
 
-  // ✅ Track expanded parent menus
-  expandedMenus = signal<Set<number>>(new Set());
-
-  // constructor(
-  //   private menuService: MenuService,
-  //   private authService: AuthService
-  // ) {}
-
   ngOnInit(): void {
     const userName = this.authService.getLocalStorageUserName();
 
@@ -81,30 +60,33 @@ export class SidebarComponent {
     }
   }
 
-  toggleMenu(menuId: number): void {
-    const current = new Set(this.expandedMenus());
-
-    if (current.has(menuId)) {
-      current.delete(menuId);
-    } else {
-      current.add(menuId);
+  getParentRoute(menu: MenuResponse): string {
+    if (menu.url?.trim()) {
+      return menu.url;
     }
 
-    this.expandedMenus.set(current);
+    switch (menu.name?.toUpperCase()) {
+      case 'MASTER_SETUP':
+        return '/master';
+      case 'DASHBOARD':
+        return '/dashboard';
+      case 'REPORT':
+        return '/report';
+      case 'RECEIVE':
+        return '/receive';
+      case 'PICKING':
+        return '/picking';
+      case 'DELIVERY':
+        return '/delivery';
+      case 'HELP':
+        return '/help';
+      case 'USERS':
+      case 'USER_MANAGEMENT':
+        return '/users';
+      default:
+        return menu.children?.find((child) => !!child.url)?.url ?? '/dashboard';
+    }
   }
-
-  isExpanded(menuId: number): boolean {
-    return this.expandedMenus().has(menuId);
-  }
-  toggleExpand(menuId: number) {
-    this.expandedMenus.update(set => {
-      const next = new Set(set);
-      next.has(menuId) ? next.delete(menuId) : next.add(menuId);
-      return next;
-    });
-  }
-
-  
 
   logout() {
     this.authService.logout();
