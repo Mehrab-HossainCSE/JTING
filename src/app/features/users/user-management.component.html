@@ -1,19 +1,38 @@
 <div class="user-management-page">
-  <div class="header-section">
-    <h1 class="page-title">User Menu Distribution</h1>
-    
-    <div class="user-selector-card">
-      <div class="form-group">
-        <label for="userSelect">User Name</label>
-        <select id="userSelect" [(ngModel)]="selectedUser" class="form-control">
-          <option value="" disabled>-- Select a User --</option>
-          <option *ngFor="let user of users" [value]="user">{{user}}</option>
-        </select>
-      </div>
+  <div class="card tabs-card" *ngIf="tabs().length">
+    <div class="tabs-grid">
+      @for (tab of tabs(); track tab.id) {
+        <button
+          class="tab-btn"
+          [class.active]="activeTabId() === tab.id"
+          (click)="navigateToTab(tab)"
+        >
+          <span class="tab-icon">{{ tab.icon }}</span>
+          <span class="tab-label">{{ tab.label }}</span>
+        </button>
+      }
     </div>
   </div>
 
-  <div class="menu-distribution-flex">
+  <div class="content-body" *ngIf="hasActiveChild()">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="menu-distribution-flex" *ngIf="!hasActiveChild()">
+    <div class="header-section">
+      <h1 class="page-title">User Menu Distribution</h1>
+      
+      <div class="user-selector-card">
+        <div class="form-group">
+          <label for="userSelect">User Name</label>
+          <select id="userSelect" [(ngModel)]="selectedUser" class="form-control">
+            <option value="" disabled>-- Select a User --</option>
+            <option *ngFor="let user of users" [value]="user">{{user}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="menu-card" *ngFor="let section of menuSections">
       <div class="card-header">
         <div class="header-left">

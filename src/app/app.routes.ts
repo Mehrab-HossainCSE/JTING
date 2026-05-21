@@ -31,9 +31,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardPageComponent),
         data: { title: 'Dashboard' }
       },
-      { 
-        path: 'users', 
-        loadComponent: () => import('./features/users/user-management.component').then(m => m.UserManagementComponent),
+      {
+        path: 'users',
+        loadChildren: () => import('./features/users/user.routes').then(m => m.USERS_ROUTES),
         data: { title: 'User Management' }
       },
      {

@@ -1,4 +1,5 @@
 @import '../../../styles/abstracts/variables';
+@import "/styles/componets/master-setup.scss";
 
 .user-management-page {
   padding: 24px;
@@ -56,6 +57,10 @@
         }
       }
     }
+  }
+
+  .content-body {
+    margin-bottom: 24px;
   }
 
   .menu-distribution-flex {

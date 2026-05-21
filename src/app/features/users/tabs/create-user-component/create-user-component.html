@@ -1,0 +1,312 @@
+<div class="master-setup-container">
+  <div class="grid-layout">
+
+    <!-- ── Form Card ──────────────────────────────────────────────── -->
+    <div class="card form-card">
+      <div class="card-header">
+        <h3>{{ editingUserId() ? 'Edit User' : 'Create User' }}</h3>
+        <p>Fill out the form to {{ editingUserId() ? 'update' : 'add' }} a user</p>
+      </div>
+
+      <form [formGroup]="userForm" class="card-body">
+
+        <div class="input-group">
+          <label>User Name <span class="req">*</span></label>
+          <input
+            type="text"
+            formControlName="userName"
+            placeholder="Enter user name"
+            [class.error]="isInvalid('userName')"
+          />
+          <small class="error-message" *ngIf="isInvalid('userName')">
+            {{ getError('userName') }}
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Email <span class="req">*</span></label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="user@example.com"
+            [class.error]="isInvalid('email')"
+          />
+          <small class="error-message" *ngIf="isInvalid('email')">
+            {{ getError('email') }}
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Full Name <span class="req">*</span></label>
+          <input
+            type="text"
+            formControlName="fullName"
+            placeholder="John Doe"
+            [class.error]="isInvalid('fullName')"
+          />
+          <small class="error-message" *ngIf="isInvalid('fullName')">
+            {{ getError('fullName') }}
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Department <span class="req">*</span></label>
+          <select
+            formControlName="departmentId"
+            class="custom-select"
+            [class.error]="isInvalid('departmentId')"
+          >
+            <option value="" disabled>-- Select Department --</option>
+            @for (dept of filteredDepartments(); track dept.id) {
+              <option [value]="dept.id">{{ dept.name }}</option>
+            }
+          </select>
+          <small class="error-message" *ngIf="isInvalid('departmentId')">
+            {{ getError('departmentId') }}
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Role <span class="req">*</span></label>
+          <select
+            formControlName="roleName"
+            class="custom-select"
+            [class.error]="isInvalid('roleName')"
+          >
+            <option value="" disabled>-- Select Role --</option>
+            @for (role of roles(); track role.id) {
+              <option [value]="role.name">{{ role.name }}</option>
+            }
+          </select>
+          <small class="error-message" *ngIf="isInvalid('roleName')">
+            {{ getError('roleName') }}
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Password <span class="req">*</span></label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Enter password"
+            [class.error]="isInvalid('password')"
+          />
+          <small class="error-message" *ngIf="isInvalid('password')">
+            {{ getError('password') }}
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Confirm Password <span class="req">*</span></label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirm password"
+            [class.error]="isInvalid('confirmPassword')"
+          />
+          <small class="error-message" *ngIf="isInvalid('confirmPassword')">
+            {{ getError('confirmPassword') }}
+          </small>
+        </div>
+
+        <div class="status-box">
+          <label>Active</label>
+          <div class="toggle-switch">
+            <input type="checkbox" formControlName="active" id="activeToggle" />
+            <label for="activeToggle" class="slider"></label>
+            <span class="toggle-label">{{ userForm.get('active')?.value ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
+
+      </form>
+
+      <div class="card-footer">
+        <button
+          class="btn btn-save"
+          (click)="saveUser()"
+          [disabled]="!canSave()"
+        >
+          {{ editingUserId() ? 'Update' : 'Create' }} User
+        </button>
+        <button class="btn btn-reset" (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- ── List Card ──────────────────────────────────────────────── -->
+    <div class="card list-card">
+      <div class="card-header">
+        <div class="list-header-top">
+          <div>
+            <h3 class="title-with-badge">
+              Users List
+              <span class="count">{{ filteredUserList().length }}</span>
+            </h3>
+            <p>Manage and view all users</p>
+          </div>
+          <div class="actions">
+            <div class="search-bar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search by name, email, or username..."
+                [value]="userSearch()"
+                (input)="onSearchChange($any($event.target).value)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body" style="padding: 0;">
+
+        <div class="table-outer">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th style="text-align:right; padding-right: 1.5rem;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoading()) {
+                <tr>
+                  <td colspan="7" style="text-align:center; color: #b2bec3; padding: 2rem 0;">
+                    Loading…
+                  </td>
+                </tr>
+              } @else if (paginatedUserList().length === 0) {
+                <tr>
+                  <td colspan="7" style="text-align:center; color: #b2bec3; padding: 2rem 0;">
+                    No users found
+                  </td>
+                </tr>
+              } @else {
+                @for (user of paginatedUserList(); track user.id) {
+                  <tr class="table-row">
+                    <td>{{ user.userName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.fullName }}</td>
+                    <td>{{ getDepartmentName(user.departmentId) }}</td>
+                    <td>{{ user.roleName }}</td>
+                    <td>
+                      <span [class]="'status-badge' + (user.active ? '' : ' inactive')">
+                        {{ user.active ? 'Active' : 'Inactive' }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="row-actions">
+                        <button
+                          class="action-btn edit-btn"
+                          (click)="editUser(user)"
+                          [disabled]="!canUpdate()"
+                          title="Edit"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                               stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                        <button
+                          class="action-btn delete-btn"
+                          (click)="deleteUser(user)"
+                          [disabled]="!canDelete()"
+                          title="Delete"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                               stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer: records info + pagination + page-size -->
+        <div class="table-footer">
+          <div class="records-info">
+            Showing
+            {{ (currentPage() - 1) * pageSize() + 1 }}–{{ Math.min(currentPage() * pageSize(), filteredUserList().length) }}
+            of {{ filteredUserList().length }}
+          </div>
+
+          <div class="pagination">
+            <button
+              class="page-btn"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(currentPage() - 1)"
+              title="Previous"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
+            @for (page of pageNumbers(); track page) {
+              <button
+                class="page-num"
+                [class.active]="page === currentPage()"
+                (click)="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              class="page-btn"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToPage(currentPage() + 1)"
+              title="Next"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <div class="page-size-selector">
+            <select
+              [value]="pageSize()"
+              (change)="onPageSizeChange($any($event.target).value)"
+            >
+              <option value="5">5 per page</option>
+              <option value="10">10 per page</option>
+              <option value="15">15 per page</option>
+              <option value="20">20 per page</option>
+              <option value="all">Show all</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
