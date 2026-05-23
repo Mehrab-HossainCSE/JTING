@@ -12,7 +12,7 @@ export const USERS_ROUTES: Routes = [
       },
       {
         path: 'create-role',
-        loadComponent: () => import('./tabs/create-role-component').then(m => m.CreateRoleComponent),
+        loadComponent: () => import('./tabs/create-role-component/create-role-component').then(m => m.CreateRoleComponent),
         data: { title: 'Create Role' }
       },
       {

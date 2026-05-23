@@ -15,12 +15,10 @@ export class RoleService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<ApiResponse<Role[]>> {
-    debugger;
     return this.http.get<ApiResponse<Role[]>>(this.apiUrl);
   }
 
   getById(id: string): Observable<ApiResponse<Role>> {
-    debugger;
     return this.http.get<ApiResponse<Role>>(`${this.apiUrl}/GetById/${id}`);
   }
 
