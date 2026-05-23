@@ -21,7 +21,7 @@ export class BrandService {
     return this.http.get<ApiResponse<Brand>>(`${this.apiUrl}/${id}`);
   }
 
-  create(brand: any): Observable<ApiResponse<Brand>> {
+  create(brand: Partial<Brand>): Observable<ApiResponse<Brand>> {
     return this.http.post<ApiResponse<Brand>>(`${this.apiUrl}/Create`, brand);
   }
 

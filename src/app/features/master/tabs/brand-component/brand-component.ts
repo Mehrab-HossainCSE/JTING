@@ -183,7 +183,7 @@ export class BrandComponent implements OnInit {
             this.toastr.error(res.message, 'Error');
           }
         },
-        error: () => this.toastr.error('Update failed.', 'Error'),
+        error: (err) => this.toastr.error(err.error?.message || 'Update failed.', 'Error'),
       });
     } else {
       const payload = { brandName };
@@ -202,13 +202,12 @@ export class BrandComponent implements OnInit {
             this.toastr.error(res.message, 'Error');
           }
         },
-        error: () => this.toastr.error('Create failed.', 'Error'),
+        error: (err) => this.toastr.error(err.error?.message || 'Create failed.', 'Error'),
       });
     }
   }
 
   editBrand(item: Brand): void {
-    debugger;
     this.editingBrandId.set(item.brandId);
     this.brandForm.setValue({ brandName: item.brandName });
   }
@@ -227,7 +226,7 @@ export class BrandComponent implements OnInit {
           this.toastr.error(res.message, 'Error');
         }
       },
-      error: () => this.toastr.error('Delete failed.', 'Error'),
+      error: (err) => this.toastr.error(err.error?.message || 'Delete failed.', 'Error'),
     });
   }
 

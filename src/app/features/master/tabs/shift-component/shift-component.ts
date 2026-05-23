@@ -3,10 +3,10 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import * as XLSX from 'xlsx';
-import { ShiftService } from '../../../../core/services/setupServices/shift-service';
 import { Shift } from '../../../../core/models/setups/shift/shift';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
+import { ShiftService } from '../../../../core/services/setupServices/shift-service';
 
 @Component({
   selector: 'app-shift-component',
