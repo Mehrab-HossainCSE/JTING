@@ -5,6 +5,24 @@
   align-items: center;
 }
 
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin status-badge($bg-color) {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba($bg-color, 0.1);
+  color: $bg-color;
+}
+
 // Card Style from Dashboard Screenshot
 @mixin dashboard-card {
   background: $bg-white;

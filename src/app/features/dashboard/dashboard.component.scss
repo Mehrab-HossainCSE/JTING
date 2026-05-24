@@ -1,7 +1,913 @@
-.page-container { 
-    padding: 0; 
-}
-h2 { 
-    color: #333; 
-    font-weight: 600; 
+@import '../../../styles/abstracts/variables';
+@import '../../../styles/abstracts/typography';
+@import '../../../styles/abstracts/mixins';
+
+.dashboard-container {
+  padding: 1rem;
+  background-color: #f8fafb;
+  min-height: 100vh;
+  font-family: $font-primary;
+
+  h1,
+  h2,
+  h3 {
+    @include heading-style;
+  }
+  p,
+  span {
+    @include body-style;
+  }
+
+  // Header
+  .dashboard-header {
+    @include flex-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .header-left {
+      .date-time {
+        font-size: $font-sm;
+        color: $text-light;
+        font-weight: 500;
+      }
+      h1 {
+        font-size: $font-xl;
+        margin: 0.25rem 0;
+      }
+      .shift-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #eaffee;
+        color: $primary-green;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: $font-sx;
+        font-weight: 600;
+        width: fit-content;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      gap: 1rem;
+
+      .summary-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid rgba($border-color, 0.5);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+
+        i {
+          font-size: 1.25rem;
+        }
+        .badge-content {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.2;
+
+          .badge-value {
+            font-weight: 700;
+            color: $text-dark;
+            font-size: $font-base;
+          }
+          .badge-label {
+            font-size: $font-sx;
+            color: $text-gray;
+          }
+        }
+
+        &.green {
+          i,
+          .badge-value {
+            color: #00bb31;
+          }
+        }
+        &.orange {
+          i,
+          .badge-value {
+            color: #f39c12;
+          }
+        }
+        &.teal {
+          i,
+          .badge-value {
+            color: #16a085;
+          }
+        }
+        &.red {
+          i,
+          .badge-value {
+            color: #e74c3c;
+            background: rgba(#e74c3c, 0.05);
+            padding: 4px;
+            border-radius: 6px;
+          }
+        }
+      }
+    }
+  }
+
+  // Metrics Grid
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .metric-card {
+      @include dashboard-card;
+      padding: 1.25rem;
+
+      .card-header {
+        @include flex-between;
+        margin-bottom: 1rem;
+
+        .card-title {
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: $text-light;
+          letter-spacing: 0.05rem;
+        }
+        .card-main-value {
+          font-size: 1.75rem;
+          margin-top: 0.25rem;
+          .unit {
+            font-size: $font-sm;
+            font-weight: 400;
+            color: $text-light;
+          }
+        }
+        .card-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          @include flex-center;
+          font-size: 1.25rem;
+        }
+      }
+
+      .card-body {
+        .trend-line {
+          @include flex-between;
+          margin-bottom: 0.5rem;
+          .trend-label {
+            font-size: $font-sx;
+            color: $text-light;
+          }
+          .trend-value {
+            font-size: $font-sm;
+            font-weight: 700;
+            &.positive {
+              color: $primary-green;
+            }
+            &.negative {
+              color: $danger;
+            }
+          }
+        }
+        .progress-bar {
+          height: 8px;
+          background: #f0f2f5;
+          border-radius: 4px;
+          overflow: hidden;
+          .progress-fill {
+            height: 100%;
+            transition: width 1s ease;
+          }
+        }
+      }
+
+      .card-footer {
+        margin-top: 1rem;
+        font-size: $font-sx;
+        color: $text-light;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba($border-color, 0.3);
+      }
+    }
+  }
+
+  // Main Grid (Charts)
+  .main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .chart-card {
+      @include dashboard-card;
+      display: flex;
+      flex-direction: column;
+
+      .card-header {
+        @include flex-between;
+        margin-bottom: 2rem;
+        h3 {
+          font-size: $font-base;
+          margin-bottom: 0.25rem;
+        }
+        .subtitle {
+          font-size: $font-sx;
+          color: $text-light;
+        }
+      }
+
+      .chart-legend {
+        display: flex;
+        gap: 1rem;
+        font-size: $font-sx;
+        .dot {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          margin-right: 4px;
+          &.total {
+            background: #00bb31;
+          }
+          &.received {
+            background: #3498db;
+          }
+          &.dispatched {
+            background: #f39c12;
+          }
+        }
+      }
+
+      .chart-placeholder {
+        flex-grow: 1;
+        position: relative;
+        padding: 0 1rem;
+        svg {
+          width: 100%;
+          height: 150px;
+          overflow: visible;
+        }
+        .chart-labels {
+          @include flex-between;
+          margin-top: 1rem;
+          color: $text-light;
+          font-size: $font-sx;
+        }
+      }
+
+      .chart-footer-stats {
+        display: flex;
+        gap: 3rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba($border-color, 0.5);
+
+        .stat {
+          display: flex;
+          flex-direction: column;
+          .val {
+            font-weight: 700;
+            font-size: $font-base;
+            color: $text-dark;
+          }
+          .lbl {
+            font-size: $font-sx;
+            color: $text-light;
+          }
+        }
+      }
+
+      &.picking-status {
+        .donut-container {
+          display: flex;
+          align-items: center;
+          gap: 2rem;
+          margin: 1rem 0;
+
+          .donut-chart {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+            .donut-label {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              display: flex;
+              flex-direction: column;
+              span.percent {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: $text-dark;
+                line-height: 1;
+              }
+              span.status {
+                font-size: 0.6rem;
+                color: $text-light;
+                text-transform: uppercase;
+              }
+            }
+          }
+
+          .donut-legend {
+            flex-grow: 1;
+            .legend-item {
+              @include flex-between;
+              font-size: $font-sm;
+              margin-bottom: 0.5rem;
+              color: $text-gray;
+              .val {
+                font-weight: 700;
+                color: $text-dark;
+              }
+              .dot {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin-right: 8px;
+                &.completed {
+                  background: #00bb31;
+                }
+                &.in-progress {
+                  background: #f39c12;
+                }
+                &.pending {
+                  background: #e74c3c;
+                }
+              }
+            }
+            .total-orders {
+              margin-top: 1rem;
+              padding-top: 0.5rem;
+              border-top: 1px dashed $border-color;
+              @include flex-between;
+              font-weight: 600;
+              font-size: $font-sm;
+            }
+          }
+        }
+
+        .status-footer {
+          margin-top: auto;
+          .sub-stat {
+            @include flex-between;
+            font-size: $font-sx;
+            margin-top: 0.5rem;
+            color: $text-gray;
+            .val {
+              font-weight: 700;
+              &.high {
+                color: $primary-green;
+              }
+              &.low {
+                color: $danger;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Details Grid
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .detail-card {
+      @include dashboard-card;
+      h3 {
+        font-size: $font-base;
+      }
+      .subtitle {
+        font-size: $font-sx;
+        color: $text-light;
+        display: block;
+        margin-bottom: 1.5rem;
+      }
+
+      .capacity-list {
+        .capacity-item {
+          margin-bottom: 1.25rem;
+          .item-header {
+            @include flex-between;
+            margin-bottom: 0.5rem;
+            .block-name {
+              font-weight: 600;
+              font-size: $font-sm;
+            }
+            .status-tag {
+              font-size: 0.65rem;
+              font-weight: 700;
+              margin-left: 8px;
+            }
+            .percentage {
+              font-weight: 700;
+              color: $text-dark;
+            }
+          }
+          .progress-bar {
+            height: 6px;
+            background: #f0f2f5;
+            border-radius: 3px;
+            margin-bottom: 0.25rem;
+            .progress-fill {
+              height: 100%;
+              border-radius: 3px;
+              transition: width 1s;
+            }
+          }
+          .item-footer {
+            font-size: $font-sx;
+            color: $text-light;
+          }
+        }
+      }
+
+      .overall-utilization {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba($border-color, 0.5);
+        .util-header {
+          @include flex-between;
+          font-weight: 700;
+          font-size: $font-base;
+          margin-bottom: 0.75rem;
+        }
+        .progress-bar.lg {
+          height: 10px;
+          border-radius: 5px;
+        }
+      }
+
+      &.work-queue {
+        .title-flex {
+          @include flex-between;
+          .job-count {
+            @include status-badge(#00bb31);
+          }
+        }
+        .queue-list {
+          .queue-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            transition: background 0.2s;
+            &:hover {
+              background: #f8fafb;
+            }
+            .item-icon {
+              width: 40px;
+              height: 40px;
+              border-radius: 8px;
+              background: #f0f2f5;
+              @include flex-center;
+              color: $text-gray;
+            }
+            .item-info {
+              flex-grow: 1;
+              .item-id {
+                display: block;
+                font-weight: 700;
+                font-size: $font-sm;
+                .priority {
+                  font-size: 0.65rem;
+                  font-weight: 800;
+                  border: 1px solid currentColor;
+                  padding: 2px 6px;
+                  border-radius: 4px;
+                  margin-left: 8px;
+                }
+              }
+              .item-type {
+                font-size: $font-sx;
+                color: $text-gray;
+                display: block;
+                margin: 2px 0;
+              }
+              .item-status {
+                @include flex-between;
+                .status-badge {
+                  font-weight: 600;
+                  color: $primary-green;
+                  font-size: $font-sx;
+                  padding: 2px 8px;
+                  background: rgba($primary-green, 0.1);
+                  border-radius: 4px;
+                }
+                .detail {
+                  font-size: $font-sx;
+                  color: $text-light;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &.live-activity {
+        .title-flex {
+          @include flex-between;
+          .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #00bb31;
+            font-weight: 700;
+            font-size: $font-sx;
+            .dot {
+              width: 6px;
+              height: 6px;
+              background: #00bb31;
+              border-radius: 50%;
+              box-shadow: 0 0 0 4px rgba(#00bb31, 0.2);
+            }
+          }
+        }
+        .activity-timeline {
+          .activity-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            position: relative;
+            &:not(:last-child):after {
+              content: '';
+              position: absolute;
+              left: 17px;
+              top: 35px;
+              bottom: -15px;
+              border-left: 1px dashed $border-color;
+            }
+            .act-icon {
+              width: 34px;
+              height: 34px;
+              border-radius: 50%;
+              @include flex-center;
+              font-size: 1rem;
+              z-index: 1;
+              &.received {
+                background: #eaffee;
+                color: #00bb31;
+              }
+              &.delivery {
+                background: #ebf5ff;
+                color: #3498db;
+              }
+              &.capacity {
+                background: #fff5eb;
+                color: #f39c12;
+              }
+              &.picking {
+                background: #f5ebff;
+                color: #8e44ad;
+              }
+            }
+            .act-content {
+              flex-grow: 1;
+              .act-message {
+                font-size: $font-sm;
+                color: $text-dark;
+                font-weight: 500;
+                margin: 0;
+                line-height: 1.4;
+              }
+              .act-meta {
+                margin-top: 4px;
+                display: flex;
+                gap: 1rem;
+                font-size: $font-sx;
+                color: $text-light;
+                .user {
+                  font-weight: 600;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .view-all-btn {
+        width: 100%;
+        margin-top: 1rem;
+        border: none;
+        background: transparent;
+        color: $primary-green;
+        font-weight: 700;
+        font-size: $font-sm;
+        @include flex-center;
+        gap: 8px;
+        cursor: pointer;
+        border-top: 1px solid rgba($border-color, 0.5);
+        padding-top: 1.5rem;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  // Bottom Grid
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .table-card {
+      @include dashboard-card;
+      padding: 1.5rem;
+      h3 {
+        margin-bottom: 0.25rem;
+      }
+      .subtitle {
+        color: $text-light;
+        font-size: $font-sx;
+        margin-bottom: 1.5rem;
+        display: block;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          th {
+            text-align: left;
+            padding: 12px;
+            font-size: $font-sx;
+            color: $text-light;
+            font-weight: 600;
+            border-bottom: 1px solid $border-color;
+          }
+          td {
+            padding: 12px;
+            font-size: $font-sm;
+            color: $text-gray;
+            border-bottom: 1px solid rgba($border-color, 0.3);
+            .rank {
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              display: inline-flex;
+              align-items: centre;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: 0.7rem;
+            }
+            &.text-green {
+              color: $primary-green;
+              font-weight: 700;
+            }
+            &.text-red {
+              color: $danger;
+              font-weight: 700;
+            }
+            &.text-blue {
+              color: $info;
+              font-weight: 700;
+            }
+            &.text-orange {
+              color: #f39c12;
+              font-weight: 700;
+            }
+          }
+        }
+      }
+    }
+
+    .delivery-card {
+      @include dashboard-card;
+      .delivery-items {
+        .delivery-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 1rem;
+          background: #f8fafb;
+          border-radius: 12px;
+          margin-bottom: 0.75rem;
+          border: 1px solid $border-color;
+          .del-left {
+            display: flex;
+            gap: 1rem;
+            i {
+              font-size: 1.5rem;
+              color: #00bb31;
+            }
+            .del-info {
+              display: flex;
+              flex-direction: column;
+              span {
+                font-size: $font-sx;
+                color: $text-light;
+              }
+            }
+          }
+          .del-right {
+            text-align: right;
+            .time {
+              font-weight: 700;
+              font-size: $font-sm;
+              color: $text-dark;
+            }
+            .status-row {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-end;
+              margin-top: 4px;
+              .status-badge {
+                font-size: 0.65rem;
+                font-weight: 800;
+                background: #eaffee;
+                color: #00bb31;
+                padding: 2px 8px;
+                border-radius: 4px;
+                margin-bottom: 4px;
+              }
+              .truck-id {
+                font-size: 0.65rem;
+                color: $text-light;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Footer Metrics
+  .footer-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    .f-metric {
+      @include dashboard-card;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      .f-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        @include flex-center;
+        font-size: 1.5rem;
+        &.green {
+          background: #eaffee;
+          color: #00bb31;
+        }
+        &.blue {
+          background: #ebf5ff;
+          color: #3498db;
+        }
+        &.orange {
+          background: #fff5eb;
+          color: #f39c12;
+        }
+        &.red {
+          background: #ffebeb;
+          color: #e74c3c;
+        }
+      }
+      .f-data {
+        display: flex;
+        flex-direction: column;
+        .f-label {
+          font-size: $font-sx;
+          color: $text-gray;
+          font-weight: 500;
+        }
+        .f-val {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: $text-dark;
+        }
+        .f-sub {
+          font-size: 0.65rem;
+          color: $text-light;
+        }
+      }
+    }
+  }
+
+  // Final Row (Perf & Actions)
+  .final-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    .perf-card {
+      @include dashboard-card;
+      .bar-chart-placeholder {
+        height: 150px;
+        @include flex-between;
+        align-items: flex-end;
+        padding: 0 1rem;
+        gap: 1rem;
+        .bar-container {
+          flex-grow: 1;
+          background: #f0f2f5;
+          border-radius: 4px;
+          height: 100%;
+          position: relative;
+          .bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #00bb31;
+            border-radius: 4px;
+            transition: height 1s;
+          }
+        }
+      }
+      .chart-legend {
+        margin-top: 1.5rem;
+        @include flex-center;
+        gap: 1.5rem;
+      }
+    }
+
+    .actions-card {
+      @include dashboard-card;
+      .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        .action-btn {
+          padding: 1.25rem;
+          background: #f8fafb;
+          border: 1px solid $border-color;
+          border-radius: 16px;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-align: center;
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            border-color: $primary-green;
+          }
+          .icon-wrap {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            @include flex-center;
+            font-size: 1.5rem;
+            margin: 0 auto 12px;
+          }
+          span {
+            font-weight: 600;
+            font-size: $font-sm;
+            color: $text-dark;
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-footer {
+    @include flex-between;
+    border-top: 1px solid $border-color;
+    padding-top: 1.5rem;
+    color: $text-gray;
+    font-size: $font-sm;
+    strong {
+      color: $text-dark;
+    }
+    .text-green {
+      color: $primary-green;
+    }
+  }
+
+  .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    &.green {
+      background: #00bb31;
+    }
+    &.orange {
+      background: #f39c12;
+    }
+    &.red {
+      background: #e74c3c;
+    }
+  }
 }
