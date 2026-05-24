@@ -6,51 +6,46 @@
   
   .header-section {
     margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .page-title {
       font-size: 1.5rem;
       font-weight: 600;
       color: #1a3353;
-      margin-bottom: 20px;
+      margin-bottom: 0; // Removed margin since it's in a flex row
     }
 
-    .user-selector-card {
-      background: $bg-white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      border: 1px solid $border-color;
+    .user-selector-wrapper {
       width: 100%;
-      max-width: calc(33.333% - 14px);
+      max-width: 300px;
 
-      @media (max-width: 1200px) {
-        max-width: calc(50% - 10px);
-      }
-      @media (max-width: 768px) {
-        max-width: 100%;
-      }
+      .premium-select {
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid $border-color;
+        background-color: $bg-white;
+        font-size: 0.9rem;
+        color: $text-dark;
+        font-weight: 500;
+        outline: none;
+        cursor: pointer;
+        transition: all $transition-fast;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a3353' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 14px;
 
-      .form-group {
-        label {
-          display: block;
-          font-size: 0.85rem;
-          color: $text-gray;
-          margin-bottom: 8px;
+        &:focus {
+          border-color: $primary-green;
+          box-shadow: 0 0 0 4px rgba($primary-green, 0.1);
         }
 
-        .form-control {
-          width: 100%;
-          padding: 10px 12px;
-          border-radius: 6px;
-          border: 1px solid $border-color;
-          font-size: 0.9rem;
-          color: $text-dark;
-          outline: none;
-          transition: border-color $transition-fast;
-
-          &:focus {
-            border-color: $primary-green;
-          }
+        &:hover {
+          border-color: rgba($primary-green, 0.5);
         }
       }
     }
