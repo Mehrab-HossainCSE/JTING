@@ -8,6 +8,7 @@ import { DepartmentService } from '../../../../core/services/setupServices/depar
 import { Department } from '../../../../core/models/setups/department/department';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-department-component',
@@ -26,7 +27,7 @@ export class DepartmentComponent implements OnInit {
   departmentSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(5);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   departmentList = signal<Department[]>([]);
 

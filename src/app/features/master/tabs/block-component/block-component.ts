@@ -9,6 +9,7 @@ import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { Block } from '../../../../core/models/setups/block/block';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-block-component',
@@ -28,7 +29,7 @@ export class BlockComponent implements OnInit {
   blockSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(10);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   blockList = signal<Block[]>([]);
 

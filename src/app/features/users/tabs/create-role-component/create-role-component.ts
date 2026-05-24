@@ -6,6 +6,7 @@ import { RoleService } from '../../../../core/services/roleManageServices/role-s
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { Role } from '../../../../core/models/role/role';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-create-role-component',
@@ -26,7 +27,7 @@ export class CreateRoleComponent implements OnInit {
   roleSearch    = signal('');
   isLoading     = signal(false);
   currentPage   = signal(1);
-  pageSize      = signal(5);
+  pageSize      = signal(StaticData.PAGE_SIZE);
 
   roleList = signal<Role[]>([]);
 

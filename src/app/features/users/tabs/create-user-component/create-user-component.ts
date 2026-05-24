@@ -10,6 +10,7 @@ import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { UserManage } from '../../../../core/models/userManage/user.model';
 import { Department } from '../../../../core/models/setups/department/department';
 import { Role } from '../../../../core/models/role/role';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-create-user-component',
@@ -29,10 +30,11 @@ export class CreateUserComponent implements OnInit {
   protected Math = Math;
 
   editingUserId = signal<number | null>(null);
+  isEditing     = computed(() => this.editingUserId() !== null);
   userSearch    = signal('');
   isLoading     = signal(false);
   currentPage   = signal(1);
-  pageSize      = signal(5);
+  pageSize      = signal(StaticData.PAGE_SIZE);
 
   userList    = signal<UserManage[]>([]);
   departments = signal<Department[]>([]);
@@ -64,7 +66,7 @@ export class CreateUserComponent implements OnInit {
   canCreate = computed(() => this.permissions().canCreate);
   canUpdate = computed(() => this.permissions().canUpdate);
   canDelete = computed(() => this.permissions().canDelete);
-  canSave   = computed(() => this.editingUserId() ? this.canUpdate() : this.canCreate());
+  canSave   = computed(() => this.isEditing() ? this.canUpdate() : this.canCreate());
 
   filteredUserList = computed(() => {
     const q = this.userSearch().toLowerCase();

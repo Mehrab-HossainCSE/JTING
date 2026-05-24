@@ -7,6 +7,7 @@ import { Shift } from '../../../../core/models/setups/shift/shift';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { ShiftService } from '../../../../core/services/setupServices/shift-service';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-shift-component',
@@ -26,7 +27,7 @@ export class ShiftComponent implements OnInit {
   shiftSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize = signal(5);
+  pageSize = signal(StaticData.PAGE_SIZE);
 
   shiftList = signal<Shift[]>([]);
 

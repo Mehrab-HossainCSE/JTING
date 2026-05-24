@@ -9,6 +9,7 @@ import { SkuService } from '../../../../core/services/skuServices/sku-service';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { Sku } from '../../../../core/models/setups/sku/sku';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-sku-component',
@@ -27,7 +28,7 @@ export class SkuComponent implements OnInit {
   skuSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(10);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   skuList = signal<Sku[]>([]);
 

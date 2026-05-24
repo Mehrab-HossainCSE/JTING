@@ -39,10 +39,12 @@
               </span>
             </div>
 
-            <div class="input-group checkbox-group">
-              <label class="checkbox-label">
-                <input type="checkbox" formControlName="isActive" />
-                <span>Active</span>
+            <div class="status-box">
+              <label>STATUS</label>
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="isActive">
+                <span class="slider"></span>
+                <span class="toggle-label">{{ departmentForm.get('isActive')?.value ? 'Active' : 'Inactive' }}</span>
               </label>
             </div>
 
