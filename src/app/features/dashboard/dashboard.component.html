@@ -1,23 +1,25 @@
 <div class="dashboard-container">
   <!-- Header Section -->
-  <header class="dashboard-header">
-    <div class="header-left">
-      <span class="date-time">Tuesday 12 May 2026 - 12:34</span>
-      <h1>Good Morning, JTI Warehouse</h1>
-      <div class="shift-info">
-        <i class="bi bi-clock"></i> AM Shift (06:00 - 14:00)
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="summary-badge" *ngFor="let stat of summaryStats" [ngClass]="stat.color">
-        <i class="bi" [ngClass]="stat.icon"></i>
-        <div class="badge-content">
-          <span class="badge-value">{{stat.value}}</span>
-          <span class="badge-label">{{stat.label}}</span>
+  <div class="header-border-wrap">
+    <header class="dashboard-header">
+      <div class="header-left">
+        <span class="date-time">Tuesday 12 May 2026 - 12:34</span>
+        <h1>Good Morning, JTI Warehouse</h1>
+        <div class="shift-info">
+          <i class="bi bi-clock"></i> AM Shift (06:00 - 14:00)
         </div>
       </div>
-    </div>
-  </header>
+      <div class="header-right">
+        <div class="summary-badge" *ngFor="let stat of summaryStats" [ngClass]="stat.color">
+          <i class="bi" [ngClass]="stat.icon"></i>
+          <div class="badge-content">
+            <span class="badge-value">{{stat.value}}</span>
+            <span class="badge-label">{{stat.label}}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
 
   <!-- Metric Cards Row -->
   <section class="metrics-grid">
@@ -28,13 +30,17 @@
           <h2 class="card-main-value">{{metric.value}} <span class="unit">{{metric.unit}}</span></h2>
         </div>
         <div class="card-icon" [style.background-color]="metric.color + '15'" [style.color]="metric.color">
-          <i class="bi bi-database-fill"></i>
+          <i class="bi" [ngClass]="metric.icon"></i>
         </div>
       </div>
       <div class="card-body">
-        <div class="trend-line">
-          <span class="trend-label">vs last week</span>
+        <div class="trend-line" *ngIf="!metric.isAlert">
+          <span class="trend-label">{{metric.changeLabel}}</span>
           <span class="trend-value" [ngClass]="metric.isPositive ? 'positive' : 'negative'">{{metric.change}}</span>
+        </div>
+        <div class="alert-info" *ngIf="metric.isAlert">
+          <span class="text-red font-bold"><i class="bi bi-fire"></i> {{metric.critical}}</span>
+          <span class="text-gray ml-2">{{metric.warnings}}</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" [style.width]="metric.progress + '%'" [style.background-color]="metric.color"></div>
@@ -60,29 +66,35 @@
           <span><i class="dot dispatched"></i> Dispatched</span>
         </div>
       </div>
-      <div class="chart-placeholder">
-        <!-- SVG Placeholder for Line Chart -->
-        <svg viewBox="0 0 800 200" preserveAspectRatio="none">
-          <path d="M0,150 Q100,120 200,140 T400,100 T600,80 T800,50" fill="none" stroke="#00BB31" stroke-width="3" />
-          <path d="M0,160 Q100,140 200,150 T400,120 T600,100 T800,80" fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="5,5" />
-          <path d="M0,170 Q100,160 200,170 T400,150 T600,140 T800,120" fill="none" stroke="#f39c12" stroke-width="2" stroke-dasharray="5,5" />
-        </svg>
+      <div class="chart-content">
+        <div class="chart-svg-wrapper">
+          <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+            <!-- Gradient for Area Fill -->
+            <defs>
+              <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#00BB31;stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#00BB31;stop-opacity:0" />
+              </linearGradient>
+            </defs>
+            <path d="M0,150 Q100,120 200,140 T400,100 T600,80 T800,50 L800,200 L0,200 Z" fill="url(#chartGradient)" />
+            <path d="M0,150 Q100,120 200,140 T400,100 T600,80 T800,50" fill="none" stroke="#00BB31" stroke-width="3" />
+            <path d="M0,160 Q100,140 200,150 T400,120 T600,100 T800,80" fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="5,5" />
+            <path d="M0,170 Q100,160 200,170 T400,150 T600,140 T800,120" fill="none" stroke="#f39c12" stroke-width="2" stroke-dasharray="5,5" />
+          </svg>
+        </div>
         <div class="chart-labels">
           <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
         </div>
       </div>
-      <div class="chart-footer-stats">
-        <div class="stat">
-          <span class="val">3,971</span>
-          <span class="lbl">Avg Daily In</span>
-        </div>
-        <div class="stat">
-          <span class="val">2,764</span>
-          <span class="lbl">Avg Daily Out</span>
-        </div>
-        <div class="stat">
-          <span class="val">+1,207</span>
-          <span class="lbl">Net Change</span>
+      <div class="chart-footer-metrics">
+        <div class="trend-stat" *ngFor="let stat of trendStats">
+          <div class="stat-icon" [style.background-color]="stat.color" [style.color]="stat.text">
+            <i class="bi" [ngClass]="stat.icon"></i>
+          </div>
+          <div class="stat-info">
+            <span class="val">{{stat.value}}</span>
+            <span class="lbl">{{stat.label}}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -94,27 +106,37 @@
           <span class="subtitle">Order completion breakdown</span>
         </div>
       </div>
-      <div class="donut-container">
-        <div class="donut-chart">
+      <div class="donut-display">
+        <div class="donut-box">
           <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f0f0f0" stroke-width="8" />
+            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f0f0f0" stroke-width="6" stroke-dasharray="5,2" />
             <circle cx="50" cy="50" r="40" fill="transparent" stroke="#00BB31" stroke-width="8" stroke-dasharray="186, 251" stroke-linecap="round" transform="rotate(-90 50 50)" />
+            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f39c12" stroke-width="8" stroke-dasharray="20, 251" stroke-linecap="round" transform="rotate(180 50 50)" />
           </svg>
-          <div class="donut-label">
-            <span class="percent">74%</span>
-            <span class="status">complete</span>
+          <div class="donut-inner">
+            <span class="num">74%</span>
+            <span class="txt">complete</span>
           </div>
         </div>
         <div class="donut-legend">
-          <div class="legend-item"><i class="dot completed"></i> Completed <span class="val">23</span></div>
-          <div class="legend-item"><i class="dot in-progress"></i> In Progress <span class="val">5</span></div>
-          <div class="legend-item"><i class="dot pending"></i> Pending <span class="val">3</span></div>
-          <div class="total-orders">Total Orders <span class="val">31</span></div>
+          <div class="legend-row"><span><i class="dot green"></i> Completed</span> <span class="val">23</span></div>
+          <div class="legend-row"><span><i class="dot orange"></i> In Progress</span> <span class="val">5</span></div>
+          <div class="legend-row"><span><i class="dot gray"></i> Pending</span> <span class="val">3</span></div>
+          <div class="legend-total"><span>Total Orders</span> <span class="val">31</span></div>
         </div>
       </div>
-      <div class="status-footer">
-        <div class="sub-stat">Pick Accuracy <span class="val high">99.2%</span></div>
-        <div class="sub-stat">Avg Pick Time <span class="val">6.4 min</span></div>
+      <div class="status-metrics">
+        <div class="metric-line">
+          <span>Pick Accuracy</span>
+          <span class="text-green font-bold">99.2%</span>
+        </div>
+        <div class="metric-line">
+          <span>Avg Pick Time</span>
+          <span class="text-blue font-bold">6.4 min</span>
+        </div>
+        <div class="mini-progress-bar">
+          <div class="fill" style="width: 80%; background: #3498db;"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -130,88 +152,99 @@
       <div class="capacity-list">
         <div class="capacity-item" *ngFor="let block of blocks">
           <div class="item-header">
-            <span class="block-name">{{block.name}} <span class="status-tag" [style.color]="block.color">{{block.status}}</span></span>
-            <span class="percentage">{{block.percentage}}%</span>
+            <span class="name">{{block.name}} <span class="badge" [style.background-color]="block.color + '15'" [style.color]="block.color">{{block.status}}</span></span>
+            <span class="percent">{{block.percentage}}%</span>
           </div>
-          <div class="progress-bar">
+          <div class="progress-track">
             <div class="progress-fill" [style.width]="block.percentage + '%'" [style.background-color]="block.color"></div>
           </div>
-          <span class="item-footer">{{block.footer}}</span>
+          <span class="footer-text">{{block.footer}}</span>
         </div>
       </div>
-      <div class="overall-utilization">
-        <div class="util-header">
+      <div class="overall-util">
+        <div class="flex-row">
           <span>Overall Utilization</span>
           <span class="val">78.4%</span>
         </div>
-        <div class="progress-bar lg">
+        <div class="progress-track lg">
           <div class="progress-fill" style="width: 78.4%; background-color: #00BB31;"></div>
         </div>
+        <span class="footer-text">1,295/1,600 total pallet positions used</span>
       </div>
     </div>
 
     <!-- Work Queue -->
     <div class="detail-card work-queue">
       <div class="card-header">
-        <div class="title-flex">
+        <div class="flex-row">
           <h3>Work Queue</h3>
-          <span class="job-count">5 Jobs</span>
+          <span class="job-badge"><i class="bi bi-lightning-charge"></i> 5 jobs</span>
         </div>
         <span class="subtitle">Pending & active jobs today</span>
       </div>
       <div class="queue-list">
         <div class="queue-item" *ngFor="let item of workQueue">
-          <div class="item-icon">
-            <i class="bi bi-file-earmark-text"></i>
+          <div class="icon-box" [style.background-color]="item.iconColor">
+            <i class="bi" [ngClass]="item.icon"></i>
           </div>
-          <div class="item-info">
-            <span class="item-id">{{item.id}} <span class="priority" [style.color]="item.color">{{item.priority}}</span></span>
-            <span class="item-type">{{item.type}}</span>
-            <div class="item-status">
-              <span class="status-badge">{{item.status}}</span>
-              <span class="detail">{{item.detail}}</span>
+          <div class="content">
+            <div class="id-row">
+              <span class="id">{{item.id}}</span>
+              <span class="priority" [style.color]="item.color" [style.border-color]="item.color">{{item.priority}}</span>
+            </div>
+            <span class="type">{{item.type}}</span>
+            <div class="status-row">
+              <span class="status-pill">{{item.status}}</span>
+              <span class="time">{{item.detail}}</span>
             </div>
           </div>
         </div>
       </div>
-      <button class="view-all-btn">View full queue <i class="bi bi-chevron-right"></i></button>
+      <a href="#" class="view-link">View full queue <i class="bi bi-chevron-right"></i></a>
     </div>
 
     <!-- Live Activity -->
     <div class="detail-card live-activity">
       <div class="card-header">
-        <div class="title-flex">
+        <div class="flex-row">
           <h3>Live Activity</h3>
-          <span class="live-indicator"><i class="dot"></i> Live</span>
+          <span class="live-dot"><i class="dot"></i> Live</span>
         </div>
         <span class="subtitle">Real-time warehouse events</span>
       </div>
-      <div class="activity-timeline">
+      <div class="activity-feed">
         <div class="activity-item" *ngFor="let act of activities">
-          <div class="act-icon" [ngClass]="act.type">
-            <i class="bi bi-lightning-fill"></i>
+          <div class="act-icon" [style.background-color]="act.color + '15'" [style.color]="act.color">
+            <i class="bi bi-box-seam" *ngIf="act.type === 'received'"></i>
+            <i class="bi bi-truck" *ngIf="act.type === 'delivery'"></i>
+            <i class="bi bi-exclamation-circle" *ngIf="act.type === 'capacity' || act.type === 'quarantine'"></i>
+            <i class="bi bi-clipboard-check" *ngIf="act.type === 'picking'"></i>
+            <i class="bi bi-check-circle" *ngIf="act.type === 'system'"></i>
           </div>
-          <div class="act-content">
-            <p class="act-message">{{act.message}}</p>
+          <div class="act-body">
+            <p>{{act.message}}</p>
             <div class="act-meta">
-              <span class="user">{{act.user}}</span>
-              <span class="time">{{act.time}}</span>
+              <span>{{act.user}}</span>
+              <span>{{act.time}}</span>
             </div>
           </div>
         </div>
       </div>
-      <button class="view-all-btn">View full activity log <i class="bi bi-chevron-right"></i></button>
+      <a href="#" class="view-link">View full activity log <i class="bi bi-chevron-right"></i></a>
     </div>
   </section>
 
-  <!-- Bottom Section Table & Delivery -->
+  <!-- Bottom Section: SKU Movement & Delivery -->
   <section class="bottom-grid">
-    <div class="table-card top-skus">
+    <div class="table-card sku-movement">
       <div class="card-header">
-        <h3>Top SKU Movement — Today</h3>
+        <div class="flex-row">
+            <h3>Top SKU Movement — Today</h3>
+            <span class="live-data"><i class="bi bi-bar-chart-steps"></i> Live data</span>
+        </div>
         <span class="subtitle">Most active SKUs by throughput</span>
       </div>
-      <div class="table-container">
+      <div class="table-box">
         <table>
           <thead>
             <tr>
@@ -227,7 +260,7 @@
           <tbody>
             <tr *ngFor="let sku of topSKUs; let i = index">
               <td><span class="rank" [style.background-color]="sku.color">{{i + 1}}</span></td>
-              <td><strong>{{sku.sku}}</strong></td>
+              <td><span class="sku-name">{{sku.sku}}</span></td>
               <td>{{sku.brand}}</td>
               <td class="text-blue">{{sku.in}}</td>
               <td class="text-orange">{{sku.out}}</td>
@@ -239,106 +272,103 @@
       </div>
     </div>
 
-    <div class="delivery-card">
+    <div class="delivery-schedule">
       <div class="card-header">
-        <h3>Delivery Schedule</h3>
+        <div class="flex-row">
+            <h3>Delivery Schedule</h3>
+            <i class="bi bi-truck-flatbed text-gray"></i>
+        </div>
         <span class="subtitle">Today's truck dispatch plan</span>
       </div>
-      <div class="delivery-items">
+      <div class="delivery-list">
         <div class="delivery-item" *ngFor="let del of deliveries">
-          <div class="del-left">
+          <div class="del-main">
             <i class="bi bi-truck"></i>
             <div class="del-info">
-              <strong>{{del.id}}</strong>
-              <span>{{del.location}}</span>
+              <span class="id">{{del.id}}</span>
+              <span class="loc">{{del.location}}</span>
+              <div class="status-row">
+                <span class="badge">Departed</span>
+                <span class="truck">{{del.truck}}</span>
+              </div>
             </div>
           </div>
-          <div class="del-right">
-            <span class="time">{{del.time}}</span>
-            <div class="status-row">
-              <span class="status-badge departing">{{del.status}}</span>
-              <span class="truck-id">{{del.truck}}</span>
-            </div>
+          <div class="del-time">
+            <span>{{del.time}}</span>
+            <span class="orders-count">{{del.orders}}</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Quick Footer Metrics -->
+  <!-- Footer Stats Row -->
   <section class="footer-metrics">
-    <div class="f-metric">
-      <div class="f-icon green"><i class="bi bi-layers"></i></div>
-      <div class="f-data">
-        <span class="f-label">Active SKUs</span>
-        <span class="f-val">284</span>
-        <span class="f-sub">12 added this week</span>
-      </div>
-    </div>
-    <div class="f-metric">
-      <div class="f-icon blue"><i class="bi bi-box-seam"></i></div>
-      <div class="f-data">
-        <span class="f-label">Pallets Generated</span>
-        <span class="f-val">1,248</span>
-        <span class="f-sub">12 added this week</span>
-      </div>
-    </div>
-    <div class="f-metric">
-      <div class="f-icon orange"><i class="bi bi-arrow-repeat"></i></div>
-      <div class="f-data">
-        <span class="f-label">Pending Reconciliation</span>
-        <span class="f-val">7</span>
-        <span class="f-sub">12 added this week</span>
-      </div>
-    </div>
-    <div class="f-metric">
-      <div class="f-icon red"><i class="bi bi-shield-exclamation"></i></div>
-      <div class="f-data">
-        <span class="f-label">Quarantine Items</span>
-        <span class="f-val">23</span>
-        <span class="f-sub">12 added this week</span>
-      </div>
+    <div class="f-metric-card" *ngFor="let i of [0,1,2,3]">
+        <!-- Reuse items from a potential footer array or mock them -->
+        <div class="f-icon" [ngClass]="['green', 'blue', 'orange', 'red'][i]">
+            <i class="bi bi-layers" *ngIf="i==0"></i>
+            <i class="bi bi-activity" *ngIf="i==1"></i>
+            <i class="bi bi-arrow-repeat" *ngIf="i==2"></i>
+            <i class="bi bi-shield-exclamation" *ngIf="i==3"></i>
+        </div>
+        <div class="f-info">
+            <span class="lbl">{{['Active SKUs', 'Pallets Generated', 'Pending Reconciliation', 'Quarantine Items'][i]}}</span>
+            <span class="val">{{['284', '1,248', '7', '23'][i]}}</span>
+            <span class="sub">{{['12 added this week', '64 today', '3 overdue', '3 flagged today'][i]}}</span>
+        </div>
     </div>
   </section>
 
-  <!-- Performance & Quick Actions -->
-  <section class="final-row">
+  <!-- Final Row: Performance and Actions -->
+  <section class="final-grid">
     <div class="perf-card">
-        <div class="card-header">
-            <h3>Delivery Performance</h3>
-            <span class="subtitle">5-week on-time delivery rate</span>
-        </div>
-        <div class="bar-chart-placeholder">
-            <div class="bar-container" *ngFor="let i of [50, 70, 60, 80, 75]">
-                <div class="bar-fill" [style.height]="i + '%'"></div>
+      <div class="card-header">
+        <h3>Delivery Performance</h3>
+        <span class="subtitle">5-week on-time delivery rate</span>
+      </div>
+      <div class="chart-box">
+        <div class="bar-group" *ngFor="let bar of [50, 70, 60, 80, 75]">
+            <div class="bar-stack">
+                <div class="bar green" [style.height]="bar + '%'"></div>
+                <div class="bar orange" [style.height]="(bar/3) + '%'"></div>
+                <div class="bar red" [style.height]="(bar/5) + '%'"></div>
             </div>
+            <span class="week">Wk 1{{bar/10}}</span>
         </div>
-        <div class="chart-legend">
-            <span><i class="dot green"></i> On Time</span>
-            <span><i class="dot orange"></i> Delayed</span>
-            <span><i class="dot red"></i> Canceled</span>
-        </div>
+      </div>
+      <div class="chart-legend">
+        <span><i class="dot green"></i> On Time</span>
+        <span><i class="dot orange"></i> Delayed</span>
+        <span><i class="dot red"></i> Canceled</span>
+      </div>
+      <div class="chart-footer">
+        <span>This Week On-Time Rate</span>
+        <span class="text-green font-bold">88.9%</span>
+      </div>
     </div>
-    
+
     <div class="actions-card">
-        <div class="card-header">
+      <div class="card-header">
+        <div class="flex-row">
             <h3>Quick Actions</h3>
-            <span class="subtitle">Jump to common warehouse operations</span>
+            <i class="bi bi-lightning text-orange"></i>
         </div>
-        <div class="actions-grid">
-            <div class="action-btn" *ngFor="let action of quickActions">
-                <div class="icon-wrap" [style.background-color]="action.color + '15'" [style.color]="action.color">
-                    <i class="bi" [ngClass]="action.icon"></i>
-                </div>
-                <span>{{action.label}}</span>
-            </div>
+        <span class="subtitle">Jump to common warehouse operations</span>
+      </div>
+      <div class="actions-grid">
+        <div class="action-item" *ngFor="let act of quickActions">
+          <div class="icon-wrap" [style.background-color]="act.color + '15'" [style.color]="act.color">
+            <i class="bi" [ngClass]="act.icon"></i>
+          </div>
+          <span>{{act.label}}</span>
         </div>
+      </div>
+      <div class="action-footer">
+        <div class="foot-stat">Today's Operations: <strong>127 completed</strong></div>
+        <div class="foot-stat">Active Users: <strong>14 online</strong></div>
+        <div class="foot-stat">System Status: <span class="text-green"><strong>All Healthy</strong></span></div>
+      </div>
     </div>
   </section>
-
-  <footer class="dashboard-footer">
-    <div class="foot-stat">Today's Operations: <strong>127 completed</strong></div>
-    <div class="foot-stat">Active Users: <strong>14 online</strong></div>
-    <div class="foot-stat">System Status: <span class="text-green"><strong>All Healthy</strong></span></div>
-  </footer>
 </div>

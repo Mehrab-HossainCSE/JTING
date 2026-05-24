@@ -1,111 +1,78 @@
-@import '../../../styles/abstracts/variables';
-@import '../../../styles/abstracts/typography';
-@import '../../../styles/abstracts/mixins';
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/typography";
+@import "../../../styles/abstracts/mixins";
 
 .dashboard-container {
   min-height: 100vh;
   font-family: $font-primary;
 
-  h1,
-  h2,
-  h3 {
-    @include heading-style;
-  }
-  p,
-  span {
-    @include body-style;
-  }
+  h1, h2, h3 { @include heading-style; margin: 0; }
+  p, span { @include body-style; }
 
-  // Header
-  .dashboard-header {
-    @include flex-between;
+  // Utility classes
+  .text-green { color: #00BB31; }
+  .text-blue { color: #3498db; }
+  .text-orange { color: #f39c12; }
+  .text-red { color: #e74c3c; }
+  .text-gray { color: #95a5a6; }
+  .font-bold { font-weight: 700; }
+  .flex-row { @include flex-between; width: 100%; }
+
+  // Header 
+  .header-border-wrap {
+    border: 1px solid rgba(#00BB31, 0.5);
+    background: white;
+    border-radius: 24px;
+    padding: 1.25rem 2rem;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 
-    .header-left {
-      .date-time {
-        font-size: $font-sm;
-        color: $text-light;
-        font-weight: 500;
+    .dashboard-header {
+      @include flex-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+
+      .header-left {
+        .date-time { font-size: 0.8rem; color: #00BB31; font-weight: 500; }
+        h1 { font-size: 1.6rem; font-weight: 700; margin: 4px 0; color: #1a1a1a; letter-spacing: -0.5px; }
+        .shift-info { 
+          display: flex; 
+          align-items: center; 
+          gap: 0.4rem; 
+          font-size: 0.85rem;
+          color: #00BB31;
+          font-weight: 600;
+          opacity: 0.9;
+        }
       }
-      h1 {
-        font-size: $font-xl;
-        margin: 0.25rem 0;
-      }
-      .shift-info {
+
+      .header-right {
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: #eaffee;
-        color: $primary-green;
-        padding: 4px 12px;
-        border-radius: 6px;
-        font-size: $font-sx;
-        font-weight: 600;
-        width: fit-content;
-      }
-    }
-
-    .header-right {
-      display: flex;
-      gap: 1rem;
-
-      .summary-badge {
-        display: flex;
-        align-items: center;
         gap: 0.75rem;
-        padding: 0.75rem 1.25rem;
-        background: white;
-        border-radius: 12px;
-        border: 1px solid rgba($border-color, 0.5);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-
-        i {
-          font-size: 1.25rem;
-        }
-        .badge-content {
+        
+        .summary-badge {
           display: flex;
-          flex-direction: column;
-          line-height: 1.2;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.6rem 1.25rem;
+          border-radius: 12px;
+          background: #f1f9f2;
+          min-width: 130px;
+          border: 1px solid transparent;
 
-          .badge-value {
-            font-weight: 700;
-            color: $text-dark;
-            font-size: $font-base;
+          i { font-size: 1rem; color: #00BB31; }
+          .badge-content {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            .badge-value { font-weight: 800; font-size: 1rem; color: #1a1a1a; }
+            .badge-label { font-size: 0.7rem; color: #00BB31; font-weight: 600; }
           }
-          .badge-label {
-            font-size: $font-sx;
-            color: $text-gray;
-          }
-        }
 
-        &.green {
-          i,
-          .badge-value {
-            color: #00bb31;
-          }
-        }
-        &.orange {
-          i,
-          .badge-value {
-            color: #f39c12;
-          }
-        }
-        &.teal {
-          i,
-          .badge-value {
-            color: #16a085;
-          }
-        }
-        &.red {
-          i,
-          .badge-value {
-            color: #e74c3c;
-            background: rgba(#e74c3c, 0.05);
-            padding: 4px;
-            border-radius: 6px;
-          }
+          &.green { background: #e8f5e9; i { color: #008a2a; } .badge-label { color: #008a2a; } }
+          &.orange { background: #fef9e7; i { color: #f39c12; } .badge-label { color: #f39c12; } }
+          &.teal { background: #e0f2f1; i { color: #009688; } .badge-label { color: #009688; } }
+          &.red { background: #fdedec; i { color: #e74c3c; } .badge-label { color: #e74c3c; } }
         }
       }
     }
@@ -114,262 +81,166 @@
   // Metrics Grid
   .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
     margin-bottom: 1.5rem;
 
     .metric-card {
       @include dashboard-card;
-      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
 
       .card-header {
         @include flex-between;
-        margin-bottom: 1rem;
-
-        .card-title {
-          font-size: 0.7rem;
-          font-weight: 700;
-          color: $text-light;
-          letter-spacing: 0.05rem;
-        }
-        .card-main-value {
-          font-size: 1.75rem;
+        .card-title { font-size: 0.75rem; color: #636e72; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-main-value { 
+          font-size: 1.8rem; 
+          font-weight: 700; 
           margin-top: 0.25rem;
-          .unit {
-            font-size: $font-sm;
-            font-weight: 400;
-            color: $text-light;
-          }
+          .unit { font-size: 0.9rem; font-weight: 400; color: #636e72; }
         }
         .card-icon {
           width: 40px;
           height: 40px;
           border-radius: 10px;
           @include flex-center;
-          font-size: 1.25rem;
+          font-size: 1.2rem;
         }
       }
 
       .card-body {
         .trend-line {
           @include flex-between;
-          margin-bottom: 0.5rem;
-          .trend-label {
-            font-size: $font-sx;
-            color: $text-light;
-          }
-          .trend-value {
-            font-size: $font-sm;
-            font-weight: 700;
-            &.positive {
-              color: $primary-green;
-            }
-            &.negative {
-              color: $danger;
-            }
+          margin-bottom: 0.75rem;
+          .trend-label { font-size: 0.85rem; color: #95a5a6; }
+          .trend-value { 
+            font-weight: 600; 
+            font-size: 0.85rem;
+            &.positive { color: #00BB31; }
+            &.negative { color: #e74c3c; }
           }
         }
+        .alert-info { font-size: 0.85rem; margin-bottom: 0.75rem; display: flex; align-items: center; }
         .progress-bar {
-          height: 8px;
-          background: #f0f2f5;
-          border-radius: 4px;
+          height: 6px;
+          background: #f0f0f0;
+          border-radius: 10px;
           overflow: hidden;
-          .progress-fill {
-            height: 100%;
-            transition: width 1s ease;
-          }
+          .progress-fill { height: 100%; border-radius: 10px; }
         }
       }
 
-      .card-footer {
-        margin-top: 1rem;
-        font-size: $font-sx;
-        color: $text-light;
-        padding-top: 0.75rem;
-        border-top: 1px solid rgba($border-color, 0.3);
-      }
+      .card-footer { font-size: 0.8rem; color: #95a5a6; }
     }
   }
 
   // Main Grid (Charts)
   .main-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1rem;
     margin-bottom: 1.5rem;
 
     .chart-card {
       @include dashboard-card;
-      display: flex;
-      flex-direction: column;
-
       .card-header {
-        @include flex-between;
-        margin-bottom: 2rem;
-        h3 {
-          font-size: $font-base;
-          margin-bottom: 0.25rem;
-        }
-        .subtitle {
-          font-size: $font-sx;
-          color: $text-light;
-        }
-      }
-
-      .chart-legend {
-        display: flex;
-        gap: 1rem;
-        font-size: $font-sx;
-        .dot {
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          margin-right: 4px;
-          &.total {
-            background: #00bb31;
-          }
-          &.received {
-            background: #3498db;
-          }
-          &.dispatched {
-            background: #f39c12;
-          }
-        }
-      }
-
-      .chart-placeholder {
-        flex-grow: 1;
-        position: relative;
-        padding: 0 1rem;
-        svg {
-          width: 100%;
-          height: 150px;
-          overflow: visible;
-        }
-        .chart-labels {
-          @include flex-between;
-          margin-top: 1rem;
-          color: $text-light;
-          font-size: $font-sx;
-        }
-      }
-
-      .chart-footer-stats {
-        display: flex;
-        gap: 3rem;
-        margin-top: 2rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba($border-color, 0.5);
-
-        .stat {
+        margin-bottom: 1.5rem;
+        h3 { font-size: 1.1rem; }
+        .subtitle { font-size: 0.85rem; color: #95a5a6; }
+        .chart-legend {
           display: flex;
-          flex-direction: column;
-          .val {
-            font-weight: 700;
-            font-size: $font-base;
-            color: $text-dark;
+          gap: 1rem;
+          margin-top: 0.5rem;
+          span { 
+            font-size: 0.75rem; 
+            color: #636e72; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px;
+            i.dot { width: 8px; height: 8px; border-radius: 50%; }
+            i.total { background: #00BB31; }
+            i.received { background: #3498db; }
+            i.dispatched { background: #f39c12; }
           }
-          .lbl {
-            font-size: $font-sx;
-            color: $text-light;
+        }
+      }
+
+      .chart-content {
+        .chart-svg-wrapper { height: 200px; margin-bottom: 1rem; }
+        .chart-labels { @include flex-between; span { font-size: 0.75rem; color: #95a5a6; } }
+      }
+
+      .chart-footer-metrics {
+        display: flex;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+        
+        .trend-stat {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          .stat-icon { width: 36px; height: 36px; border-radius: 50%; @include flex-center; font-size: 1rem; }
+          .stat-info {
+            display: flex;
+            flex-direction: column;
+            .val { font-weight: 700; font-size: 1rem; }
+            .lbl { font-size: 0.7rem; color: #95a5a6; }
           }
         }
       }
 
       &.picking-status {
-        .donut-container {
+        .donut-display {
           display: flex;
           align-items: center;
           gap: 2rem;
-          margin: 1rem 0;
-
-          .donut-chart {
+          margin-bottom: 1.5rem;
+          
+          .donut-box {
             position: relative;
             width: 120px;
             height: 120px;
-            svg {
-              width: 100%;
-              height: 100%;
-            }
-            .donut-label {
+            .donut-inner {
               position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
+              top: 50%; left: 50%; transform: translate(-50%, -50%);
               text-align: center;
-              display: flex;
-              flex-direction: column;
-              span.percent {
-                font-size: 1.5rem;
-                font-weight: 800;
-                color: $text-dark;
-                line-height: 1;
-              }
-              span.status {
-                font-size: 0.6rem;
-                color: $text-light;
-                text-transform: uppercase;
-              }
+              .num { display: block; font-size: 1.5rem; font-weight: 700; }
+              .txt { font-size: 0.7rem; color: #95a5a6; }
             }
           }
-
+          
           .donut-legend {
-            flex-grow: 1;
-            .legend-item {
+            flex: 1;
+            .legend-row {
               @include flex-between;
-              font-size: $font-sm;
+              font-size: 0.85rem;
               margin-bottom: 0.5rem;
-              color: $text-gray;
-              .val {
-                font-weight: 700;
-                color: $text-dark;
-              }
-              .dot {
-                display: inline-block;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                margin-right: 8px;
-                &.completed {
-                  background: #00bb31;
-                }
-                &.in-progress {
-                  background: #f39c12;
-                }
-                &.pending {
-                  background: #e74c3c;
-                }
-              }
+              span i.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+              i.green { background: #00BB31; }
+              i.orange { background: #f39c12; }
+              i.gray { background: #dcdde1; }
+              .val { font-weight: 600; }
             }
-            .total-orders {
-              margin-top: 1rem;
+            .legend-total {
+              border-top: 1px solid #f0f0f0;
               padding-top: 0.5rem;
-              border-top: 1px dashed $border-color;
+              margin-top: 0.5rem;
               @include flex-between;
-              font-weight: 600;
-              font-size: $font-sm;
+              font-weight: 700;
+              font-size: 0.9rem;
             }
           }
         }
 
-        .status-footer {
-          margin-top: auto;
-          .sub-stat {
-            @include flex-between;
-            font-size: $font-sx;
-            margin-top: 0.5rem;
-            color: $text-gray;
-            .val {
-              font-weight: 700;
-              &.high {
-                color: $primary-green;
-              }
-              &.low {
-                color: $danger;
-              }
-            }
-          }
+        .status-metrics {
+          background: #f8fafb;
+          padding: 1rem;
+          border-radius: 12px;
+          .metric-line { @include flex-between; font-size: 0.85rem; margin-bottom: 0.5rem; }
+          .mini-progress-bar { height: 4px; background: #e0e0e0; border-radius: 2px; overflow: hidden; .fill { height: 100%; } }
         }
       }
     }
@@ -378,137 +249,56 @@
   // Details Grid
   .details-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
     margin-bottom: 1.5rem;
 
     .detail-card {
       @include dashboard-card;
-      h3 {
-        font-size: $font-base;
-      }
-      .subtitle {
-        font-size: $font-sx;
-        color: $text-light;
-        display: block;
+      
+      .card-header {
         margin-bottom: 1.5rem;
+        h3 { font-size: 1rem; }
+        .subtitle { font-size: 0.8rem; color: #95a5a6; }
+        .job-badge { background: rgba(#00BB31, 0.1); color: #00BB31; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .live-dot { color: #00BB31; font-size: 0.75rem; font-weight: 600; .dot { width: 8px; height: 8px; background: #00BB31; border-radius: 50%; display: inline-block; margin-right: 4px; } }
       }
 
-      .capacity-list {
-        .capacity-item {
-          margin-bottom: 1.25rem;
-          .item-header {
-            @include flex-between;
-            margin-bottom: 0.5rem;
-            .block-name {
-              font-weight: 600;
-              font-size: $font-sm;
-            }
-            .status-tag {
-              font-size: 0.65rem;
-              font-weight: 700;
-              margin-left: 8px;
-            }
-            .percentage {
-              font-weight: 700;
-              color: $text-dark;
-            }
-          }
-          .progress-bar {
-            height: 6px;
-            background: #f0f2f5;
-            border-radius: 3px;
-            margin-bottom: 0.25rem;
-            .progress-fill {
-              height: 100%;
-              border-radius: 3px;
-              transition: width 1s;
-            }
-          }
-          .item-footer {
-            font-size: $font-sx;
-            color: $text-light;
+      &.block-capacity {
+        .capacity-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+          margin-bottom: 2rem;
+          .capacity-item {
+            .item-header { @include flex-between; .name { font-size: 0.85rem; font-weight: 600; .badge { margin-left: 8px; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; } } .percent { font-weight: 700; font-size: 0.9rem; } }
+            .progress-track { height: 6px; background: #f0f0f0; border-radius: 10px; margin: 6px 0; overflow: hidden; .progress-fill { height: 100%; border-radius: 10px; } }
+            .footer-text { font-size: 0.75rem; color: #95a5a6; }
           }
         }
-      }
-
-      .overall-utilization {
-        margin-top: 2rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba($border-color, 0.5);
-        .util-header {
-          @include flex-between;
-          font-weight: 700;
-          font-size: $font-base;
-          margin-bottom: 0.75rem;
-        }
-        .progress-bar.lg {
-          height: 10px;
-          border-radius: 5px;
+        .overall-util {
+          border-top: 1px solid #f0f0f0;
+          padding-top: 1.5rem;
+          .flex-row { @include flex-between; .val { font-weight: 800; font-size: 1.1rem; } }
+          .progress-track.lg { height: 10px; margin: 10px 0; }
+          .footer-text { font-size: 0.75rem; color: #95a5a6; }
         }
       }
 
       &.work-queue {
-        .title-flex {
-          @include flex-between;
-          .job-count {
-            @include status-badge(#00bb31);
-          }
-        }
         .queue-list {
+          display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;
           .queue-item {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            padding: 0.75rem;
-            border-radius: 12px;
-            transition: background 0.2s;
-            &:hover {
-              background: #f8fafb;
-            }
-            .item-icon {
-              width: 40px;
-              height: 40px;
-              border-radius: 8px;
-              background: #f0f2f5;
-              @include flex-center;
-              color: $text-gray;
-            }
-            .item-info {
-              flex-grow: 1;
-              .item-id {
-                display: block;
-                font-weight: 700;
-                font-size: $font-sm;
-                .priority {
-                  font-size: 0.65rem;
-                  font-weight: 800;
-                  border: 1px solid currentColor;
-                  padding: 2px 6px;
-                  border-radius: 4px;
-                  margin-left: 8px;
-                }
-              }
-              .item-type {
-                font-size: $font-sx;
-                color: $text-gray;
-                display: block;
-                margin: 2px 0;
-              }
-              .item-status {
-                @include flex-between;
-                .status-badge {
-                  font-weight: 600;
-                  color: $primary-green;
-                  font-size: $font-sx;
-                  padding: 2px 8px;
-                  background: rgba($primary-green, 0.1);
-                  border-radius: 4px;
-                }
-                .detail {
-                  font-size: $font-sx;
-                  color: $text-light;
-                }
+            display: flex; gap: 1rem; padding: 1rem; border: 1px solid #f0f0f0; border-radius: 12px;
+            .icon-box { width: 44px; height: 44px; border-radius: 10px; @include flex-center; font-size: 1.2rem; }
+            .content {
+              flex: 1;
+              .id-row { @include flex-between; .id { font-weight: 700; } .priority { font-size: 0.7rem; font-weight: 700; border: 1px solid; padding: 2px 8px; border-radius: 4px; } }
+              .type { display: block; font-size: 0.8rem; color: #95a5a6; margin: 4px 0; }
+              .status-row { 
+                display: flex; gap: 8px; align-items: center;
+                .status-pill { background: #f8fafb; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: #3498db; font-weight: 600; }
+                .time { font-size: 0.75rem; color: #95a5a6; }
               }
             }
           }
@@ -516,396 +306,131 @@
       }
 
       &.live-activity {
-        .title-flex {
-          @include flex-between;
-          .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #00bb31;
-            font-weight: 700;
-            font-size: $font-sx;
-            .dot {
-              width: 6px;
-              height: 6px;
-              background: #00bb31;
-              border-radius: 50%;
-              box-shadow: 0 0 0 4px rgba(#00bb31, 0.2);
-            }
-          }
-        }
-        .activity-timeline {
+        .activity-feed {
+          display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;
           .activity-item {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            position: relative;
-            &:not(:last-child):after {
-              content: '';
-              position: absolute;
-              left: 17px;
-              top: 35px;
-              bottom: -15px;
-              border-left: 1px dashed $border-color;
-            }
-            .act-icon {
-              width: 34px;
-              height: 34px;
-              border-radius: 50%;
-              @include flex-center;
-              font-size: 1rem;
-              z-index: 1;
-              &.received {
-                background: #eaffee;
-                color: #00bb31;
-              }
-              &.delivery {
-                background: #ebf5ff;
-                color: #3498db;
-              }
-              &.capacity {
-                background: #fff5eb;
-                color: #f39c12;
-              }
-              &.picking {
-                background: #f5ebff;
-                color: #8e44ad;
-              }
-            }
-            .act-content {
-              flex-grow: 1;
-              .act-message {
-                font-size: $font-sm;
-                color: $text-dark;
-                font-weight: 500;
-                margin: 0;
-                line-height: 1.4;
-              }
-              .act-meta {
-                margin-top: 4px;
-                display: flex;
-                gap: 1rem;
-                font-size: $font-sx;
-                color: $text-light;
-                .user {
-                  font-weight: 600;
-                }
-              }
+            display: flex; gap: 1rem;
+            .act-icon { width: 36px; height: 36px; border-radius: 50%; @include flex-center; font-size: 1rem; flex-shrink: 0; }
+            .act-body {
+              p { font-size: 0.85rem; margin: 0; line-height: 1.4; font-weight: 500; }
+              .act-meta { display: flex; gap: 10px; font-size: 0.75rem; color: #95a5a6; margin-top: 4px; }
             }
           }
         }
       }
 
-      .view-all-btn {
-        width: 100%;
-        margin-top: 1rem;
-        border: none;
-        background: transparent;
-        color: $primary-green;
-        font-weight: 700;
-        font-size: $font-sm;
-        @include flex-center;
-        gap: 8px;
-        cursor: pointer;
-        border-top: 1px solid rgba($border-color, 0.5);
-        padding-top: 1.5rem;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
+      .view-link { display: block; text-align: center; font-size: 0.85rem; color: #00BB31; font-weight: 600; text-decoration: none; margin-top: auto; }
     }
   }
 
   // Bottom Grid
   .bottom-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1rem;
     margin-bottom: 1.5rem;
 
     .table-card {
-      @include dashboard-card;
-      padding: 1.5rem;
-      h3 {
-        margin-bottom: 0.25rem;
-      }
-      .subtitle {
-        color: $text-light;
-        font-size: $font-sx;
-        margin-bottom: 1.5rem;
-        display: block;
-      }
-
-      .table-container {
-        overflow-x: auto;
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          th {
-            text-align: left;
-            padding: 12px;
-            font-size: $font-sx;
-            color: $text-light;
-            font-weight: 600;
-            border-bottom: 1px solid $border-color;
-          }
-          td {
-            padding: 12px;
-            font-size: $font-sm;
-            color: $text-gray;
-            border-bottom: 1px solid rgba($border-color, 0.3);
-            .rank {
-              width: 24px;
-              height: 24px;
-              border-radius: 6px;
-              display: inline-flex;
-              align-items: centre;
-              justify-content: center;
-              color: white;
-              font-weight: 700;
-              font-size: 0.7rem;
+        @include dashboard-card;
+        .live-data { color: #3498db; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .table-box {
+            overflow-x: auto;
+            margin-top: 1rem;
+            table {
+                width: 100%; border-collapse: collapse;
+                th { text-align: left; padding: 12px 8px; font-size: 0.75rem; color: #95a5a6; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; }
+                td { 
+                    padding: 12px 8px; font-size: 0.85rem; border-bottom: 1px solid #f0f0f0; 
+                    .rank { width: 22px; height: 22px; border-radius: 4px; color: white; @include flex-center; font-size: 0.75rem; font-weight: 700; }
+                    .sku-name { font-weight: 600; }
+                }
             }
-            &.text-green {
-              color: $primary-green;
-              font-weight: 700;
-            }
-            &.text-red {
-              color: $danger;
-              font-weight: 700;
-            }
-            &.text-blue {
-              color: $info;
-              font-weight: 700;
-            }
-            &.text-orange {
-              color: #f39c12;
-              font-weight: 700;
-            }
-          }
         }
-      }
     }
 
-    .delivery-card {
-      @include dashboard-card;
-      .delivery-items {
-        .delivery-item {
-          display: flex;
-          justify-content: space-between;
-          padding: 1rem;
-          background: #f8fafb;
-          border-radius: 12px;
-          margin-bottom: 0.75rem;
-          border: 1px solid $border-color;
-          .del-left {
-            display: flex;
-            gap: 1rem;
-            i {
-              font-size: 1.5rem;
-              color: #00bb31;
+    .delivery-schedule {
+        @include dashboard-card;
+        .delivery-list {
+            display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem;
+            .delivery-item {
+                display: flex; @include flex-between;
+                .del-main {
+                    display: flex; gap: 1rem;
+                    i { font-size: 1.25rem; color: #dcdde1; }
+                    .del-info {
+                        display: flex; flex-direction: column;
+                        .id { font-weight: 700; font-size: 0.95rem; }
+                        .loc { font-size: 0.8rem; color: #95a5a6; margin: 2px 0; }
+                        .status-row {
+                            display: flex; align-items: center; gap: 8px; margin-top: 4px;
+                            .badge { background: rgba(#00BB31, 0.1); color: #00BB31; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+                            .truck { font-size: 0.75rem; color: #95a5a6; }
+                        }
+                    }
+                }
+                .del-time {
+                    text-align: right; font-size: 0.85rem; font-weight: 600;
+                    .orders-count { display: block; font-size: 0.75rem; font-weight: 400; color: #95a5a6; margin-top: 4px; }
+                }
+
+                &:not(:last-child) { border-bottom: 1px solid #f8fafb; padding-bottom: 1rem; }
             }
-            .del-info {
-              display: flex;
-              flex-direction: column;
-              span {
-                font-size: $font-sx;
-                color: $text-light;
-              }
-            }
-          }
-          .del-right {
-            text-align: right;
-            .time {
-              font-weight: 700;
-              font-size: $font-sm;
-              color: $text-dark;
-            }
-            .status-row {
-              display: flex;
-              flex-direction: column;
-              align-items: flex-end;
-              margin-top: 4px;
-              .status-badge {
-                font-size: 0.65rem;
-                font-weight: 800;
-                background: #eaffee;
-                color: #00bb31;
-                padding: 2px 8px;
-                border-radius: 4px;
-                margin-bottom: 4px;
-              }
-              .truck-id {
-                font-size: 0.65rem;
-                color: $text-light;
-              }
-            }
-          }
         }
-      }
     }
   }
 
   // Footer Metrics
   .footer-metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    .f-metric {
-      @include dashboard-card;
-      padding: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      .f-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        @include flex-center;
-        font-size: 1.5rem;
-        &.green {
-          background: #eaffee;
-          color: #00bb31;
-        }
-        &.blue {
-          background: #ebf5ff;
-          color: #3498db;
-        }
-        &.orange {
-          background: #fff5eb;
-          color: #f39c12;
-        }
-        &.red {
-          background: #ffebeb;
-          color: #e74c3c;
-        }
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;
+      .f-metric-card {
+          @include dashboard-card; display: flex; gap: 1rem; align-items: center;
+          .f-icon { width: 44px; height: 44px; border-radius: 12px; @include flex-center; font-size: 1.2rem; }
+          .f-info {
+              display: flex; flex-direction: column;
+              .lbl { font-size: 0.75rem; color: #95a5a6; }
+              .val { font-size: 1.1rem; font-weight: 800; margin: 2px 0; }
+              .sub { font-size: 0.7rem; color: #95a5a6; }
+          }
+
+          .f-icon.green { background: rgba(#00BB31, 0.1); color: #00BB31; }
+          .f-icon.blue { background: rgba(#3498db, 0.1); color: #3498db; }
+          .f-icon.orange { background: rgba(#f39c12, 0.1); color: #f39c12; }
+          .f-icon.red { background: rgba(#e74c3c, 0.1); color: #e74c3c; }
       }
-      .f-data {
-        display: flex;
-        flex-direction: column;
-        .f-label {
-          font-size: $font-sx;
-          color: $text-gray;
-          font-weight: 500;
-        }
-        .f-val {
-          font-size: 1.25rem;
-          font-weight: 800;
-          color: $text-dark;
-        }
-        .f-sub {
-          font-size: 0.65rem;
-          color: $text-light;
-        }
-      }
-    }
   }
 
-  // Final Row (Perf & Actions)
-  .final-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-
-    .perf-card {
-      @include dashboard-card;
-      .bar-chart-placeholder {
-        height: 150px;
-        @include flex-between;
-        align-items: flex-end;
-        padding: 0 1rem;
-        gap: 1rem;
-        .bar-container {
-          flex-grow: 1;
-          background: #f0f2f5;
-          border-radius: 4px;
-          height: 100%;
-          position: relative;
-          .bar-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #00bb31;
-            border-radius: 4px;
-            transition: height 1s;
+  // Final Row
+  .final-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;
+      .perf-card {
+          @include dashboard-card;
+          .chart-box {
+              display: flex; justify-content: space-around; height: 180px; align-items: flex-end; margin: 1.5rem 0; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0;
+              .bar-group {
+                  text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+                  .bar-stack { width: 12px; height: 120px; background: #f8fafb; border-radius: 10px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; .bar { width: 100%; &.green { background: #00BB31; } &.orange { background: #f39c12; } &.red { background: #e74c3c; } } }
+                  .week { font-size: 0.7rem; color: #95a5a6; }
+              }
           }
-        }
+          .chart-legend { @include flex-center; gap: 1.5rem; font-size: 0.75rem; color: #636e72; .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; } .green { background: #00BB31; } .orange { background: #f39c12; } .red { background: #e74c3c; } }
+          .chart-footer { border-top: 1px solid #f0f0f0; margin-top: 1.5rem; padding-top: 1rem; @include flex-between; font-size: 0.9rem; }
       }
-      .chart-legend {
-        margin-top: 1.5rem;
-        @include flex-center;
-        gap: 1.5rem;
+
+      .actions-card {
+          @include dashboard-card;
+          .actions-grid {
+              display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem;
+              .action-item {
+                  text-align: center; cursor: pointer; transition: transform 0.2s;
+                  .icon-wrap { width: 50px; height: 50px; border-radius: 15px; @include flex-center; font-size: 1.25rem; margin: 0 auto 0.5rem; }
+                  span { font-size: 0.75rem; font-weight: 600; color: #2d3436; }
+                  &:hover { transform: translateY(-3px); }
+              }
+          }
+          .action-footer {
+              background: #f8fafb; padding: 1.25rem; border-radius: 12px; margin-top: 1.5rem; display: flex; justify-content: space-between;
+              .foot-stat { font-size: 0.75rem; color: #636e72; strong { color: #2d3436; } }
+          }
       }
-    }
-
-    .actions-card {
-      @include dashboard-card;
-      .actions-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        .action-btn {
-          padding: 1.25rem;
-          background: #f8fafb;
-          border: 1px solid $border-color;
-          border-radius: 16px;
-          cursor: pointer;
-          transition: all 0.2s;
-          text-align: center;
-          &:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-            border-color: $primary-green;
-          }
-          .icon-wrap {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            @include flex-center;
-            font-size: 1.5rem;
-            margin: 0 auto 12px;
-          }
-          span {
-            font-weight: 600;
-            font-size: $font-sm;
-            color: $text-dark;
-            display: block;
-          }
-        }
-      }
-    }
-  }
-
-  .dashboard-footer {
-    @include flex-between;
-    border-top: 1px solid $border-color;
-    padding-top: 1.5rem;
-    color: $text-gray;
-    font-size: $font-sm;
-    strong {
-      color: $text-dark;
-    }
-    .text-green {
-      color: $primary-green;
-    }
-  }
-
-  .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
-    &.green {
-      background: #00bb31;
-    }
-    &.orange {
-      background: #f39c12;
-    }
-    &.red {
-      background: #e74c3c;
-    }
   }
 }

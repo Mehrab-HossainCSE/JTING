@@ -25,9 +25,11 @@ export class DashboardPageComponent {
       unit: 'units', 
       change: '+3.2%', 
       isPositive: true,
+      changeLabel: 'vs last week',
       footer: '1,248 pallets | 4 blocks',
       color: '#00BB31',
-      progress: 75
+      progress: 75,
+      icon: 'bi-database'
     },
     { 
       title: "TODAY'S RECEIPTS", 
@@ -35,9 +37,11 @@ export class DashboardPageComponent {
       unit: 'cartons', 
       change: '70.6%', 
       isPositive: true,
+      changeLabel: 'of 1,200 target',
       footer: '2 batches pending | 3 completed',
       color: '#3498db',
-      progress: 70
+      progress: 70,
+      icon: 'bi-box-seam'
     },
     { 
       title: 'PICKING PROGRESS', 
@@ -45,20 +49,32 @@ export class DashboardPageComponent {
       unit: 'orders', 
       change: '74.2%', 
       isPositive: true,
+      changeLabel: 'completion rate',
       footer: '5 in-progress | 3 pending',
       color: '#8e44ad',
-      progress: 74
+      progress: 74,
+      icon: 'bi-clipboard-check'
     },
     { 
       title: 'ACTIVE ALERTS', 
       value: '17', 
       unit: 'total', 
-      change: '5 critical | 12 warnings', 
       isPositive: false,
+      isAlert: true,
+      critical: '5 critical',
+      warnings: '12 warnings',
       footer: 'Requires immediate attention',
       color: '#e74c3c',
-      progress: 40
+      progress: 40,
+      icon: 'bi-exclamation-triangle'
     }
+  ];
+
+  // Trend Stats
+  trendStats = [
+    { label: 'Avg Daily In', value: '3,971', icon: 'bi-graph-up-arrow', color: '#ebf5ff', text: '#3498db' },
+    { label: 'Avg Daily Out', value: '2,764', icon: 'bi-graph-down-arrow', color: '#fff5eb', text: '#f39c12' },
+    { label: 'Net Change', value: '+1,207', icon: 'bi-plus-circle', color: '#eaffee', text: '#00BB31' },
   ];
 
   // Block Capacity
@@ -71,17 +87,19 @@ export class DashboardPageComponent {
 
   // Work Queue
   workQueue = [
-    { id: 'RCV-089', type: 'Winston Blue 20s', priority: 'High', status: 'Awaiting', detail: '420 units - 10:30 AM', color: '#e74c3c' },
-    { id: 'PCK-441', type: 'Camel Classic 20s', priority: 'High', status: 'In Progress', detail: '240 units - 9:45 AM', color: '#e74c3c' },
-    { id: 'DEL-091', type: 'Multi-SKU - 4 orders', priority: 'Medium', status: 'Staged', detail: '320 units - 11:00 AM', color: '#f39c12' },
+    { id: 'RCV-089', type: 'Winston Blue 20s', priority: 'High', status: 'Awaiting', detail: '420 units - 10:30 AM', color: '#e74c3c', iconColor: '#eaffee', icon: 'bi-box-arrow-in-down' },
+    { id: 'PCK-441', type: 'Camel Classic 20s', priority: 'High', status: 'In Progress', detail: '240 units - 9:45 AM', color: '#e74c3c', iconColor: '#f5ebff', icon: 'bi-clipboard-check' },
+    { id: 'DEL-091', type: 'Multi-SKU - 4 orders', priority: 'Medium', status: 'Staged', detail: '320 units - 11:00 AM', color: '#f39c12', iconColor: '#ebf5ff', icon: 'bi-truck' },
   ];
 
   // Live Activity
   activities = [
-    { type: 'received', message: 'Received 240 cartons — Batch B2024-289', time: '9:32 AM', user: 'Kenji T.' },
-    { type: 'delivery', message: 'Delivery DEL-2024-059 dispatched to Osaka', time: '9:15 AM', user: 'Maria G.' },
-    { type: 'capacity', message: 'Block C approaching capacity threshold (95%)', time: '8:48 AM', user: 'System' },
-    { type: 'picking', message: 'Picking order PO-2024-441 completed — 120 units', time: '8:22 AM', user: 'Ahmed H.' },
+    { type: 'received', message: 'Received 240 cartons — Batch B2024-289', time: '9:32 AM', user: 'Kenji T.', color: '#00BB31' },
+    { type: 'delivery', message: 'Delivery DEL-2024-059 dispatched to Osaka', time: '9:15 AM', user: 'Maria G.', color: '#3498db' },
+    { type: 'capacity', message: 'Block C approaching capacity threshold (95%)', time: '8:48 AM', user: 'System', color: '#f39c12' },
+    { type: 'picking', message: 'Picking order PO-2024-441 completed — 120 units', time: '8:22 AM', user: 'Ahmed H.', color: '#8e44ad' },
+    { type: 'system', message: 'Auto-receive completed: Winston Blue batch', time: '7:55 AM', user: 'System', color: '#00BB31' },
+    { type: 'quarantine', message: '3 pallets flagged for quarantine review', time: '7:30 AM', user: 'System', color: '#e74c3c' },
   ];
 
   // Top SKU Movement
