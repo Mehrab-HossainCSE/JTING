@@ -41,11 +41,6 @@
             <span class="action-label">Edit</span>
           </label>
 
-          <label class="checkbox-container action-checkbox header-action" title="Toggle All Delete">
-            <input type="checkbox" [(ngModel)]="section.allDelete" (change)="onPermissionToggle(section, 'delete')">
-            <span class="checkmark small"></span>
-            <span class="action-label">Delete</span>
-          </label>
         </div>
       </div>
       
@@ -76,12 +71,6 @@
               <input type="checkbox" [(ngModel)]="item.edit">
               <span class="checkmark small"></span>
               <span class="action-label">Edit</span>
-            </label>
-            
-            <label class="checkbox-container action-checkbox">
-              <input type="checkbox" [(ngModel)]="item.delete">
-              <span class="checkmark small"></span>
-              <span class="action-label">Delete</span>
             </label>
           </div>
         </div>
