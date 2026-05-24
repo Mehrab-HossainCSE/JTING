@@ -21,6 +21,14 @@ export class LineService {
     return this.http.get<ApiResponse<Line>>(`${this.apiUrl}/GetById/${id}`);
   }
 
+  getByAreaId(areaId: number): Observable<ApiResponse<Line[]>> {
+    return this.http.get<ApiResponse<Line[]>>(`${this.apiUrl}/GetByAreaId/${areaId}`);
+  }
+  
+  getByArchId(archId: string): Observable<ApiResponse<Line[]>> {
+    return this.http.get<ApiResponse<Line[]>>(`${this.apiUrl}/GetByArchId/${archId}`);
+  }
+
   create(line: Partial<Line>): Observable<ApiResponse<Line>> {
     return this.http.post<ApiResponse<Line>>(`${this.apiUrl}/Create`, line);
   }

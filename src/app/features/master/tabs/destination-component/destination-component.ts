@@ -8,6 +8,7 @@ import { DestinationService } from '../../../../core/services/setupServices/dest
 import { Destination } from '../../../../core/models/setups/destination/destination';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-destination-component',
@@ -26,7 +27,7 @@ export class DestinationComponent implements OnInit {
   destinationSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(5);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   destinationList = signal<Destination[]>([]);
 

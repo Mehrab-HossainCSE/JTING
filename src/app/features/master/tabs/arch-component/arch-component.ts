@@ -11,6 +11,7 @@ import { Arch } from '../../../../core/models/setups/arch/arch';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { BlockService } from '../../../../core/services/setupServices/block-service';
 import { Block } from '../../../../core/models/setups/block/block';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-arch-component',
@@ -24,6 +25,7 @@ export class ArchComponent implements OnInit {
   private toastr       = inject(ToastrService);
   private errorHandler = inject(ErrorHandlerService);
   private blockService = inject(BlockService);
+  
 
   protected Math = Math;
 
@@ -31,7 +33,7 @@ export class ArchComponent implements OnInit {
   archSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(10);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   archList = signal<Arch[]>([]);
   blockList = signal<Block[]>([]);

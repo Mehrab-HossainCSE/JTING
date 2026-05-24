@@ -10,6 +10,15 @@ import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { Line } from '../../../../core/models/setups/line/line';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 
+import { BlockService } from '../../../../core/services/setupServices/block-service';
+import { ArchService } from '../../../../core/services/setupServices/arch-service';
+import { AreaService } from '../../../../core/services/setupServices/area-service';
+import { Block } from '../../../../core/models/setups/block/block';
+import { Arch } from '../../../../core/models/setups/arch/arch';
+import { Area } from '../../../../core/models/setups/area/area';
+import { SkuService } from '../../../../core/services/skuServices/sku-service';
+import { StaticData } from '../../../../core/services/static-data';
+
 @Component({
   selector: 'app-line-component',
   imports: [CommonModule, ReactiveFormsModule],
@@ -22,25 +31,34 @@ export class LineComponent implements OnInit {
   private toastr      = inject(ToastrService);
   private errorHandler= inject(ErrorHandlerService);
 
+  private blockService = inject(BlockService);
+  private archService  = inject(ArchService);
+  private areaService  = inject(AreaService);
+  private skuService   = inject(SkuService);
+
   protected Math = Math;
 
   editingLineId = signal<string | null>(null);
   lineSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(10);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   lineList = signal<Line[]>([]);
+  blockList = signal<Block[]>([]);
+  archList  = signal<Arch[]>([]);
+  areaList  = signal<Area[]>([]);
+  skuList   = signal<any[]>([]); // Define actual Sku type if available
 
   lineForm: FormGroup = this.fb.group({
-    lineId: ['', [Validators.required]],
-    lineName: ['', [Validators.required, Validators.minLength(2)]],
-    lineCode: ['', [Validators.required]],
-    serialNo: ['', [Validators.required]],
-    areaId: [0, [Validators.required, Validators.min(1)]],
+    lineId: [''],
     blockId: ['', [Validators.required]],
     archId: ['', [Validators.required]],
     skucode: ['', [Validators.required]],
+    areaId: ['', [Validators.required]],
+    lineCode: ['', [Validators.required]],
+    serialNo: ['', [Validators.required]],
+    lineName: ['', [Validators.required, Validators.minLength(2)]],
     isActive: [true],
     areaName: [''],
     blockName: [''],
@@ -87,8 +105,15 @@ export class LineComponent implements OnInit {
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
     if (this.canView()) {
+      this.loadInitialData();
       this.loadLines();
     }
+  }
+
+  loadInitialData(): void {
+    this.blockService.getAll().subscribe(res => { if (res.success) this.blockList.set(res.data); });
+    this.areaService.getAll().subscribe(res => { if (res.success) this.areaList.set(res.data); });
+    this.skuService.getAll().subscribe(res => { if (res.success) this.skuList.set(res.data); });
   }
 
   private loadPermissionsFromStorage(): void {
@@ -137,6 +162,16 @@ export class LineComponent implements OnInit {
     this.currentPage.set(page);
   }
 
+  onBlockChange(blockId: string): void {
+    this.archList.set([]);
+    this.lineForm.get('archId')?.setValue('');
+    if (blockId) {
+      this.archService.getByBlockId(blockId).subscribe({
+        next: (res) => { if (res.success) this.archList.set(res.data); }
+      });
+    }
+  }
+
   onPageSizeChange(value: string): void {
     const size = value === 'all' ? this.filteredLineList().length || 1 : +value;
     this.pageSize.set(size);
@@ -151,13 +186,13 @@ export class LineComponent implements OnInit {
   resetForm(): void {
     this.lineForm.reset({
       lineId: '',
-      lineName: '',
-      lineCode: '',
-      serialNo: '',
-      areaId: 0,
       blockId: '',
       archId: '',
       skucode: '',
+      areaId: '',
+      lineCode: '',
+      serialNo: '',
+      lineName: '',
       isActive: true,
       areaName: '',
       blockName: '',
@@ -177,7 +212,6 @@ export class LineComponent implements OnInit {
     if (!ctrl || !ctrl.errors) return '';
     if (ctrl.errors['required'])  return 'This field is required.';
     if (ctrl.errors['minlength']) return `Minimum ${ctrl.errors['minlength'].requiredLength} characters.`;
-    if (ctrl.errors['min']) return `Minimum value is ${ctrl.errors['min'].min}.`;
     return '';
   }
 
@@ -190,15 +224,19 @@ export class LineComponent implements OnInit {
 
     const payload: Line = this.lineForm.getRawValue();
     
-    // Provide fallback values to satisfy backend validation
-    payload.areaName = payload.areaName || `Area ${payload.areaId}`;
-    payload.blockName = payload.blockName || `Block ${payload.blockId}`;
-    payload.archName = payload.archName || `Arch ${payload.archId}`;
+    // Map exact names from lists
+    const block = this.blockList().find(b => b.blockId === payload.blockId);
+    if (block) payload.blockName = block.blockName;
+
+    const arch = this.archList().find(a => a.archId === payload.archId);
+    if (arch) payload.archName = arch.archName;
+
+    const area = this.areaList().find(a => a.id.toString() === payload.areaId.toString());
+    if (area) payload.areaName = area.areaName;
     
     const editing = this.editingLineId();
 
     if (editing) {
-      debugger;
       payload.lineId = editing; 
       this.lineService.update(payload).subscribe({
         next: (res) => {
@@ -232,8 +270,17 @@ export class LineComponent implements OnInit {
 
   editLine(item: Line): void {
     this.editingLineId.set(item.lineId);
-    this.lineForm.patchValue(item);
-    this.lineForm.get('lineId')?.disable(); // Prevent editing primary key
+    // Load arches for the selected block before patching
+    if (item.blockId) {
+      this.archService.getByBlockId(item.blockId).subscribe(res => {
+        if (res.success) this.archList.set(res.data);
+        this.lineForm.patchValue(item);
+        this.lineForm.get('lineId')?.disable();
+      });
+    } else {
+      this.lineForm.patchValue(item);
+      this.lineForm.get('lineId')?.disable();
+    }
   }
 
   deleteLine(id: string): void {

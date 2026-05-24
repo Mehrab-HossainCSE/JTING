@@ -7,6 +7,7 @@ import { BrandService } from '../../../../core/services/setupServices/brand-serv
 import { Brand } from '../../../../core/models/setups/brand/brand';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
+import { StaticData } from '../../../../core/services/static-data';
 
 @Component({
   selector: 'app-brand-component',
@@ -25,7 +26,7 @@ export class BrandComponent implements OnInit {
   brandSearch = signal('');
   isLoading = signal(false);
   currentPage = signal(1);
-  pageSize    = signal(5);
+  pageSize    = signal(StaticData.PAGE_SIZE);
 
   brandList = signal<Brand[]>([]);
 
