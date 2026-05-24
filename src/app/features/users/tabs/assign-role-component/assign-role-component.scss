@@ -1,7 +1,235 @@
+@import '../../../../../styles/abstracts/variables';
 @import "/styles/componets/master-setup.scss";
 
 .user-tab-page {
-  .card {
+  padding: 0; // Padding is already on the parent user-management-page
+  
+  .header-section {
+    margin-bottom: 24px;
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1a3353;
+      margin-bottom: 20px;
+    }
+
+    .user-selector-card {
+      background: $bg-white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid $border-color;
+      width: 100%;
+      max-width: calc(33.333% - 14px);
+
+      @media (max-width: 1200px) {
+        max-width: calc(50% - 10px);
+      }
+      @media (max-width: 768px) {
+        max-width: 100%;
+      }
+
+      .form-group {
+        label {
+          display: block;
+          font-size: 0.85rem;
+          color: $text-gray;
+          margin-bottom: 8px;
+        }
+
+        .form-control {
+          width: 100%;
+          padding: 10px 12px;
+          border-radius: 6px;
+          border: 1px solid $border-color;
+          font-size: 0.9rem;
+          color: $text-dark;
+          outline: none;
+          transition: border-color $transition-fast;
+
+          &:focus {
+            border-color: $primary-green;
+          }
+        }
+      }
+    }
+  }
+
+  .menu-distribution-flex {
+    column-count: 3;
+    column-gap: 20px;
     width: 100%;
+    
+    @media (max-width: 1200px) {
+      column-count: 2;
+    }
+    @media (max-width: 768px) {
+      column-count: 1;
+    }
+  }
+
+  .menu-card {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
+    break-inside: avoid;
+    background: $bg-white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    border: 1px solid $border-color;
+    overflow: hidden;
+    transition: transform $transition-fast, box-shadow $transition-fast;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-header {
+      background: #f8fafc;
+      padding: 10px 16px;
+      border-bottom: 1px solid $border-color;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .header-right {
+        display: flex;
+        gap: 10px;
+
+        .header-action {
+          .action-label {
+            font-size: 0.85rem;
+            color: $text-gray;
+            font-weight: 600;
+            margin-left: 6px;
+          }
+
+          &:hover {
+            .action-label {
+              color: $primary-green;
+            }
+          }
+        }
+      }
+    }
+
+    .card-body {
+      padding: 0 16px;
+      height: 350px;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #e1e8ed;
+        border-radius: 10px;
+
+        &:hover {
+          background: $primary-green;
+        }
+      }
+
+      .menu-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba($border-color, 0.5);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .item-main {
+          flex: 1;
+          .item-name {
+            font-size: 0.9rem;
+            color: $text-dark;
+            margin-left: 8px;
+          }
+        }
+
+        .item-actions {
+          display: flex;
+          gap: 10px;
+
+          .action-checkbox {
+            .action-label {
+              font-size: 0.85rem;
+              color: $text-gray;
+              margin-left: 6px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Custom Checkbox Styling
+.checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  .checkmark {
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid $border-color;
+    border-radius: 4px;
+    transition: all $transition-fast;
+    position: relative;
+
+    &.small {
+      height: 16px;
+      width: 16px;
+    }
+
+    &:after {
+      content: "";
+      position: absolute;
+      display: none;
+      left: 5px;
+      top: 1px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  input:checked ~ .checkmark {
+    background-color: $primary-green;
+    border-color: $primary-green;
+
+    &:after {
+      display: block;
+    }
+  }
+
+  &:hover input ~ .checkmark {
+    border-color: $primary-green;
+  }
+
+  .label-text, .item-name, .action-label {
+    margin-left: 10px;
+    font-size: inherit;
   }
 }

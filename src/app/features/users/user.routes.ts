@@ -6,6 +6,11 @@ export const USERS_ROUTES: Routes = [
     loadComponent: () => import('./user-management.component').then(m => m.UserManagementComponent),
     children: [
       {
+        path: '',
+        redirectTo: 'create-user',
+        pathMatch: 'full'
+      },
+      {
         path: 'create-user',
         loadComponent: () => import('./tabs/create-user-component').then(m => m.CreateUserComponent),
         data: { title: 'Create User' }
