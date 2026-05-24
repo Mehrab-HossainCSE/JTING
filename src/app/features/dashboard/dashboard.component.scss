@@ -138,12 +138,26 @@
   // Main Grid (Charts)
   .main-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(12, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
 
+    @include tablet {
+      grid-template-columns: 1fr;
+    }
+
     .chart-card {
       @include dashboard-card;
+      
+      &.inventory-trend {
+        grid-column: span 8;
+        @include tablet { grid-column: span 1; }
+      }
+
+      &.picking-status {
+        grid-column: span 4;
+        @include tablet { grid-column: span 1; }
+      }
       .card-header {
         margin-bottom: 1.5rem;
         h3 { font-size: 1.1rem; }
@@ -326,12 +340,19 @@
   // Bottom Grid
   .bottom-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(12, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
 
+    @include tablet {
+      grid-template-columns: 1fr;
+    }
+
     .table-card {
         @include dashboard-card;
+        grid-column: span 8;
+        @include tablet { grid-column: span 1; }
+
         .live-data { color: #3498db; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .table-box {
             overflow-x: auto;
@@ -350,6 +371,8 @@
 
     .delivery-schedule {
         @include dashboard-card;
+        grid-column: span 4;
+        @include tablet { grid-column: span 1; }
         .delivery-list {
             display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem;
             .delivery-item {
