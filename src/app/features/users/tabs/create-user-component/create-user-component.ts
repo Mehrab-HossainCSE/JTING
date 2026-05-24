@@ -344,4 +344,26 @@ export class CreateUserComponent implements OnInit {
   getRoleName(roleId: string): string {
     return this.roles().find(r => r.id.toString() === roleId)?.name || '---';
   }
+
+  getInitials(fullName: string): string {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  getCircleClass(userName: string): string {
+    const hash = userName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const colorNum = (hash % 5) + 1;
+    return `c-${colorNum}`;
+  }
+
+  getRoleClass(roleName: string): string {
+    const role = roleName?.toLowerCase() || '';
+    if (role.includes('admin')) return 'admin';
+    if (role.includes('manager')) return 'manager';
+    if (role.includes('operator')) return 'operator';
+    if (role.includes('supervisor')) return 'supervisor';
+    return 'viewer';
+  }
 }

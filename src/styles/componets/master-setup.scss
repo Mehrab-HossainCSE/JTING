@@ -1,7 +1,9 @@
+@import '../abstracts/typography';
+
 .master-setup-container {
   background: #f4f7f6;
   min-height: calc(100vh - 70px);
-  font-family: 'Inter', sans-serif;
+  font-family: $font-primary;
 }
 
 .tabs-card {
@@ -56,6 +58,7 @@
   border-radius: 20px; // Slightly reduced radius
   border: 1px solid #eef2f5;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+  height: 100%;
   overflow: hidden;
 }
 
@@ -77,15 +80,32 @@
 
 .card-body {
   padding: 1.25rem 1.5rem;
-  .operations-tag {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #b2bec3;
-    letter-spacing: 1px;
-    text-align: right;
+  
+  .operations-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
     margin-bottom: 1.5rem;
-    border-bottom: 1px dashed #eef2f5;
-    padding-bottom: 6px;
+    color: #b2bec3;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    &:not(:empty)::before {
+      margin-right: 1rem;
+    }
+
+    &:not(:empty)::after {
+      margin-left: 1rem;
+    }
   }
 }
 
@@ -95,8 +115,10 @@
     display: block;
     font-size: 0.65rem;
     font-weight: 700;
-    color: #636e72;
+    color: #8395a7; // Lighter gray as seen in image
     margin-bottom: 8px;
+    text-transform: uppercase; // All caps labels
+    letter-spacing: 0.5px;
     .req {
       color: #ff7675;
       margin-left: 2px;
@@ -319,25 +341,82 @@
     font-size: 0.7rem;
     font-weight: 600;
   }
-  .status-badge {
+  .name-with-initials {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .initials-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      
+      &.c-1 { background: #e6f7ec; color: #00BB31; }
+      &.c-2 { background: #f0f7ff; color: #007aff; }
+      &.c-3 { background: #fff8f1; color: #ff9f43; }
+      &.c-4 { background: #f5f3ff; color: #7c3aed; }
+      &.c-5 { background: #fff1f2; color: #f43f5e; }
+    }
+    
+    .user-name-text {
+      font-weight: 700;
+      color: #2d3436;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+  }
+
+  .role-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #00BB31;
-    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 99px;
     font-size: 0.75rem;
-    &::before {
-      content: "";
+    font-weight: 600;
+    
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    &.admin { background: #f5f3ff; color: #7c3aed; }
+    &.manager { background: #e6f7ec; color: #00BB31; }
+    &.operator { background: #fff8eb; color: #d97706; }
+    &.supervisor { background: #ecfdf5; color: #059669; }
+    &.viewer { background: #f9fafb; color: #6b7280; }
+  }
+
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    
+    .dot {
       width: 6px;
       height: 6px;
-      background: #00BB31;
       border-radius: 50%;
     }
+    
+    &.active {
+      color: #00BB31;
+      .dot { background: #00BB31; }
+    }
     &.inactive {
-      color: #b2bec3;
-      &::before {
-        background: #b2bec3;
-      }
+      color: #8395a7;
+      .dot { background: #8395a7; }
+    }
+    &.suspended {
+      color: #ff7675;
+      .dot { background: #ff7675; }
     }
   }
 
@@ -356,8 +435,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
+    pointer-events: auto;
     transition: all 0.2s;
     justify-content: flex-end;
     padding-right: 1.5rem;
@@ -374,17 +453,19 @@
     border-radius: 6px;
     transition: all 0.2s;
 
+    &:hover {
+      transform: scale(1.1);
+    }
+
     &.edit-btn {
-      color: #8395a7;
+      color: #00BB31;
       &:hover {
-        color: #00BB31;
         background: #e6f7ec;
       }
     }
     &.delete-btn {
-      color: #8395a7;
+      color: #ff7675;
       &:hover {
-        color: #ff7675;
         background: #fff5f5;
       }
     }
@@ -423,7 +504,6 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #f9fafb;
     }
   }
   overflow-y: auto;
