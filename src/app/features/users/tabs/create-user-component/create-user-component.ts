@@ -11,6 +11,7 @@ import { UserManage } from '../../../../core/models/userManage/user.model';
 import { Department } from '../../../../core/models/setups/department/department';
 import { Role } from '../../../../core/models/role/role';
 import { StaticData } from '../../../../core/services/static-data';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-create-user-component',
@@ -26,6 +27,7 @@ export class CreateUserComponent implements OnInit {
   private storageService    = inject(StorageService);
   private fb                = inject(FormBuilder);
   private toastr            = inject(ToastrService);
+  private errorHandler      = inject(ErrorHandlerService);
 
   protected Math = Math;
 
@@ -148,7 +150,6 @@ export class CreateUserComponent implements OnInit {
     this.isLoading.set(true);
     this.userService.getAll().subscribe({
       next: (res) => {
-        debugger;
         if (res.success) this.userList.set(res.data);
         else this.toastr.error(res.message, 'Error');
         this.isLoading.set(false);
@@ -249,12 +250,11 @@ export class CreateUserComponent implements OnInit {
             this.resetForm();
             this.loadUsers();
           } else {
-            debugger;
             this.toastr.error(res.message, 'Error');
           }
         },
         error: (err) => {   
-            this.toastr.error(err.error.message, 'Error');
+            this.errorHandler.handleErrorWithToster(err);
         }
       });
 
@@ -287,14 +287,13 @@ export class CreateUserComponent implements OnInit {
           }
         },
         error: (err) => {   
-            this.toastr.error(err.error.message, 'Error');
+            this.errorHandler.handleErrorWithToster(err);
         }
       });
     }
   }
 
   editUser(user: UserManage): void {
-    debugger;
     if (!this.canUpdate()) {
       this.toastr.warning('You do not have permission to edit.', 'Warning');
       return;
@@ -316,7 +315,6 @@ export class CreateUserComponent implements OnInit {
   }
 
   deleteUser(user: UserManage): void {
-    debugger;
     if (!this.canDelete()) {
       this.toastr.warning('You do not have permission to delete.', 'Warning');
       return;
@@ -332,7 +330,7 @@ export class CreateUserComponent implements OnInit {
             this.toastr.error(res.message, 'Error');
           }
         },
-        error: (err) => this.toastr.error(err.error.message, 'Error')
+        error: (err) => this.errorHandler.handleErrorWithToster(err)
       });
     }
   }

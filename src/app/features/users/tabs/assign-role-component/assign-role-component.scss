@@ -19,7 +19,13 @@
 
     .user-selector-wrapper {
       width: 100%;
-      max-width: 300px;
+      max-width: 400px;
+      display: flex;
+      gap: 12px;
+
+      .premium-select, .btn-save {
+        flex: 1;
+      }
 
       .premium-select {
         width: 100%;
@@ -46,6 +52,29 @@
 
         &:hover {
           border-color: rgba($primary-green, 0.5);
+        }
+      }
+
+      .btn-save {
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 10px;
+        background-color: $primary-green;
+        color: $bg-white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: all $transition-fast;
+        
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba($primary-green, 0.3);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
       }
     }

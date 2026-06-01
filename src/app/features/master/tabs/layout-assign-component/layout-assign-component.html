@@ -1,0 +1,138 @@
+<div class="content-body">
+  <div class="grid-layout">
+
+    <!-- ── Left Card: Box Setup ──────────────────────────────────────────── -->
+    <div class="card form-card">
+      <div class="card-header">
+        <h3>Box Setup</h3>
+        <p>Select source box to allocate</p>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="sourceForm">
+          <div class="input-group">
+            <label>BLOCK<span class="req">*</span></label>
+            <select formControlName="blockId" class="custom-select" [class.input-error]="isInvalid('blockId', sourceForm)">
+              <option value="" disabled>Select Block</option>
+              <option *ngFor="let item of blocks()" [value]="item.id || item.blockId">{{ item.name || item.blockName }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('blockId', sourceForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>ARCH<span class="req">*</span></label>
+            <select formControlName="archId" class="custom-select" [class.input-error]="isInvalid('archId', sourceForm)">
+              <option value="" disabled>Select Arch</option>
+              <option *ngFor="let item of arches()" [value]="item.id || item.archId">{{ item.name || item.archName }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('archId', sourceForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>LINE<span class="req">*</span></label>
+            <select formControlName="lineId" class="custom-select" [class.input-error]="isInvalid('lineId', sourceForm)">
+              <option value="" disabled>Select Line</option>
+              <option *ngFor="let item of lines()" [value]="item.id || item.lineId">{{ item.name || item.lineName }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('lineId', sourceForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>BOX NAME<span class="req">*</span></label>
+            <select formControlName="boxId" class="custom-select" [class.input-error]="isInvalid('boxId', sourceForm)">
+              <option value="" disabled>Select box...</option>
+              <option *ngFor="let item of boxes()" [value]="item.id || item.boxId">{{ item.name || item.boxName }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('boxId', sourceForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group" *ngIf="isBoxAssigned()">
+            <label>ALLOCATED TO</label>
+            <input type="text" formControlName="allocatedTo" readonly placeholder="—" />
+            <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+              <button type="button" class="btn btn-reset-inline" (click)="resetBoxLayout()">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Right Card: Warehouse Layout ──────────────────────────────────── -->
+    <div class="card list-card">
+      <div class="card-header">
+        <h3>Warehouse Layout</h3>
+        <p>Select target warehouse position</p>
+      </div>
+
+      <div *ngIf="isLoading()" class="loading-state">Loading lists...</div>
+
+      <div class="card-body" *ngIf="!isLoading()">
+        <form [formGroup]="targetForm">
+          <div class="input-group">
+            <label>BLOCK<span class="req">*</span></label>
+            <select formControlName="blockId" class="custom-select" [class.input-error]="isInvalid('blockId', targetForm)">
+              <option value="" disabled>Select Block</option>
+              <option *ngFor="let item of targetBlocks" [value]="item">{{ item }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('blockId', targetForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>ARCH<span class="req">*</span></label>
+            <select formControlName="archId" class="custom-select" [class.input-error]="isInvalid('archId', targetForm)">
+              <option value="" disabled>Select arch...</option>
+              <option *ngFor="let item of targetArches" [value]="item">{{ item }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('archId', targetForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>LINE<span class="req">*</span></label>
+            <select formControlName="lineId" class="custom-select" [class.input-error]="isInvalid('lineId', targetForm)">
+              <option value="" disabled>Select line...</option>
+              <option *ngFor="let item of targetLines" [value]="item">{{ item }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('lineId', targetForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>BOX NAME<span class="req">*</span></label>
+            <select formControlName="boxId" class="custom-select" [class.input-error]="isInvalid('boxId', targetForm)">
+              <option value="" disabled>Select box...</option>
+              <option *ngFor="let item of targetBoxes" [value]="item">{{ item }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('boxId', targetForm)">This field is required.</span>
+          </div>
+
+          <div class="input-group">
+            <label>CONTROL NAME</label>
+            <input type="text" formControlName="controlName" placeholder="—" />
+          </div>
+        </form>
+      </div>
+
+      <div class="card-footer target-footer">
+        <button type="button" class="btn btn-preview" (click)="onPreview()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Preview
+        </button>
+        <button type="button" class="btn btn-save"
+                [disabled]="isLoading() || sourceForm.invalid || targetForm.invalid"
+                (click)="onSaveAllocation()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Save Allocation
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

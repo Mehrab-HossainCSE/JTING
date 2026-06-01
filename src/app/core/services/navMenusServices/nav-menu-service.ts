@@ -26,12 +26,10 @@ export class NavMenuService {
   }
 
   getNavMenusByRoleId(roleId: string): Observable<ApiResponse<NavMenu[]>> {
-    return this.http.get<ApiResponse<NavMenu[]>>(`${this.apiUrl}/roleId?roleId=${roleId}`);
+    return this.http.get<ApiResponse<NavMenu[]>>(`${this.apiUrl}/roleid/${roleId}`);
   }
 
-  create(menu: NavMenu): Observable<ApiResponse<NavMenu>> {
-    return this.http.post<ApiResponse<NavMenu>>(`${this.apiUrl}/navmenupermission`, menu);
+  create(roleId: string, menus: any[]): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/navmenupermission/${roleId}`, menus);
   }
 }
-
-

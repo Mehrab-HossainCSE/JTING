@@ -22,6 +22,7 @@ export const MASTER_ROUTES: Routes = [
       {path: 'box', loadComponent: () => import('./tabs/box-component/box-component').then(m => m.BoxComponent), data: { title: 'Box Setup', tabId: 17 } },
       {path: 'area', loadComponent: () => import('./tabs/area-component/area-component').then(m => m.AreaComponent), data: { title: 'Area Setup', tabId: 18 } },
       {path: 'driver', loadComponent: () => import('./tabs/driver-component/driver-component').then(m => m.DriverComponent), data: { title: 'Driver Setup', tabId: 19 } },
+      {path: 'layout-assign', loadComponent: () => import('./tabs/layout-assign-component/layout-assign-component').then(m => m.LayoutAssignComponent), data: { title: 'Layout Assign Setup', tabId: 20 } }
       
       ]
   }

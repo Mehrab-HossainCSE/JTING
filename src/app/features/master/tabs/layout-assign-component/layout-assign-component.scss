@@ -1,0 +1,16 @@
+@import "/styles/componets/master-setup.scss";
+
+// Override grid layout for equal width and height
+.grid-layout {
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+
+  .card {
+    display: flex;
+    flex-direction: column;
+
+    .card-body {
+      flex: 1;
+    }
+  }
+}

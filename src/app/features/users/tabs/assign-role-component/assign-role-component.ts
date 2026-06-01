@@ -1,7 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
+
+import { Role } from '../../../../core/models/role/role';
+import { RoleService } from '../../../../core/services/roleManageServices/role-service';
+import { NavMenuService } from '../../../../core/services/navMenusServices/nav-menu-service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-assign-role-component',
@@ -10,146 +16,139 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './assign-role-component.html',
   styleUrl: './assign-role-component.scss'
 })
-export class AssignRoleComponent {
-  selectedUser: string = '';
-  users: string[] = ['Admin', 'Manager', 'Store Keeper', 'Sales Executive'];
+export class AssignRoleComponent implements OnInit {
+  private roleService = inject(RoleService);
+  private navMenuService = inject(NavMenuService);
+  private errorHandler = inject(ErrorHandlerService);
+  private toastr = inject(ToastrService);
 
-  menuSections = [
-    {
-      title: 'Home',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'Quick Access', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Recent Activity', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Notifications', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'System Health', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Statistics', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    },
-    {
-      title: 'Settings',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'Category', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Sub-Category', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Product Name', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Brand', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Product Attribute', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Product Entry', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Attribute Value', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Vendor', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Priority', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Product', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Delivery Person', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Store Requisition Permission', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Product Bulk Update', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Courier Service', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    },
-    {
-      title: 'Inventory Tracking System',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'InvPrepareSeason', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'InvScanBarcode', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'InvFinalPost', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'InvReportView', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'InvAdjustment', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    },
-    {
-      title: 'Dashboard',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'Sales Overview', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Inventory Stats', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'User Performance', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Revenue Report', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Monthly Summary', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Order Status', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Customer Insights', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    },
-    {
-      title: 'Inventory',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'Reprint', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Purchase Receive By Style', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Purchase Receive By Barcode', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Purchase Receive', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Barcode Print', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Store Delivery', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Store Delivery Fashion', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Purchase Return', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Store Delivery By Style', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Damage and Lost', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'ECOM Receive', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Receive From Shop', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Barcode Print Product', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Requisition Approval', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    },
-    {
-      title: 'Promotion',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'Discount Promotion', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Price Change', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Price Change (Excel)', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Promotion Extend', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Promotion InActive', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    },
-    {
-      title: 'CRM',
-      isSelected: false,
-      allView: false,
-      allAdd: false,
-      allEdit: false,
-      allDelete: false,
-      isOpen: true,
-      items: [
-        { name: 'Customer Entry', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Gift Voucher Status Report', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Gift Voucher Generation', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Extend Gift Voucher Expiry Date', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Gift Voucher Delivery By Excel', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'Gift Voucher Delivery To Customer', isSelected: false, view: false, add: false, edit: false, delete: false },
-        { name: 'giftvoucher-reactive', isSelected: false, view: false, add: false, edit: false, delete: false }
-      ]
-    }
-  ];
+  selectedRole = signal<string>('');
+  roles = signal<Role[]>([]);
+  menuSections = signal<any[]>([]);
+
+  ngOnInit(): void {
+    this.roleService.getAll().subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          this.roles.set(response.data);
+        }
+      },
+      error: (error) => {
+        this.errorHandler.handleErrorWithToster(error);
+      }
+    });
+
+    this.loadMenuDistribution();
+  }
+
+  loadMenuDistribution(): void {
+    this.navMenuService.getChildrenMenuItems().subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          this.menuSections.set(response.data.map((section: any) => ({
+            id: section.id,
+            name: section.name,
+            displayName: section.displayName,
+            url: section.url,
+            navIcon: section.navIcon,
+            displayOrder: section.displayOrder,
+            visible: section.visible,
+            title: section.displayName,
+            isSelected: false,
+            allView: false,
+            allAdd: false,
+            allEdit: false,
+            allDelete: false,
+            isOpen: true,
+            items: section.children ? section.children.map((child: any) => ({
+              id: child.id,
+              originalName: child.name,
+              displayName: child.displayName,
+              controllerName: child.controllerName,
+              actionUrl: child.actionUrl,
+              url: child.url,
+              navIcon: child.navIcon,
+              displayOrder: child.displayOrder,
+              visible: child.visible,
+              moduleId: child.moduleId,
+              name: child.displayName,
+              isSelected: false,
+              view: child.canView || false,
+              add: child.canCreate || false,
+              edit: child.canUpdate || false,
+              delete: child.canDelete || false
+            })) : []
+          })));
+        }
+      },
+      error: (error) => {
+        this.errorHandler.handleErrorWithToster(error);
+      }
+    });
+  }
+
+  onRoleChange(roleId: string): void {
+    this.selectedRole.set(roleId);
+    if (!roleId) return;
+    
+    this.navMenuService.getNavMenusByRoleId(roleId).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          this.updateMenuPermissions(response.data);
+        }
+      },
+      error: (error) => {
+        this.errorHandler.handleErrorWithToster(error);
+      }
+    });
+  }
+
+  updateMenuPermissions(roleMenus: any[]): void {
+    const roleMenuMap = new Map<number, any>();
+    const flatten = (menus: any[]) => {
+      for (const m of menus) {
+        roleMenuMap.set(m.id, m);
+        if (m.children && m.children.length > 0) {
+          flatten(m.children);
+        }
+      }
+    };
+    flatten(roleMenus);
+
+    this.menuSections.update(sections => {
+      sections.forEach(section => {
+        let anyItemSelected = false;
+        
+        section.items.forEach((item: any) => {
+          const roleMenu = roleMenuMap.get(item.id);
+          if (roleMenu) {
+            item.view = roleMenu.canView || false;
+            item.add = roleMenu.canCreate || false;
+            item.edit = roleMenu.canUpdate || false;
+            item.delete = roleMenu.canDelete || false;
+            item.isSelected = item.view || item.add || item.edit || item.delete;
+          } else {
+            item.view = false;
+            item.add = false;
+            item.edit = false;
+            item.delete = false;
+            item.isSelected = false;
+          }
+          if (item.isSelected) anyItemSelected = true;
+        });
+        
+        section.isSelected = anyItemSelected;
+        
+        if (section.items.length > 0) {
+          section.allView = section.items.every((i: any) => i.view);
+          section.allAdd = section.items.every((i: any) => i.add);
+          section.allEdit = section.items.every((i: any) => i.edit);
+          section.allDelete = section.items.every((i: any) => i.delete);
+        }
+      });
+      return [...sections];
+    });
+  }
 
   onSectionToggle(section: any) {
     const isSelected = section.isSelected;
@@ -165,6 +164,8 @@ export class AssignRoleComponent {
       item.edit = isSelected;
       item.delete = isSelected;
     });
+    
+    this.menuSections.update(sections => [...sections]);
   }
 
   onPermissionToggle(section: any, permission: string) {
@@ -173,6 +174,8 @@ export class AssignRoleComponent {
     section.items.forEach((item: any) => {
       item[permission] = isSelected;
     });
+    
+    this.menuSections.update(sections => [...sections]);
   }
 
   onItemToggle(section: any, item: any) {
@@ -180,5 +183,51 @@ export class AssignRoleComponent {
     item.add = item.isSelected;
     item.edit = item.isSelected;
     item.delete = item.isSelected;
+    
+    this.menuSections.update(sections => [...sections]);
+  }
+
+  savePermissions(): void {
+    const roleId = this.selectedRole();
+    if (!roleId) {
+      this.toastr.warning('Please select a role first.', 'Warning');
+      return;
+    }
+
+    // Construct payload matching the expected nested NavMenu structure
+    const payload = this.menuSections().map(section => ({
+      id: section.id,
+      name: section.name,
+      displayName: section.displayName,
+      url: section.url,
+      navIcon: section.navIcon,
+      displayOrder: section.displayOrder,
+      visible: section.visible,
+      children: section.items.map((item: any) => ({
+        id: item.id,
+        name: item.originalName,
+        displayName: item.displayName,
+        controllerName: item.controllerName,
+        actionUrl: item.actionUrl,
+        url: item.url,
+        navIcon: item.navIcon,
+        displayOrder: item.displayOrder,
+        visible: item.visible,
+        moduleId: item.moduleId,
+        canView: item.view,
+        canCreate: item.add,
+        canUpdate: item.edit,
+        canDelete: item.delete
+      }))
+    }));
+
+    this.navMenuService.create(roleId, payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.toastr.success('Permissions saved successfully.', 'Success');
+        }
+      },
+      error: (error) => this.errorHandler.handleErrorWithToster(error)
+    });
   }
 }

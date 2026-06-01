@@ -643,3 +643,131 @@
     }
   }
 }
+
+
+// ── Add these rules to your existing layout-assign-component.scss ─────────
+
+// "OPERATIONS" divider tag inside card body
+.operations-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #b2bec3;
+  text-align: center;
+  margin-bottom: 1.25rem;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 38%;
+    height: 1px;
+    background: #f1f5f9;
+  }
+  &::before { left: 0; }
+  &::after  { right: 0; }
+}
+
+// Allocated To row: readonly input + inline Reset button
+.allocated-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  input {
+    flex: 1;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #2d3436;
+    cursor: default;
+
+    &:focus { outline: none; }
+  }
+}
+
+.btn-reset-inline {
+  height: 40px;
+  padding: 0 18px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+
+  &:hover { background: #dc2626; }
+}
+
+// Right card: input styling (inherits from .input-group but needs select + input)
+.list-card {
+  .card-body {
+    padding: 1.25rem 1.5rem;
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #e1e8ed;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      color: #2d3436;
+      transition: all 0.2s;
+      box-sizing: border-box;
+
+      &::placeholder { color: #b2bec3; }
+      &:focus {
+        outline: none;
+        border-color: #00BB31;
+        box-shadow: 0 0 0 4px rgba(0, 187, 49, 0.05);
+      }
+    }
+
+    select.custom-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23b2bec3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+    }
+  }
+}
+
+// Right-card footer: Preview + Save Allocation side by side
+.target-footer {
+  justify-content: flex-end !important;
+
+  .btn-preview {
+    background: white;
+    border: 1px solid #e1e8ed;
+    color: #636e72;
+    padding: 0 20px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex: unset !important;
+
+    &:hover { background: #f8fafc; }
+  }
+
+  .btn-save {
+    flex: unset !important;
+    padding: 0 24px;
+  }
+}
+

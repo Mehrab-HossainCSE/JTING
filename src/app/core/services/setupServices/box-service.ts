@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Box } from '../../models/setups/box/box';
 import { ApiResponse } from '../../models/ApiResponse.model';
+import { BossAssaign } from '../../models/setups/box/boss-assaign';
 
 @Injectable({
   providedIn: 'root',
@@ -31,5 +32,17 @@ export class BoxService {
 
   delete(id: string): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/SoftDelete/${id}`);
+  }
+
+  isAssignedBox(boxId: string): Observable<ApiResponse<Box>> {
+    return this.http.get<ApiResponse<Box>>(`${this.apiUrl}/IsAssignedBox/${boxId}`);
+  }
+
+  resetLayout(boxId: string): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.apiUrl}/ResetLayout`, { boxId });
+  }
+
+  assignLayout(payload: BossAssaign): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.apiUrl}/Assign`, payload);
   }
 }

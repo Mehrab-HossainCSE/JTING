@@ -3,16 +3,20 @@
     <h1 class="page-title">User Menu Distribution</h1>
     
     <div class="user-selector-wrapper">
-      <select id="userSelect" [(ngModel)]="selectedUser" class="form-control premium-select">
-        <option value="" disabled> Select a User </option>
-        <option *ngFor="let user of users" [value]="user">{{user}}</option>
+      <select id="roleSelect" [ngModel]="selectedRole()" (ngModelChange)="onRoleChange($event)" class="form-control premium-select">
+        <option value="" disabled> Select a Role </option>
+        <option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</option>
       </select>
+      
+      <button class="btn-save" (click)="savePermissions()" [disabled]="!selectedRole()">
+        Save
+      </button>
     </div>
   </div>
 
   <div class="menu-distribution-flex">
 
-    <div class="menu-card" *ngFor="let section of menuSections">
+    <div class="menu-card" *ngFor="let section of menuSections()">
       <div class="card-header">
         <div class="header-left">
           <label class="checkbox-container main-header">
