@@ -24,7 +24,6 @@ export class MenuService {
   }
 
   loadMenus(userName: string) {
-    debugger;
   this._loading.set(true);
 
   this.navMenuService.getNavMenusByUserName(userName)
@@ -33,7 +32,6 @@ export class MenuService {
     )
     .subscribe({
       next: (res) => {
-        debugger;
         if (res.success && res.data) {
           const sortedMenus = [...res.data].sort((a, b) => a.displayOrder - b.displayOrder);
 
