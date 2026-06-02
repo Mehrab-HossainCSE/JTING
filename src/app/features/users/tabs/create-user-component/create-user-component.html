@@ -17,7 +17,7 @@
             type="text"
             formControlName="userName"
             placeholder="e.g. JANDERSON"
-            [class.error]="isInvalid('userName')"
+            [class.is-invalid]="isInvalid('userName')"
           />
           <small class="error-message" *ngIf="isInvalid('userName')">
             {{ getError('userName') }}
@@ -30,7 +30,7 @@
             type="password"
             formControlName="password"
             placeholder="••••••••"
-            [class.error]="isInvalid('password')"
+            [class.is-invalid]="isInvalid('password')"
           />
           <small class="error-message" *ngIf="isInvalid('password')">
             {{ getError('password') }}
@@ -43,7 +43,7 @@
             type="text"
             formControlName="fullName"
             placeholder="Enter full name"
-            [class.error]="isInvalid('fullName')"
+            [class.is-invalid]="isInvalid('fullName')"
           />
           <small class="error-message" *ngIf="isInvalid('fullName')">
             {{ getError('fullName') }}
@@ -56,7 +56,7 @@
             type="email"
             formControlName="email"
             placeholder="user@jti.com"
-            [class.error]="isInvalid('email')"
+            [class.is-invalid]="isInvalid('email')"
           />
           <small class="error-message" *ngIf="isInvalid('email')">
             {{ getError('email') }}
@@ -68,7 +68,7 @@
           <select
             formControlName="departmentId"
             class="custom-select"
-            [class.error]="isInvalid('departmentId')"
+            [class.is-invalid]="isInvalid('departmentId')"
           >
             <option value="" disabled>-- Select Department --</option>
             @for (dept of filteredDepartments(); track dept.id) {
@@ -85,7 +85,7 @@
           <select
             formControlName="roleName"
             class="custom-select"
-            [class.error]="isInvalid('roleName')"
+            [class.is-invalid]="isInvalid('roleName')"
           >
             <option value="" disabled>-- Select Role --</option>
             @for (role of roles(); track role.id) {

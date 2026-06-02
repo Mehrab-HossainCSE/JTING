@@ -2,6 +2,7 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 
 // Note: Adjust paths if your exact service location differs
 import { BlockService } from '../../../../core/services/setupServices/block-service';
@@ -17,11 +18,13 @@ import { BossAssaign } from '../../../../core/models/setups/box/boss-assaign';
   templateUrl: './layout-assign-component.html',
   styleUrl: './layout-assign-component.scss',
 })
+
 export class LayoutAssignComponent implements OnInit {
   private blockService = inject(BlockService);
   private archService  = inject(ArchService);
   private lineService  = inject(LineService);
   private boxService   = inject(BoxService);
+  
   private fb           = inject(FormBuilder);
   private toastr       = inject(ToastrService);
   private errorHandler = inject(ErrorHandlerService);
@@ -34,13 +37,11 @@ export class LayoutAssignComponent implements OnInit {
   lines  = signal<any[]>([]);
   boxes  = signal<any[]>([]);
 
-  // Hardcoded target values for the right panel
   targetBlocks = ['FG1', 'FG2', 'FG3', 'N1', 'N2', 'N3'];
   targetArches = Array.from({ length: 20 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   targetLines  = Array.from({ length: 6 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   targetBoxes  = Array.from({ length: 11 }, (_, i) => (i + 1).toString().padStart(2, '0'));
 
-  // Left panel — source box selection
   sourceForm: FormGroup = this.fb.group({
     blockId:     ['', Validators.required],
     archId:      ['', Validators.required],
@@ -49,7 +50,6 @@ export class LayoutAssignComponent implements OnInit {
     allocatedTo: [{ value: '', disabled: true }],
   });
 
-  // Right panel — target warehouse position
   targetForm: FormGroup = this.fb.group({
     blockId:     ['', Validators.required],
     archId:      ['', Validators.required],
@@ -60,6 +60,9 @@ export class LayoutAssignComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDropdownData();
+    this.watchSourceBlockId();
+    this.watchSourceArchId();
+    this.watchSourceLineId();
     this.watchSourceBoxId();
     this.watchTargetFormForControlName();
   }
@@ -70,26 +73,73 @@ export class LayoutAssignComponent implements OnInit {
     this.blockService.getAll().subscribe({
       next: (res: any) => { if (res.success) this.blocks.set(res.data); },
       error: () => this.toastr.error('Failed to load blocks', 'Error'),
-    });
-
-    this.archService.getAll().subscribe({
-      next: (res: any) => { if (res.success) this.arches.set(res.data); },
-      error: () => this.toastr.error('Failed to load arches', 'Error'),
-    });
-
-    this.lineService.getAll().subscribe({
-      next: (res: any) => { if (res.success) this.lines.set(res.data); },
-      error: () => this.toastr.error('Failed to load lines', 'Error'),
-    });
-
-    this.boxService.getAll().subscribe({
-      next: (res: any) => { if (res.success) this.boxes.set(res.data); },
-      error: () => this.toastr.error('Failed to load boxes', 'Error'),
       complete: () => this.isLoading.set(false),
     });
   }
 
-  /** Fetch assigned layout when a source box is selected */
+  private watchSourceBlockId(): void {
+    this.sourceForm.get('blockId')?.valueChanges.subscribe((blockId) => {
+      // Reset dependent fields and data arrays down the chain
+      this.sourceForm.get('archId')?.setValue('', { emitEvent: false });
+      this.sourceForm.get('lineId')?.setValue('', { emitEvent: false });
+      this.sourceForm.get('boxId')?.setValue('', { emitEvent: false });
+      this.sourceForm.get('allocatedTo')?.setValue('', { emitEvent: false });
+      this.arches.set([]);
+      this.lines.set([]);
+      this.boxes.set([]);
+      this.isBoxAssigned.set(false);
+
+      if (blockId) {
+        this.isLoading.set(true);
+        this.archService.getByBlockId(blockId).subscribe({
+          next: (res: any) => { if (res.success) this.arches.set(res.data); },
+          error: () => this.toastr.error('Failed to load arches', 'Error'),
+          complete: () => this.isLoading.set(false),
+        });
+      }
+    });
+  }
+
+  private watchSourceArchId(): void {
+    this.sourceForm.get('archId')?.valueChanges.subscribe((archId) => {
+      // Reset dependent fields and data arrays down the chain
+      this.sourceForm.get('lineId')?.setValue('', { emitEvent: false });
+      this.sourceForm.get('boxId')?.setValue('', { emitEvent: false });
+      this.sourceForm.get('allocatedTo')?.setValue('', { emitEvent: false });
+      this.lines.set([]);
+      this.boxes.set([]);
+      this.isBoxAssigned.set(false);
+
+      if (archId) {
+        this.isLoading.set(true);
+        this.lineService.getByArchId(archId).subscribe({
+          next: (res: any) => { if (res.success) this.lines.set(res.data); },
+          error: () => this.toastr.error('Failed to load lines', 'Error'),
+          complete: () => this.isLoading.set(false),
+        });
+      }
+    });
+  }
+
+  private watchSourceLineId(): void {
+    this.sourceForm.get('lineId')?.valueChanges.subscribe((lineId) => {
+      // Reset dependent fields and data arrays
+      this.sourceForm.get('boxId')?.setValue('', { emitEvent: false });
+      this.sourceForm.get('allocatedTo')?.setValue('', { emitEvent: false });
+      this.boxes.set([]);
+      this.isBoxAssigned.set(false);
+
+      if (lineId) {
+        this.isLoading.set(true);
+        this.boxService.getByLineId(lineId).subscribe({
+          next: (res: any) => { if (res.success) this.boxes.set(res.data); },
+          error: () => this.toastr.error('Failed to load boxes', 'Error'),
+          complete: () => this.isLoading.set(false),
+        });
+      }
+    });
+  }
+
   private watchSourceBoxId(): void {
     this.sourceForm.get('boxId')?.valueChanges.subscribe((boxId) => {
       if (boxId) {
@@ -115,7 +165,6 @@ export class LayoutAssignComponent implements OnInit {
     });
   }
 
-  /** Auto-generate the "Control Name" display value from target selections */
   private watchTargetFormForControlName(): void {
     this.targetForm.valueChanges.subscribe(() => {
       const { blockId, archId, lineId, boxId } = this.targetForm.getRawValue();
@@ -159,7 +208,6 @@ export class LayoutAssignComponent implements OnInit {
   }
 
   onPreview(): void {
-    // Trigger preview logic — emit event or open modal as needed
     this.toastr.info('Preview not yet implemented', 'Preview');
   }
 
@@ -182,6 +230,35 @@ export class LayoutAssignComponent implements OnInit {
       controlName: target.controlName
     };
 
+    this.boxService.checkValidControl(payload.controlName).subscribe({
+      next: (res) => {
+        if (res.success) {
+          if (res.data === false) {
+            Swal.fire({
+              title: 'Not Found',
+              text: `"${payload.controlName}" is not found. Are you sure you want to save the Controlname?`,
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, save it!'
+            }).then((result: SweetAlertResult) => {
+              if (result.isConfirmed) {
+                this.executeSaveAllocation(payload);
+              }
+            });
+          } else {
+            this.executeSaveAllocation(payload);
+          }
+        } else {
+          this.toastr.error(res.message || 'Error validating control name', 'Error');
+        }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err)
+    });
+  }
+
+  private executeSaveAllocation(payload: BossAssaign): void {
     this.boxService.assignLayout(payload).subscribe({
       next: (res) => {
         if (res.success) {

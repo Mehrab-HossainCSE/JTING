@@ -29,8 +29,8 @@
               <input type="text"
                      placeholder="e.g. 01"
                      formControlName="archId"
-                     [class.input-error]="isInvalid('archId')" />
-              <span class="field-error" *ngIf="isInvalid('archId')">{{ getError('archId') }}</span>
+                     [class.is-invalid]="isInvalid('archId')" />
+              <span class="error-message" *ngIf="isInvalid('archId')">{{ getError('archId') }}</span>
             </div>
 
             <div class="input-group">
@@ -38,20 +38,21 @@
               <input type="text"
                      placeholder="e.g. Arch 1"
                      formControlName="archName"
-                     [class.input-error]="isInvalid('archName')" />
-              <span class="field-error" *ngIf="isInvalid('archName')">{{ getError('archName') }}</span>
+                     [class.is-invalid]="isInvalid('archName')" />
+              <span class="error-message" *ngIf="isInvalid('archName')">{{ getError('archName') }}</span>
             </div>
 
             <div class="input-group">
               <label>BLOCK ID<span class="req">*</span></label>
               <select formControlName="blockId"
-                      [class.input-error]="isInvalid('blockId')">
+                      class="custom-select"
+                      [class.is-invalid]="isInvalid('blockId')">
                 <option value="" disabled selected>Select Block</option>
                 <option *ngFor="let block of blockList()" [value]="block.blockId">
                   {{ block.blockName }} ({{ block.blockId }})
                 </option>
               </select>
-              <span class="field-error" *ngIf="isInvalid('blockId')">{{ getError('blockId') }}</span>
+              <span class="error-message" *ngIf="isInvalid('blockId')">{{ getError('blockId') }}</span>
             </div>
 
             <div class="status-box">

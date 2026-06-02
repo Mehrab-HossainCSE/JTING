@@ -28,8 +28,8 @@
               <input type="text"
                      placeholder="e.g. Marlboro"
                      formControlName="brandName"
-                     [class.input-error]="isInvalid('brandName')" />
-              <span class="field-error" *ngIf="isInvalid('brandName')">{{ getError('brandName') }}</span>
+                     [class.is-invalid]="isInvalid('brandName')" />
+              <span class="error-message" *ngIf="isInvalid('brandName')">{{ getError('brandName') }}</span>
             </div>
           </form>
         </div>

@@ -74,11 +74,11 @@ export class SidebarComponent {
         return '/dashboard';
       case 'REPORT':
         return '/report';
-      case 'RECEIVE':
+      case 'RECEIVE_MODULE':
         return '/receive';
-      case 'PICKING':
+      case 'PICKING_MODULE':
         return '/picking';
-      case 'DELIVERY':
+      case 'DELIVERY_MODULE':
         return '/delivery';
       case 'HELP':
         return '/help';

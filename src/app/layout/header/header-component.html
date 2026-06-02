@@ -24,11 +24,11 @@
     <div class="user-profile-dropdown" [class.active]="isProfileDropdownOpen">
       <div class="user-profile" (click)="toggleProfileDropdown()">
         <div class="user-avatar">
-          JA
+          {{ userInitials() }}
         </div>
         <div class="user-info">
-          <span class="name">James Admin</span>
-          <span class="role">Administrator</span>
+          <span class="name">{{ userName() }}</span>
+          <span class="role">{{ userRole() }}</span>
         </div>
         <i class="bi bi-chevron-down ms-2 toggle-icon"></i>
       </div>
@@ -36,10 +36,10 @@
       <!-- Dropdown Menu -->
       <div class="dropdown-menu-custom" *ngIf="isProfileDropdownOpen">
         <div class="dropdown-header">
-          <div class="user-avatar large">JA</div>
+          <div class="user-avatar large">{{ userInitials() }}</div>
           <div class="user-details">
-            <span class="full-name">James Admin</span>
-            <span class="email">james.admin@jti.com</span>
+            <span class="full-name">{{ userName() }}</span>
+            <span class="email">{{ userEmail() }}</span>
           </div>
         </div>
         

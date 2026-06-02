@@ -29,8 +29,8 @@
               <input type="text"
                      placeholder="e.g. 01"
                      formControlName="blockId"
-                     [class.input-error]="isInvalid('blockId')" />
-              <span class="field-error" *ngIf="isInvalid('blockId')">{{ getError('blockId') }}</span>
+                     [class.is-invalid]="isInvalid('blockId')" />
+              <span class="error-message" *ngIf="isInvalid('blockId')">{{ getError('blockId') }}</span>
             </div>
 
             <div class="input-group">
@@ -38,8 +38,8 @@
               <input type="text"
                      placeholder="e.g. FG1"
                      formControlName="blockName"
-                     [class.input-error]="isInvalid('blockName')" />
-              <span class="field-error" *ngIf="isInvalid('blockName')">{{ getError('blockName') }}</span>
+                     [class.is-invalid]="isInvalid('blockName')" />
+              <span class="error-message" *ngIf="isInvalid('blockName')">{{ getError('blockName') }}</span>
             </div>
 
             <div class="input-group">
@@ -47,8 +47,8 @@
               <input type="text"
                      placeholder="e.g. BDGTNG01"
                      formControlName="parentBranch"
-                     [class.input-error]="isInvalid('parentBranch')" />
-              <span class="field-error" *ngIf="isInvalid('parentBranch')">{{ getError('parentBranch') }}</span>
+                     [class.is-invalid]="isInvalid('parentBranch')" />
+              <span class="error-message" *ngIf="isInvalid('parentBranch')">{{ getError('parentBranch') }}</span>
             </div>
 
             <div class="status-box">

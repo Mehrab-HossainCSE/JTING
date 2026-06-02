@@ -47,11 +47,11 @@
                 type="text"
                 placeholder="e.g. Dhaka"
                 formControlName="destinationName"
-                [class.input-error]="isInvalid('destinationName')"
+                [class.is-invalid]="isInvalid('destinationName')"
               />
 
               <span
-                class="field-error"
+                class="error-message"
                 *ngIf="isInvalid('destinationName')"
               >
                 {{ getError('destinationName') }}

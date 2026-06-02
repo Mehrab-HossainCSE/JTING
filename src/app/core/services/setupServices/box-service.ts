@@ -22,6 +22,10 @@ export class BoxService {
     return this.http.get<ApiResponse<Box>>(`${this.apiUrl}/GetById/${id}`);
   }
 
+  getByLineId(lineId: string): Observable<ApiResponse<Box[]>> {
+    return this.http.get<ApiResponse<Box[]>>(`${this.apiUrl}/GetByLineId/${lineId}`);
+  }
+
   create(box: Partial<Box>): Observable<ApiResponse<Box>> {
     return this.http.post<ApiResponse<Box>>(`${this.apiUrl}/Create`, box);
   }
@@ -40,6 +44,10 @@ export class BoxService {
 
   resetLayout(boxId: string): Observable<ApiResponse<void>> {
     return this.http.put<ApiResponse<void>>(`${this.apiUrl}/ResetLayout`, { boxId });
+  }
+
+  checkValidControl(controlName: string): Observable<ApiResponse<boolean>> {
+    return this.http.get<ApiResponse<boolean>>(`${this.apiUrl}/CheckValidControl/${controlName}`);
   }
 
   assignLayout(payload: BossAssaign): Observable<ApiResponse<void>> {

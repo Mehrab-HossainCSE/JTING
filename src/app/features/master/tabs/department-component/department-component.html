@@ -31,10 +31,10 @@
                 type="text"
                 placeholder="e.g. HR"
                 formControlName="name"
-                [class.input-error]="isInvalid('name')"
+                [class.is-invalid]="isInvalid('name')"
               />
 
-              <span class="field-error" *ngIf="isInvalid('name')">
+              <span class="error-message" *ngIf="isInvalid('name')">
                 {{ getError('name') }}
               </span>
             </div>

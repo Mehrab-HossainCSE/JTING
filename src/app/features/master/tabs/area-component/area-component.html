@@ -28,8 +28,8 @@
               <input type="text"
                      placeholder="e.g. Storages Area"
                      formControlName="areaName"
-                     [class.input-error]="isInvalid('areaName')" />
-              <span class="field-error" *ngIf="isInvalid('areaName')">{{ getError('areaName') }}</span>
+                     [class.is-invalid]="isInvalid('areaName')" />
+              <span class="error-message" *ngIf="isInvalid('areaName')">{{ getError('areaName') }}</span>
             </div>
           </form>
         </div>
