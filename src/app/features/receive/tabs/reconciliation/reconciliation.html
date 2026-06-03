@@ -1,1 +1,215 @@
-<p>reconciliation works!</p>
+<div class="content-body">
+
+  <div *ngIf="!canView()" class="no-permission-card">
+    <div class="card">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view Reconciliation.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="canView()">
+    <div class="card main-reconciliation-card">
+      
+      <!-- ── Sub Navigation Tabs ── -->
+      <div class="card-header reconciliation-header">
+        <div class="sub-tabs-bar">
+          <button *ngFor="let tab of subTabs"
+                  class="sub-tab-btn"
+                  [class.active]="activeSubTab() === tab"
+                  (click)="setSubTab(tab)">
+            {{ tab }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        
+        <!-- ── Parameters Form Row ── -->
+        <div class="upload-params-panel">
+          
+          <!-- File Input Custom Widget -->
+          <div class="param-item file-upload-item">
+            <label>FILE</label>
+            <div class="custom-file-wrapper">
+              <input type="file" id="file-input" (change)="onFileSelected($event)" style="display: none;" />
+              <label for="file-input" class="btn btn-browse-file">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                </svg>
+                Browse File
+              </label>
+              <span class="file-name-text">{{ fileName() || 'No file selected' }}</span>
+            </div>
+          </div>
+
+          <!-- Unit Dropdown -->
+          <div class="param-item">
+            <label>UNIT</label>
+            <select class="custom-select" 
+                    [ngModel]="selectedUnit()" 
+                    (ngModelChange)="selectedUnit.set($event)">
+              <option value="CS">CS</option>
+              <option value="Carton">Carton</option>
+              <option value="Pallet">Pallet</option>
+            </select>
+          </div>
+
+          <!-- Is Shift Wise Checkbox -->
+          <div class="param-item checkbox-param-item">
+            <label class="all-select-label">
+              <input type="checkbox" 
+                     [ngModel]="isShiftWise()" 
+                     (ngModelChange)="isShiftWise.set($event)" />
+              <span>Is Shift Wise</span>
+            </label>
+          </div>
+
+          <!-- From Date -->
+          <div class="param-item">
+            <label>FROM DATE</label>
+            <input type="date" 
+                   [ngModel]="fromDate()" 
+                   (ngModelChange)="fromDate.set($event)" 
+                   class="form-input-date" />
+          </div>
+
+          <!-- To Date -->
+          <div class="param-item">
+            <label>TO DATE</label>
+            <input type="date" 
+                   [ngModel]="toDate()" 
+                   (ngModelChange)="toDate.set($event)" 
+                   class="form-input-date" />
+          </div>
+
+          <!-- Form Buttons -->
+          <div class="param-item form-buttons-item">
+            <button class="btn btn-save upload-btn" (click)="uploadFile()" [disabled]="isLoading()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-1">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Upload
+            </button>
+            
+            <button class="btn btn-reset clear-btn" (click)="clearData()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Clear Data
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ── Reconciliation Results Table ────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="card results-card mt-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3>Reconciliation Results</h3>
+        <div class="badge count-badge" *ngIf="results().length > 0">
+          {{ results().length }} discrepancies
+        </div>
+      </div>
+
+      <div class="table-outer results-table-outer">
+        <div *ngIf="isLoading()" class="loading-state py-5 text-center">
+          <div class="spinner-border text-success" role="status"></div>
+          <p class="mt-2 text-muted">Processing file, please wait...</p>
+        </div>
+
+        <table class="premium-table" *ngIf="!isLoading()">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>SKU DESC.</th>
+              <th>BATCH NO</th>
+              <th>DATE</th>
+              <th>SAP QTY (A)</th>
+              <th>WMS STOCK (B)</th>
+              <th>PHYSICAL QTY (C)</th>
+              <th>B - A</th>
+              <th>B - C</th>
+              <th>A - C</th>
+              <th>REMARKS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of results()" class="table-row">
+              <td><span class="id-pill">{{ item.sku }}</span></td>
+              <td>{{ item.skuDesc }}</td>
+              <td><span class="batch-badge">{{ item.batchNo }}</span></td>
+              <td>{{ item.date }}</td>
+              <td><strong>{{ item.sapQty }}</strong></td>
+              <td><strong>{{ item.wmsStock }}</strong></td>
+              <td><strong>{{ item.physicalQty }}</strong></td>
+              <td>
+                <span class="diff-value" [class.negative]="item.diffBA < 0" [class.positive]="item.diffBA > 0">
+                  {{ item.diffBA > 0 ? '+' : '' }}{{ item.diffBA }}
+                </span>
+              </td>
+              <td>
+                <span class="diff-value" [class.negative]="item.diffBC < 0" [class.positive]="item.diffBC > 0">
+                  {{ item.diffBC > 0 ? '+' : '' }}{{ item.diffBC }}
+                </span>
+              </td>
+              <td>
+                <span class="diff-value" [class.negative]="item.diffAC < 0" [class.positive]="item.diffAC > 0">
+                  {{ item.diffAC > 0 ? '+' : '' }}{{ item.diffAC }}
+                </span>
+              </td>
+              <td class="remarks-cell">
+                <span class="remarks-text" [title]="item.remarks">{{ item.remarks }}</span>
+              </td>
+            </tr>
+            <tr *ngIf="results().length === 0">
+              <td colspan="11" class="empty-row text-center py-5" style="color: #b2bec3;">
+                Upload a reconciliation file to view results.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Footer actions: Save & Print ── -->
+      <div class="card-footer reconciliation-footer d-flex align-items-center justify-content-between flex-wrap gap-3" *ngIf="results().length > 0">
+        
+        <div class="receive-no-input-wrapper d-flex align-items-center gap-2">
+          <label style="font-size: 0.7rem; font-weight: 700; color: #8395a7;">CURRENT RECEIVENO</label>
+          <input type="text" 
+                 [ngModel]="receiveNo()" 
+                 (ngModelChange)="receiveNo.set($event)" 
+                 class="receive-no-input" />
+        </div>
+
+        <div class="footer-buttons-group d-flex gap-2">
+          <button class="btn btn-reset btn-print" (click)="printResults()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Print
+          </button>
+          
+          <button class="btn btn-save btn-save-data" (click)="saveData()" [disabled]="!canCreate()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
