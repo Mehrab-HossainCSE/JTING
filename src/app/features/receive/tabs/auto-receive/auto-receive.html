@@ -1,1 +1,127 @@
-<p>auto-receive works!</p>
+<div class="auto-receive-container">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="page-title">Auto Product Receive (SKU)</span>
+    <span class="operations-link">OPERATIONS</span>
+  </div>
+
+  <!-- Barcode Row -->
+  <div class="barcode-card">
+    <div class="barcode-row">
+      <span class="barcode-label">Barcode</span>
+      <div class="barcode-input-wrapper">
+        <svg class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+        </svg>
+        <input
+          type="text"
+          class="barcode-input"
+          placeholder="Scan or enter barcode, press Enter..."
+          [(ngModel)]="barcodeInput"
+          (keyup.enter)="onBarcodeEnter()"
+        />
+      </div>
+      <button class="btn-confirm" (click)="onConfirm()">Confirm</button>
+      <button class="btn-clear" (click)="onClear()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- Left Column -->
+    <div class="left-col">
+
+      <!-- Summary Card -->
+      <div class="card summary-card">
+        <div class="card-header-sm">Summary</div>
+        <div class="summary-table-wrapper">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>SKU CODE</th>
+                <th>SKU NAME</th>
+                <th>QTY</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="summaryItems.length === 0">
+                <td colspan="3" class="empty-state">No records yet — scan a barcode to begin.</td>
+              </tr>
+              <tr *ngFor="let item of summaryItems">
+                <td>{{ item.skuCode }}</td>
+                <td>{{ item.skuName }}</td>
+                <td>{{ item.qty }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notes-wrapper">
+          <textarea
+            class="notes-input"
+            placeholder="Notes..."
+            [(ngModel)]="notes"
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-col">
+
+      <!-- Carton Counter Card -->
+      <div class="card counter-card">
+        <div class="counter-inner">
+          <div class="counter-box">
+            <span class="counter-number">{{ totalCartons }}</span>
+          </div>
+          <div class="counter-label">TOTAL CARTONS</div>
+          <div class="counter-footer">
+            <span>Scanned entries: <strong>{{ scannedEntries }}</strong></span>
+            <span class="sku-count">{{ scannedEntries }} SKU(s)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Batch Details -->
+  <div class="card batch-card">
+    <div class="card-header-sm batch-header">Batch Details</div>
+    <div class="batch-table-wrapper">
+      <table class="batch-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>BATCH NO</th>
+            <th>SKU NAME</th>
+            <th>LOCATION</th>
+            <th>PALLET NO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="batchItems.length === 0">
+            <td colspan="5" class="empty-state">No batch records yet.</td>
+          </tr>
+          <tr *ngFor="let item of batchItems; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.batchNo }}</td>
+            <td>{{ item.skuName }}</td>
+            <td>{{ item.location }}</td>
+            <td>{{ item.palletNo }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
