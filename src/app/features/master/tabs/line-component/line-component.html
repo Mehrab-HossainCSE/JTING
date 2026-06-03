@@ -26,57 +26,57 @@
             
             <div class="input-group">
               <label>BLOCK<span class="req">*</span></label>
-              <select class="custom-select" formControlName="blockId" [class.input-error]="isInvalid('blockId')" (change)="onBlockChange($any($event.target).value)">
+              <select class="custom-select" formControlName="blockId" [class.is-invalid]="isInvalid('blockId')" (change)="onBlockChange($any($event.target).value)">
                 <option value="" disabled>Select a block...</option>
                 <option *ngFor="let b of blockList()" [value]="b.blockId">{{ b.blockName }}</option>
               </select>
-              <span class="field-error" *ngIf="isInvalid('blockId')">{{ getError('blockId') }}</span>
+              <span class="error-message" *ngIf="isInvalid('blockId')">{{ getError('blockId') }}</span>
             </div>
 
             <div class="input-group">
               <label>ARCH<span class="req">*</span></label>
-              <select class="custom-select" formControlName="archId" [class.input-error]="isInvalid('archId')">
+              <select class="custom-select" formControlName="archId" [class.is-invalid]="isInvalid('archId')">
                 <option value="" disabled>Select an arch...</option>
                 <option *ngFor="let a of archList()" [value]="a.archId">{{ a.archName }}</option>
               </select>
-              <span class="field-error" *ngIf="isInvalid('archId')">{{ getError('archId') }}</span>
+              <span class="error-message" *ngIf="isInvalid('archId')">{{ getError('archId') }}</span>
             </div>
 
             <div class="input-group">
               <label>SKU<span class="req">*</span></label>
-              <select class="custom-select" formControlName="skucode" [class.input-error]="isInvalid('skucode')">
+              <select class="custom-select" formControlName="skucode" [class.is-invalid]="isInvalid('skucode')">
                 <option value="" disabled>Select a SKU...</option>
                 <!-- Adjust `s.skucode` if your SKU model uses a different property name like `s.skuId` -->
                 <option *ngFor="let s of skuList()" [value]="s.skucode">{{ s.skucode }}</option> 
               </select>
-              <span class="field-error" *ngIf="isInvalid('skucode')">{{ getError('skucode') }}</span>
+              <span class="error-message" *ngIf="isInvalid('skucode')">{{ getError('skucode') }}</span>
             </div>
 
             <div class="input-group">
               <label>AREA<span class="req">*</span></label>
-              <select class="custom-select" formControlName="areaId" [class.input-error]="isInvalid('areaId')">
+              <select class="custom-select" formControlName="areaId" [class.is-invalid]="isInvalid('areaId')">
                 <option value="" disabled>Select an area...</option>
                 <option *ngFor="let a of areaList()" [value]="a.id">{{ a.areaName }}</option>
               </select>
-              <span class="field-error" *ngIf="isInvalid('areaId')">{{ getError('areaId') }}</span>
+              <span class="error-message" *ngIf="isInvalid('areaId')">{{ getError('areaId') }}</span>
             </div>
 
             <div class="input-group">
               <label>LINE CODE<span class="req">*</span></label>
-              <input type="text" placeholder="e.g. FG-1-ARCH-1-LINE-3" formControlName="lineCode" [class.input-error]="isInvalid('lineCode')" />
-              <span class="field-error" *ngIf="isInvalid('lineCode')">{{ getError('lineCode') }}</span>
+              <input type="text" placeholder="e.g. FG-1-ARCH-1-LINE-3" formControlName="lineCode" [class.is-invalid]="isInvalid('lineCode')" />
+              <span class="error-message" *ngIf="isInvalid('lineCode')">{{ getError('lineCode') }}</span>
             </div>
 
             <div class="input-group">
               <label>LINE SERIAL<span class="req">*</span></label>
-              <input type="text" placeholder="e.g. 3" formControlName="serialNo" [class.input-error]="isInvalid('serialNo')" />
-              <span class="field-error" *ngIf="isInvalid('serialNo')">{{ getError('serialNo') }}</span>
+              <input type="text" placeholder="e.g. 3" formControlName="serialNo" [class.is-invalid]="isInvalid('serialNo')" />
+              <span class="error-message" *ngIf="isInvalid('serialNo')">{{ getError('serialNo') }}</span>
             </div>
 
             <div class="input-group">
               <label>LINE NAME<span class="req">*</span></label>
-              <input type="text" placeholder="e.g. L3" formControlName="lineName" [class.input-error]="isInvalid('lineName')" />
-              <span class="field-error" *ngIf="isInvalid('lineName')">{{ getError('lineName') }}</span>
+              <input type="text" placeholder="e.g. L3" formControlName="lineName" [class.is-invalid]="isInvalid('lineName')" />
+              <span class="error-message" *ngIf="isInvalid('lineName')">{{ getError('lineName') }}</span>
             </div>
 
             <div class="status-box">
@@ -181,7 +181,7 @@
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
                   </button>
-                  <button *ngIf="canDelete()" class="action-btn delete-btn" title="Delete"
+                  <!-- <button *ngIf="canDelete()" class="action-btn delete-btn" title="Delete"
                           (click)="deleteLine(item.lineId)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2">
@@ -190,7 +190,7 @@
                       <line x1="10" y1="11" x2="10" y2="17"/>
                       <line x1="14" y1="11" x2="14" y2="17"/>
                     </svg>
-                  </button>
+                  </button> -->
                 </div>
               </td>
             </tr>
