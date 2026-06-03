@@ -43,7 +43,7 @@ export const routes: Routes = [
       },
       { 
         path: 'receive', 
-        loadComponent: () => import('./features/receive/receive-module.component').then(m => m.ReceiveModuleComponent),
+        loadChildren: () => import('./features/receive/receive-route').then(m => m.RECEIVE_ROUTES),
         data: { title: 'Receive Module' }
       },
       { 

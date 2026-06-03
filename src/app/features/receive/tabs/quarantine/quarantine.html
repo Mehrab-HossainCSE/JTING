@@ -1,0 +1,276 @@
+<div class="content-body">
+
+  <div *ngIf="!canView()" class="no-permission-card">
+    <div class="card">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view Quarantine.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="canView()">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ── Filter Card ─────────────────────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="card filter-card">
+      <div class="card-body">
+        <div class="filters-grid">
+          
+          <!-- SKU Dropdown -->
+          <div class="filter-item">
+            <label>SKU</label>
+            <select class="custom-select" [(ngModel)]="filterSku">
+              <option value="">Select SKU...</option>
+              <option *ngFor="let sku of skus" [value]="sku.code">
+                {{ sku.name }} ({{ sku.code }})
+              </option>
+            </select>
+          </div>
+
+          <!-- BLOCK Dropdown -->
+          <div class="filter-item">
+            <label>BLOCK</label>
+            <select class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
+              <option value="">Select Block...</option>
+              <option *ngFor="let b of blocks" [value]="b">{{ b }}</option>
+            </select>
+          </div>
+
+          <!-- ARCH Dropdown -->
+          <div class="filter-item">
+            <label>ARCH</label>
+            <select class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
+              <option value="">Select Arch...</option>
+              <option *ngFor="let a of filteredArches()" [value]="a">{{ a }}</option>
+            </select>
+          </div>
+
+          <!-- LINE Dropdown -->
+          <div class="filter-item">
+            <label>LINE</label>
+            <select class="custom-select" [(ngModel)]="filterLine">
+              <option value="">Select Line...</option>
+              <option *ngFor="let l of filteredLines()" [value]="l">{{ l }}</option>
+            </select>
+          </div>
+
+          <!-- All Select Checkbox -->
+          <div class="filter-item checkbox-item">
+            <label class="all-select-label">
+              <input type="checkbox" [(ngModel)]="allSelect" (change)="toggleAllSelect()" />
+              <span>All Select</span>
+            </label>
+          </div>
+
+          <!-- From Date -->
+          <div class="filter-item">
+            <label>FROM DATE</label>
+            <input type="date" [(ngModel)]="fromDate" class="form-input-date" />
+          </div>
+
+          <!-- To Date -->
+          <div class="filter-item">
+            <label>TO DATE</label>
+            <input type="date" [(ngModel)]="toDate" class="form-input-date" />
+          </div>
+
+          <!-- Search Button -->
+          <div class="filter-item search-btn-item">
+            <button class="btn btn-save search-btn" (click)="search()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Search
+            </button>
+          </div>
+
+          <!-- Quarantine No -->
+          <div class="filter-item qrn-item">
+            <label>QUARANTINE NO</label>
+            <input type="text" placeholder="QRN-XXXXX" [(ngModel)]="quarantineNoQuery" (keyup.enter)="search()" class="form-input-text" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ── Main Grid ───────────────────────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="quarantine-grid mt-3">
+
+      <!-- ── Left Column: Box / Location Checklist ──────────────────────── -->
+      <div class="left-col">
+        <div class="card box-location-card">
+          <div class="card-header">
+            <h3>Box / Location</h3>
+          </div>
+          <div class="table-outer">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>BOX / LOCATION</th>
+                  <th class="text-right">SELECT</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let box of filteredBoxes()" class="table-row">
+                  <td><span class="id-pill">{{ box.location }}</span></td>
+                  <td class="text-right check-col">
+                    <label class="custom-checkbox">
+                      <input type="checkbox" [(ngModel)]="box.selected" (change)="updateAllSelectState()" />
+                      <span class="checkmark"></span>
+                    </label>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredBoxes().length === 0">
+                  <td colspan="2" class="empty-row text-center py-4" style="color: #b2bec3;">
+                    No locations found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right Column: Quarantine Records & Pallet Details ───────────── -->
+      <div class="right-col">
+        
+        <!-- Quarantine Records Card -->
+        <div class="card records-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>Quarantine Records</h3>
+            <button class="btn-add-outline" (click)="openAddModal()" *ngIf="canCreate()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-1">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Add
+            </button>
+          </div>
+          <div class="table-outer records-table-outer">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>QUARANTINE NO</th>
+                  <th>SKU DESCRIPTION</th>
+                  <th>PALLET QTY</th>
+                  <th>CREATE DATE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let rec of filteredRecords()" class="table-row">
+                  <td><span class="id-pill qrn-pill">{{ rec.quarantineNo }}</span></td>
+                  <td>{{ rec.skuDescription }}</td>
+                  <td><span class="qty-pill">{{ rec.palletQty }}</span></td>
+                  <td>{{ rec.createDate }}</td>
+                </tr>
+                <tr *ngIf="filteredRecords().length === 0">
+                  <td colspan="4" class="empty-row text-center py-4" style="color: #b2bec3;">
+                    No quarantine records found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pallet Details Card -->
+        <div class="card pallets-card mt-3">
+          <div class="card-header">
+            <h3>Pallet Details</h3>
+          </div>
+          <div class="table-outer pallets-table-outer">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>BOX / LOCATION</th>
+                  <th>PALLET NO</th>
+                  <th>BATCH NO</th>
+                  <th>RECEIVE DATE</th>
+                  <th>QTY</th>
+                  <th>STATUS</th>
+                  <th class="text-right">ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pallet of filteredPallets()" class="table-row">
+                  <td><span class="id-pill">{{ pallet.boxLocation }}</span></td>
+                  <td><span class="pallet-pill">{{ pallet.palletNo }}</span></td>
+                  <td>{{ pallet.batchNo }}</td>
+                  <td>{{ pallet.receiveDate }}</td>
+                  <td><strong style="color: #2d3436;">{{ pallet.qty }}</strong></td>
+                  <td>
+                    <span class="status-badge" [class]="pallet.status.toLowerCase()">
+                      {{ pallet.status }}
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    <div class="row-actions justify-content-end">
+                      <button *ngIf="pallet.status !== 'Released' && pallet.status !== 'Destroyed' && canUpdate()" 
+                              class="action-pill-btn btn-release-action" 
+                              (click)="releasePallet(pallet)">
+                        Release
+                      </button>
+                      <button *ngIf="pallet.status !== 'Released' && pallet.status !== 'Destroyed' && canDelete()" 
+                              class="action-pill-btn btn-destroy-action" 
+                              (click)="destroyPallet(pallet)">
+                        Destroy
+                      </button>
+                      <span *ngIf="pallet.status === 'Released' || pallet.status === 'Destroyed'" 
+                            class="text-completed">
+                        Completed
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredPallets().length === 0">
+                  <td colspan="7" class="empty-row text-center py-4" style="color: #b2bec3;">
+                    No pallet details found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ── Remarks Card ────────────────────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="card remarks-card mt-3">
+      <div class="card-body">
+        <div class="remarks-row">
+          
+          <div class="remarks-input-wrapper">
+            <label>REMARKS</label>
+            <textarea class="remarks-textarea" 
+                      placeholder="Enter remarks..." 
+                      [(ngModel)]="remarks"
+                      rows="2"></textarea>
+          </div>
+
+          <button class="btn btn-save make-quarantine-btn" 
+                  (click)="makeQuarantine()" 
+                  [disabled]="!hasSelectedBoxes() || !canCreate()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Make Quarantine
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,144 @@
+<div class="content-body">
+
+  <div *ngIf="!canView()" class="no-permission-card">
+    <div class="card">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view Barcode Generation.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="canView()">
+    <div class="grid-layout">
+
+      <!-- ── Left Column: Form Setup ── -->
+      <div class="card setup-card">
+        <div class="card-header">
+          <h3>Barcode Generate</h3>
+          <p>Operations — fill in details and print</p>
+        </div>
+
+        <div class="card-body">
+          <div class="operations-tag">OPERATIONS</div>
+
+          <!-- Brand Dropdown -->
+          <div class="input-group">
+            <label>BRAND<span class="req">*</span></label>
+            <select class="custom-select" 
+                    [ngModel]="selectedBrand()" 
+                    (ngModelChange)="selectedBrand.set($event); onBrandChange()">
+              <option value="">Select Brand...</option>
+              <option *ngFor="let b of brands" [value]="b">{{ b }}</option>
+            </select>
+          </div>
+
+          <!-- Sub Brand Dropdown -->
+          <div class="input-group">
+            <label>SUB BRAND<span class="req">*</span></label>
+            <select class="custom-select" 
+                    [ngModel]="selectedSubBrand()" 
+                    (ngModelChange)="selectedSubBrand.set($event)"
+                    [disabled]="!selectedBrand()">
+              <option value="">Select Sub Brand...</option>
+              <option *ngFor="let sb of filteredSubBrands()" [value]="sb">{{ sb }}</option>
+            </select>
+          </div>
+
+          <!-- No. of Carton / Board Input -->
+          <div class="input-group">
+            <label>NO. OF CARTON / BOARD<span class="req">*</span></label>
+            <input type="number" 
+                   placeholder="e.g. 1" 
+                   [ngModel]="noOfCarton()" 
+                   (ngModelChange)="noOfCarton.set($event)" />
+          </div>
+
+          <!-- Barcode Qty Input -->
+          <div class="input-group">
+            <label>BARCODE QTY<span class="req">*</span></label>
+            <input type="number" 
+                   placeholder="e.g. 10" 
+                   [ngModel]="barcodeQty()" 
+                   (ngModelChange)="barcodeQty.set($event)" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right Column: Preview Panel ── -->
+      <div class="card preview-card">
+        <div class="card-header">
+          <h3>PREVIEW</h3>
+        </div>
+
+        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
+          <div class="barcode-preview-box">
+            
+            <div class="preview-item">
+              <span class="preview-label">Brand:</span>
+              <span class="preview-value">{{ previewBrand() }}</span>
+            </div>
+
+            <div class="preview-item">
+              <span class="preview-label">Sub Brand:</span>
+              <span class="preview-value highlight-value">{{ previewSubBrand() }}</span>
+            </div>
+
+            <div class="preview-item">
+              <span class="preview-label">Cartons/Board:</span>
+              <span class="preview-value">{{ previewCartons() }}</span>
+            </div>
+
+            <div class="preview-item">
+              <span class="preview-label">Barcode Qty:</span>
+              <span class="preview-value">{{ previewQty() }}</span>
+            </div>
+
+            <div class="barcode-graphic-wrapper" *ngIf="isValidForm()">
+              <div class="barcode-strip">
+                <!-- Visual mock of barcode lines -->
+                <div class="line thin"></div>
+                <div class="line thick"></div>
+                <div class="line thin"></div>
+                <div class="line medium"></div>
+                <div class="line thin"></div>
+                <div class="line thick"></div>
+                <div class="line medium"></div>
+                <div class="line thin"></div>
+                <div class="line thick"></div>
+                <div class="line thin"></div>
+              </div>
+              <span class="barcode-text-label">JTI-{{ previewSubBrand() | uppercase | slice:0:3 }}-{{ previewQty() }}</span>
+            </div>
+            <div class="barcode-placeholder" *ngIf="!isValidForm()">
+              <span>Fill form to see preview</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-reset" (click)="close()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Close
+          </button>
+          
+          <button class="btn btn-save" 
+                  (click)="saveAndPrint()" 
+                  [disabled]="!isValidForm() || !canCreate()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+              <path d="M6 9V2h12v7"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Save &amp; Print
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

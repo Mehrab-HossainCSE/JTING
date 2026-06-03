@@ -1,5 +1,5 @@
 import { Component, signal, computed, OnInit, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../../../../core/services/user-service';
@@ -52,10 +52,20 @@ export class CreateUserComponent implements OnInit {
     fullName:        ['', [Validators.required, Validators.minLength(2)]],
     roleName:        ['', Validators.required],
     departmentId:    ['', Validators.required],
-    password:        ['', [Validators.required, Validators.minLength(6)]],
+    password:        ['', [Validators.required, Validators.minLength(3)]],
     confirmPassword: ['', Validators.required],
     active:          [true]
-  });
+  }, { validators: this.passwordMatchValidator });
+
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { mismatch: true };
+    }
+    return null;
+  }
 
   permissions = signal({
     canView:   false,
@@ -202,19 +212,33 @@ export class CreateUserComponent implements OnInit {
 
   isInvalid(field: string): boolean {
     const ctrl = this.userForm.get(field);
-    return !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
+    const isFieldInvalid = !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
+    
+    if (field === 'confirmPassword' && this.userForm.hasError('mismatch') && (ctrl?.dirty || ctrl?.touched)) {
+      return true;
+    }
+    
+    return isFieldInvalid;
   }
 
   getError(field: string): string {
     const ctrl = this.userForm.get(field);
-    if (!ctrl?.errors) return '';
-    if (ctrl.errors['required'])  return 'This field is required.';
-    if (ctrl.errors['minlength']) return `Minimum ${ctrl.errors['minlength'].requiredLength} characters.`;
-    if (ctrl.errors['email'])     return 'Invalid email format.';
+    
+    if (ctrl?.errors) {
+      if (ctrl.errors['required'])  return 'This field is required.';
+      if (ctrl.errors['minlength']) return `Minimum ${ctrl.errors['minlength'].requiredLength} characters.`;
+      if (ctrl.errors['email'])     return 'Invalid email format.';
+    }
+    
+    if (field === 'confirmPassword' && this.userForm.hasError('mismatch')) {
+      return 'Passwords do not match.';
+    }
+    
     return '';
   }
 
   saveUser(): void {
+    debugger;
     if (!this.canSave()) {
       this.toastr.warning('You do not have permission to perform this action.', 'Warning');
       return;
@@ -259,10 +283,6 @@ export class CreateUserComponent implements OnInit {
       });
 
     } else {
-      if (formValue.password !== formValue.confirmPassword) {
-        this.toastr.error('Passwords do not match.', 'Error');
-        return;
-      }
 
       const createPayload: UserManage = {
         id:              0,  

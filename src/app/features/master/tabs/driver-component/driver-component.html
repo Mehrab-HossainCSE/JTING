@@ -28,8 +28,8 @@
               <input type="text"
                      placeholder="e.g. Test Driver 1"
                      formControlName="driverName"
-                     [class.input-error]="isInvalid('driverName')" />
-              <span class="field-error" *ngIf="isInvalid('driverName')">{{ getError('driverName') }}</span>
+                     [class.is-invalid]="isInvalid('driverName')" />
+              <span class="error-message" *ngIf="isInvalid('driverName')">{{ getError('driverName') }}</span>
             </div>
           </form>
         </div>

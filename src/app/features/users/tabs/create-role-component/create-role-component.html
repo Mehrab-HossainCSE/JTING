@@ -1,5 +1,14 @@
 <div class="master-setup-container">
-  <div class="grid-layout">
+  <div *ngIf="!canView()" class="no-permission-card">
+    <div class="card">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view roles.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="canView()" class="grid-layout">
 
     <!-- ── Form Card ──────────────────────────────────────────────── -->
     <div class="card form-card">
@@ -15,7 +24,7 @@
             type="text"
             formControlName="name"
             placeholder="Enter role name"
-            [class.error]="isInvalid('name')"
+            [class.is-invalid]="isInvalid('name')"
           />
           <small class="error-message" *ngIf="isInvalid('name')">
             {{ getError('name') }}
@@ -24,15 +33,18 @@
       </form>
 
       <div class="card-footer">
+        <button class="btn btn-reset" (click)="resetForm()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><polyline points="21 3 21 8 16 8"></polyline></svg>
+          Reset
+        </button>
         <button
           class="btn btn-save"
+          *ngIf="canSave()"
           (click)="saveRole()"
-          [disabled]="!canSave()"
+          [disabled]="isLoading()"
         >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
           {{ editingRoleId() ? 'Update' : 'Create' }} Role
-        </button>
-        <button class="btn btn-reset" (click)="resetForm()">
-          Reset
         </button>
       </div>
     </div>
@@ -96,9 +108,9 @@
                     <td>
                       <div class="row-actions">
                         <button
+                          *ngIf="canUpdate()"
                           class="action-btn edit-btn"
                           (click)="editRole(role)"
-                          [disabled]="!canUpdate()"
                           title="Edit"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"

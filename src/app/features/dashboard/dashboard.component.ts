@@ -1,14 +1,18 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MenuService } from '../../core/services/menu.service';
+import { EmptyDashboard } from '../empty-dashboard/empty-dashboard';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, EmptyDashboard],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardPageComponent {
+  menuService = inject(MenuService);
   // Header Stats
   summaryStats = [
     { label: 'Received Today', value: '847', icon: 'bi-box-seam', color: 'green' },

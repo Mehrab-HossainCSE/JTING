@@ -1,4 +1,5 @@
-import { 
+
+import {
   ApplicationConfig,
   provideZonelessChangeDetection
 } from '@angular/core';

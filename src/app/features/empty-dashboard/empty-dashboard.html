@@ -1,0 +1,38 @@
+<div class="master-setup-container">
+  <div class="empty-dashboard-wrapper">
+    <div class="card empty-card">
+      <div class="card-body">
+        <div class="restricted-container">
+          <div class="icon-pulse">
+            <div class="pulse-ring"></div>
+            <i class="bi bi-shield-lock"></i>
+          </div>
+          
+          <div class="content-text text-center">
+            <h2 class="restricted-title">Access Restricted</h2>
+            <p class="restricted-description">
+              You currently do not have the necessary permissions to view the real-time warehouse performance metrics. 
+              Dashboard visibility is restricted to authorized personnel only.
+            </p>
+            
+            <div class="info-alert">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>If you require access to these metrics, please contact your system administrator or department supervisor.</span>
+            </div>
+            
+            <div class="action-footer mt-5">
+              <button class="btn-return" (click)="goHome()">
+                <i class="bi bi-house-door"></i> Back to Workspace
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="system-footer">
+      <img src="images/logo/jti-logo.png" alt="JTI Logo" class="mini-logo">
+      <span>Warehouse Management System v2.1</span>
+    </div>
+  </div>
+</div>

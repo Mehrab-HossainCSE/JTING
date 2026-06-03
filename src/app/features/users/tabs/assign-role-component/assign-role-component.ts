@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,8 @@ import { RoleService } from '../../../../core/services/roleManageServices/role-s
 import { NavMenuService } from '../../../../core/services/navMenusServices/nav-menu-service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { ToastrService } from 'ngx-toastr';
+import { StorageService } from '../../../../core/services/storage.service';
+import { MenuResponse } from '../../../../core/models/MenuResponse';
 
 @Component({
   selector: 'app-assign-role-component',
@@ -21,24 +23,66 @@ export class AssignRoleComponent implements OnInit {
   private navMenuService = inject(NavMenuService);
   private errorHandler = inject(ErrorHandlerService);
   private toastr = inject(ToastrService);
+  private storageService = inject(StorageService);
 
   selectedRole = signal<string>('');
   roles = signal<Role[]>([]);
   menuSections = signal<any[]>([]);
 
-  ngOnInit(): void {
-    this.roleService.getAll().subscribe({
-      next: (response) => {
-        if (response && response.data) {
-          this.roles.set(response.data);
-        }
-      },
-      error: (error) => {
-        this.errorHandler.handleErrorWithToster(error);
-      }
-    });
+  permissions = signal({
+    canView: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false
+  });
 
-    this.loadMenuDistribution();
+  canView = computed(() => this.permissions().canView);
+  canUpdate = computed(() => this.permissions().canUpdate);
+
+  ngOnInit(): void {
+    this.loadPermissionsFromStorage();
+
+    if (this.canView()) {
+      this.roleService.getAll().subscribe({
+        next: (response) => {
+          if (response && response.data) {
+            this.roles.set(response.data);
+          }
+        },
+        error: (error) => {
+          this.errorHandler.handleErrorWithToster(error);
+        }
+      });
+
+      this.loadMenuDistribution();
+    }
+  }
+
+  private loadPermissionsFromStorage(): void {
+    debugger;
+    const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
+    const userManagementMenu = menus?.find(
+      (menu) => menu.name?.toUpperCase().includes('USER_MANAGEMENT') ||
+                menu.url?.toLowerCase().includes('/users')
+    );
+
+    const assignRoleMenu = userManagementMenu?.children?.find(
+      (child) => child.name?.toUpperCase().includes('ASSIGN_MODULE_WITH_ROLE') ||
+                 child.url?.toLowerCase().includes('/assignrole') ||
+                 child.url?.toLowerCase().includes('/assign-role')
+    );
+
+    if (!assignRoleMenu) {
+      this.permissions.set({ canView: false, canCreate: false, canUpdate: false, canDelete: false });
+      return;
+    }
+
+    this.permissions.set({
+      canView: !!assignRoleMenu.canView,
+      canCreate: !!assignRoleMenu.canCreate,
+      canUpdate: !!assignRoleMenu.canUpdate,
+      canDelete: !!assignRoleMenu.canDelete
+    });
   }
 
   loadMenuDistribution(): void {
@@ -188,6 +232,11 @@ export class AssignRoleComponent implements OnInit {
   }
 
   savePermissions(): void {
+    if (!this.canUpdate()) {
+      this.toastr.warning('You do not have permission to update role assignments.', 'Warning');
+      return;
+    }
+
     const roleId = this.selectedRole();
     if (!roleId) {
       this.toastr.warning('Please select a role first.', 'Warning');

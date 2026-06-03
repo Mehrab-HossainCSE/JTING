@@ -1,5 +1,14 @@
 <div class="master-setup-container">
-  <div class="grid-layout">
+  <div *ngIf="!canView()" class="no-permission-card">
+    <div class="card">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view Users.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="canView()" class="grid-layout">
 
     <!-- ── Form Card ──────────────────────────────────────────────── -->
     <div class="card form-card">
@@ -17,33 +26,49 @@
             type="text"
             formControlName="userName"
             placeholder="e.g. JANDERSON"
-            [class.error]="isInvalid('userName')"
+            [class.is-invalid]="isInvalid('userName')"
           />
           <small class="error-message" *ngIf="isInvalid('userName')">
             {{ getError('userName') }}
           </small>
         </div>
 
-        <div class="input-group">
-          <label>Password <span class="req">*</span></label>
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="••••••••"
-            [class.error]="isInvalid('password')"
-          />
-          <small class="error-message" *ngIf="isInvalid('password')">
-            {{ getError('password') }}
-          </small>
-        </div>
+        @if (!isEditing()) {
+          <div class="input-group">
+            <label>Password <span class="req">*</span></label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="••••••••"
+              [class.is-invalid]="isInvalid('password')"
+            />
+            <small class="error-message" *ngIf="isInvalid('password')">
+              {{ getError('password') }}
+            </small>
+          </div>
+
+          <div class="input-group">
+            <label>Confirm Password <span class="req">*</span></label>
+            <input
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="••••••••"
+              [class.is-invalid]="isInvalid('confirmPassword')"
+            />
+            <small class="error-message" *ngIf="isInvalid('confirmPassword')">
+              {{ getError('confirmPassword') }}
+            </small>
+          </div>
+        }
 
         <div class="input-group">
+
           <label>Full Name <span class="req">*</span></label>
           <input
             type="text"
             formControlName="fullName"
             placeholder="Enter full name"
-            [class.error]="isInvalid('fullName')"
+            [class.is-invalid]="isInvalid('fullName')"
           />
           <small class="error-message" *ngIf="isInvalid('fullName')">
             {{ getError('fullName') }}
@@ -56,7 +81,7 @@
             type="email"
             formControlName="email"
             placeholder="user@jti.com"
-            [class.error]="isInvalid('email')"
+            [class.is-invalid]="isInvalid('email')"
           />
           <small class="error-message" *ngIf="isInvalid('email')">
             {{ getError('email') }}
@@ -68,7 +93,7 @@
           <select
             formControlName="departmentId"
             class="custom-select"
-            [class.error]="isInvalid('departmentId')"
+            [class.is-invalid]="isInvalid('departmentId')"
           >
             <option value="" disabled>-- Select Department --</option>
             @for (dept of filteredDepartments(); track dept.id) {
@@ -85,7 +110,7 @@
           <select
             formControlName="roleName"
             class="custom-select"
-            [class.error]="isInvalid('roleName')"
+            [class.is-invalid]="isInvalid('roleName')"
           >
             <option value="" disabled>-- Select Role --</option>
             @for (role of roles(); track role.id) {
@@ -115,8 +140,9 @@
         </button>
         <button
           class="btn btn-save"
+          *ngIf="canSave()"
           (click)="saveUser()"
-          [disabled]="!canSave()"
+          [disabled]="isLoading()"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
           {{ editingUserId() ? 'Update' : 'Save' }} User
@@ -220,9 +246,9 @@
                     <td>
                       <div class="row-actions">
                         <button
+                          *ngIf="canUpdate()"
                           class="action-btn edit-btn"
                           (click)="editUser(user); $event.stopPropagation()"
-                          [disabled]="!canUpdate()"
                           title="Edit"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>

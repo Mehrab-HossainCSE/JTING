@@ -12,38 +12,38 @@
         <form [formGroup]="sourceForm">
           <div class="input-group">
             <label>BLOCK<span class="req">*</span></label>
-            <select formControlName="blockId" class="custom-select" [class.input-error]="isInvalid('blockId', sourceForm)">
+            <select formControlName="blockId" class="custom-select" [class.is-invalid]="isInvalid('blockId', sourceForm)">
               <option value="" disabled>Select Block</option>
               <option *ngFor="let item of blocks()" [value]="item.id || item.blockId">{{ item.name || item.blockName }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('blockId', sourceForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('blockId', sourceForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
             <label>ARCH<span class="req">*</span></label>
-            <select formControlName="archId" class="custom-select" [class.input-error]="isInvalid('archId', sourceForm)">
+            <select formControlName="archId" class="custom-select" [class.is-invalid]="isInvalid('archId', sourceForm)">
               <option value="" disabled>Select Arch</option>
               <option *ngFor="let item of arches()" [value]="item.id || item.archId">{{ item.name || item.archName }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('archId', sourceForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('archId', sourceForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
             <label>LINE<span class="req">*</span></label>
-            <select formControlName="lineId" class="custom-select" [class.input-error]="isInvalid('lineId', sourceForm)">
+            <select formControlName="lineId" class="custom-select" [class.is-invalid]="isInvalid('lineId', sourceForm)">
               <option value="" disabled>Select Line</option>
               <option *ngFor="let item of lines()" [value]="item.id || item.lineId">{{ item.name || item.lineName }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('lineId', sourceForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('lineId', sourceForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
             <label>BOX NAME<span class="req">*</span></label>
-            <select formControlName="boxId" class="custom-select" [class.input-error]="isInvalid('boxId', sourceForm)">
+            <select formControlName="boxId" class="custom-select" [class.is-invalid]="isInvalid('boxId', sourceForm)">
               <option value="" disabled>Select box...</option>
               <option *ngFor="let item of boxes()" [value]="item.id || item.boxId">{{ item.name || item.boxName }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('boxId', sourceForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('boxId', sourceForm)">This field is required.</span>
           </div>
 
           <div class="input-group" *ngIf="isBoxAssigned()">
@@ -70,38 +70,38 @@
         <form [formGroup]="targetForm">
           <div class="input-group">
             <label>BLOCK<span class="req">*</span></label>
-            <select formControlName="blockId" class="custom-select" [class.input-error]="isInvalid('blockId', targetForm)">
+            <select formControlName="blockId" class="custom-select" [class.is-invalid]="isInvalid('blockId', targetForm)">
               <option value="" disabled>Select Block</option>
               <option *ngFor="let item of targetBlocks" [value]="item">{{ item }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('blockId', targetForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('blockId', targetForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
             <label>ARCH<span class="req">*</span></label>
-            <select formControlName="archId" class="custom-select" [class.input-error]="isInvalid('archId', targetForm)">
+            <select formControlName="archId" class="custom-select" [class.is-invalid]="isInvalid('archId', targetForm)">
               <option value="" disabled>Select arch...</option>
               <option *ngFor="let item of targetArches" [value]="item">{{ item }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('archId', targetForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('archId', targetForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
             <label>LINE<span class="req">*</span></label>
-            <select formControlName="lineId" class="custom-select" [class.input-error]="isInvalid('lineId', targetForm)">
+            <select formControlName="lineId" class="custom-select" [class.is-invalid]="isInvalid('lineId', targetForm)">
               <option value="" disabled>Select line...</option>
               <option *ngFor="let item of targetLines" [value]="item">{{ item }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('lineId', targetForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('lineId', targetForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
             <label>BOX NAME<span class="req">*</span></label>
-            <select formControlName="boxId" class="custom-select" [class.input-error]="isInvalid('boxId', targetForm)">
+            <select formControlName="boxId" class="custom-select" [class.is-invalid]="isInvalid('boxId', targetForm)">
               <option value="" disabled>Select box...</option>
               <option *ngFor="let item of targetBoxes" [value]="item">{{ item }}</option>
             </select>
-            <span class="field-error" *ngIf="isInvalid('boxId', targetForm)">This field is required.</span>
+            <span class="error-message" *ngIf="isInvalid('boxId', targetForm)">This field is required.</span>
           </div>
 
           <div class="input-group">
