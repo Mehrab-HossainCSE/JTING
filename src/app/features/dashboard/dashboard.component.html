@@ -1,3 +1,4 @@
+<ng-container *ngIf="menuService.hasDashboardPermission(); else noPermission">
 <div class="dashboard-container">
   <!-- Header Section -->
   <div class="header-border-wrap">
@@ -375,3 +376,8 @@
     </div>
   </section>
 </div>
+</ng-container>
+
+<ng-template #noPermission>
+  <app-empty-dashboard></app-empty-dashboard>
+</ng-template>

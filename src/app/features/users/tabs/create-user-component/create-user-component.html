@@ -33,20 +33,36 @@
           </small>
         </div>
 
-        <div class="input-group">
-          <label>Password <span class="req">*</span></label>
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="••••••••"
-            [class.is-invalid]="isInvalid('password')"
-          />
-          <small class="error-message" *ngIf="isInvalid('password')">
-            {{ getError('password') }}
-          </small>
-        </div>
+        @if (!isEditing()) {
+          <div class="input-group">
+            <label>Password <span class="req">*</span></label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="••••••••"
+              [class.is-invalid]="isInvalid('password')"
+            />
+            <small class="error-message" *ngIf="isInvalid('password')">
+              {{ getError('password') }}
+            </small>
+          </div>
+
+          <div class="input-group">
+            <label>Confirm Password <span class="req">*</span></label>
+            <input
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="••••••••"
+              [class.is-invalid]="isInvalid('confirmPassword')"
+            />
+            <small class="error-message" *ngIf="isInvalid('confirmPassword')">
+              {{ getError('confirmPassword') }}
+            </small>
+          </div>
+        }
 
         <div class="input-group">
+
           <label>Full Name <span class="req">*</span></label>
           <input
             type="text"

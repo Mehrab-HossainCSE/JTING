@@ -22,6 +22,7 @@ export class HeaderComponent implements OnInit {
   userInitials = signal('U');
 
   ngOnInit() {
+    debugger;
     const userInfo = this.authService.getUserInfo();
     console.log('HeaderComponent initialized. User info:', userInfo);
        

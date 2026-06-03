@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { MenuResponse, ApiMenuResponse } from '../models/MenuResponse';
 import { NavMenuService } from './navMenusServices/nav-menu-service';
 import { StorageService } from './storage.service';
@@ -12,6 +12,25 @@ export class MenuService {
 
   readonly menus = this._menus.asReadonly();
   readonly loading = this._loading.asReadonly();
+
+  readonly hasDashboardPermission = computed(() => {
+    const checkRecursive = (items: MenuResponse[]): boolean => {
+      for (const item of items) {
+        if (
+          item.name.toUpperCase() === 'DASHBOARD' ||
+          item.displayName.toUpperCase() === 'DASHBOARD' ||
+          item.url === '/dashboard'
+        ) {
+          return true;
+        }
+        if (item.children?.length && checkRecursive(item.children)) {
+          return true;
+        }
+      }
+      return false;
+    };
+    return checkRecursive(this.menus());
+  });
 
   constructor(
     private navMenuService: NavMenuService,
