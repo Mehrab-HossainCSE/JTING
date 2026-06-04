@@ -2,25 +2,36 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ApiResponse } from '../../models/ApiResponse.model';
+import { PalletGenerateItem, PalletRecord, PalletGenerateCreatePayload } from '../../models/receives/generate-pallet/generate-pallet';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PalleteGenerateService {
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/ArchSetup`;
-    constructor(private http: HttpClient) {}
 
+  getPalletGenerateList(): Observable<ApiResponse<PalletGenerateItem[]>> {
+    return this.http.get<ApiResponse<PalletGenerateItem[]>>(`${environment.apiUrl}/PalletGenerate/GetMasterCaseForPallet`);
+  }
 
-  getPalletGenerateList(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/pallet/generate-list`);
+  generatePallet(payload: PalletGenerateCreatePayload): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${environment.apiUrl}/PalletGenerate/Create`, payload);
   }
-  generatePallet(payload: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/pallet/generate`, payload);
+
+  searchPalletRecords(query: string, withDate: boolean, fromDate?: string, toDate?: string): Observable<ApiResponse<PalletRecord[]>> {
+    const params: any = {
+      search: query,
+      withDate: withDate
+    };
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+    return this.http.get<ApiResponse<PalletRecord[]>>(`${environment.apiUrl}/PalletGenerate/GetPalletListBySearchData`, { params });
   }
-  searchPalletRecords(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/pallet/records`, { params: { search: query } });
-  }
-  deletePalletRecord(palletNo: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/pallet/records/${palletNo}`);
+
+  deletePalletRecord(palletNo: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/pallet/records/${palletNo}`);
   }
 }
+
