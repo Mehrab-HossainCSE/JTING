@@ -194,23 +194,8 @@ export class GeneratePallet implements OnInit {
     this.palletRecords.set([]);
   }
 
-  deleteRecord(record: PalletRecord): void {
-    if (!this.canDelete()) return;
-
-    this.palletService.deletePalletRecord(record.palletNo).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.palletRecords.update((list) =>
-            list.filter((r) => r.palletNo !== record.palletNo)
-          );
-          this.toastr.success('Pallet record deleted.', 'Success');
-          this.loadPalletGenerateList();
-        } else {
-          this.toastr.error(res.message, 'Error');
-        }
-      },
-      error: (err) => this.errorHandler.handleErrorWithToster(err),
-    });
+  printRecord(record: PalletRecord): void {
+    // Print functionality to be implemented later
   }
 
   exportToExcel(): void {
