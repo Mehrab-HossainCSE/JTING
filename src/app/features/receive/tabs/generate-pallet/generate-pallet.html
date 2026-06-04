@@ -40,8 +40,8 @@
                 [style.background]="isSelected(item) ? '#e6f7ec' : ''"
                 [style.cursor]="'pointer'"
                 (click)="selectRow(item)">
-              <td><span class="id-pill">{{ item.sku }}</span></td>
-              <td>{{ item.skuName }}</td>
+              <td><span class="id-pill">{{ item.skucode }}</span></td>
+              <td>{{ item.skuname }}</td>
               <td>{{ item.palletCount }}</td>
               <td>
                 <span style="color: #00BB31; font-weight: 700;">
@@ -49,7 +49,7 @@
                 </span>
               </td>
               <td>{{ item.batchNo }}</td>
-              <td>{{ item.date }}</td>
+              <td>{{ item.rcvDate }}</td>
             </tr>
             <tr *ngIf="palletList().length === 0 && !isLoading()">
               <td colspan="6" class="empty-row"
@@ -74,25 +74,15 @@
             SKU
           </label>
           <input type="text"
-                 [value]="selectedItem()?.skuName || ''"
+                 [value]="selectedItem()?.skuname || ''"
                  readonly
                  placeholder="SKU Name"
                  style="min-width: 160px;" />
           <input type="text"
-                 [value]="selectedItem()?.sku || ''"
+                 [value]="selectedItem()?.skucode || ''"
                  readonly
                  placeholder="SKU Code"
                  style="flex: 0 0 auto; width: 120px;" />
-
-          <!-- With Date checkbox -->
-          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem;
-                        color: #636e72; cursor: pointer; white-space: nowrap; margin-left: 8px;">
-            <input type="checkbox"
-                   [checked]="withDate()"
-                   (change)="onWithDateChange($any($event.target).checked)"
-                   style="width: 16px; height: 16px; accent-color: #00BB31; cursor: pointer;" />
-            With Date
-          </label>
 
           <!-- Action buttons (pushed right) -->
           <div class="card-footer" style="margin-left: auto; padding: 0; border: none; background: transparent;">
@@ -127,6 +117,35 @@
           <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap;">
             Search
           </label>
+
+          <!-- With Date checkbox -->
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem;
+                        color: #636e72; cursor: pointer; white-space: nowrap; margin-left: 8px; margin-right: 8px;">
+            <input type="checkbox"
+                   [checked]="withDate()"
+                   (change)="onWithDateChange($any($event.target).checked)"
+                   style="width: 16px; height: 16px; accent-color: #00BB31; cursor: pointer;" />
+            With Date
+          </label>
+
+          <!-- Start Date and End Date inputs, shown only if withDate() is true -->
+          <ng-container *ngIf="withDate()">
+            <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap; margin-left: 8px; margin-right: 4px;">
+              Start Date
+            </label>
+            <input type="date"
+                   [value]="startDate()"
+                   (input)="onStartDateChange($any($event.target).value)"
+                   style="width: 130px; margin-right: 8px;" />
+
+            <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap; margin-left: 8px; margin-right: 4px;">
+              End Date
+            </label>
+            <input type="date"
+                   [value]="endDate()"
+                   (input)="onEndDateChange($any($event.target).value)"
+                   style="width: 130px; margin-right: 8px;" />
+          </ng-container>
 
           <div style="position: relative; flex: 1; min-width: 200px; max-width: 280px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b2bec3" stroke-width="2.5"
@@ -190,11 +209,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let record of palletRecords()" class="table-row">
-              <td><span class="id-pill">{{ record.skuCode }}</span></td>
-              <td>{{ record.skuName }}</td>
-              <td>{{ record.location }}</td>
+              <td><span class="id-pill">{{ record.skucode }}</span></td>
+              <td>{{ record.skuname }}</td>
+              <td>{{ record.palletLocation }}</td>
               <td>{{ record.palletNo }}</td>
-              <td>{{ record.date }}</td>
+              <td>{{ record.rcvDate }}</td>
               <td>
                 <div class="row-actions">
                   <button *ngIf="canDelete()" class="action-btn delete-btn"

@@ -7,25 +7,7 @@ import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { PalleteGenerateService } from '../../../../core/services/receiveServices/pallete-generate-service';
-
-
-// ── Interfaces (move to core/models/warehouse/ if preferred) ───────────
-export interface PalletGenerateItem {
-  sku: string;
-  skuName: string;
-  palletCount: number;
-  currentPalletCount: number;
-  batchNo: string;
-  date: string;
-}
-
-export interface PalletRecord {
-  skuCode: string;
-  skuName: string;
-  location: string;
-  palletNo: string;
-  date: string;
-}
+import { PalletGenerateItem, PalletRecord, PalletGenerateCreatePayload } from '../../../../core/models/receives/generate-pallet/generate-pallet';
 
 @Component({
   selector: 'app-generate-pallet',
@@ -34,19 +16,21 @@ export interface PalletRecord {
   styleUrl: './generate-pallet.scss',
 })
 export class GeneratePallet implements OnInit {
-  private palletService  = inject(PalleteGenerateService);
-  private toastr         = inject(ToastrService);
-  private errorHandler   = inject(ErrorHandlerService);
+  private palletService = inject(PalleteGenerateService);
+  private toastr = inject(ToastrService);
+  private errorHandler = inject(ErrorHandlerService);
   private storageService = inject(StorageService);
 
   // ── State ────────────────────────────────────────────────────────────
-  palletList    = signal<PalletGenerateItem[]>([]);
-  selectedItem  = signal<PalletGenerateItem | null>(null);
-  withDate      = signal(false);
-  searchQuery   = signal('');
+  palletList = signal<PalletGenerateItem[]>([]);
+  selectedItem = signal<PalletGenerateItem | null>(null);
+  withDate = signal(false);
+  startDate = signal('');
+  endDate = signal('');
+  searchQuery = signal('');
   palletRecords = signal<PalletRecord[]>([]);
-  isLoading     = signal(false);
-  isSearching   = signal(false);
+  isLoading = signal(false);
+  isSearching = signal(false);
 
   // ── Permissions ──────────────────────────────────────────────────────
   permissions = signal({
@@ -56,7 +40,7 @@ export class GeneratePallet implements OnInit {
     canDelete: false,
   });
 
-  canView   = computed(() => this.permissions().canView);
+  canView = computed(() => this.permissions().canView);
   canCreate = computed(() => this.permissions().canCreate);
   canUpdate = computed(() => this.permissions().canUpdate);
   canDelete = computed(() => this.permissions().canDelete);
@@ -70,7 +54,6 @@ export class GeneratePallet implements OnInit {
   }
 
   private loadPermissionsFromStorage(): void {
-    debugger;
     const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
     const parentMenu = menus?.find(
       (m) => m.name?.toUpperCase() === 'RECEIVE_MODULE' || m.url?.toLowerCase() === '/receive'
@@ -87,7 +70,7 @@ export class GeneratePallet implements OnInit {
     }
 
     this.permissions.set({
-      canView:   !!palletMenu.canView,
+      canView: !!palletMenu.canView,
       canCreate: !!palletMenu.canCreate,
       canUpdate: !!palletMenu.canUpdate,
       canDelete: !!palletMenu.canDelete,
@@ -120,7 +103,7 @@ export class GeneratePallet implements OnInit {
 
   isSelected(item: PalletGenerateItem): boolean {
     const sel = this.selectedItem();
-    return !!sel && sel.batchNo === item.batchNo && sel.sku === item.sku;
+    return !!sel && sel.batchNo === item.batchNo && sel.skucode === item.skucode;
   }
 
   clearSelection(): void {
@@ -138,13 +121,13 @@ export class GeneratePallet implements OnInit {
     const item = this.selectedItem();
     if (!item) return;
 
-    const payload = {
-      sku: item.sku,
-      skuName: item.skuName,
+    const payload: PalletGenerateCreatePayload = {
+      skucode: item.skucode,
       batchNo: item.batchNo,
-      palletCount: item.palletCount,
+      rcvDate: this.withDate() ? item.rcvDate : '',
+      isESL: item.isESL,
       currentPalletCount: item.currentPalletCount,
-      withDate: this.withDate(),
+      palletCount: item.palletCount,
     };
 
     this.isLoading.set(true);
@@ -153,8 +136,6 @@ export class GeneratePallet implements OnInit {
         if (res.success) {
           this.toastr.success('Pallet generated successfully.', 'Success');
           this.loadPalletGenerateList();
-          // Trigger browser print dialog if needed
-          // window.print();
         } else {
           this.toastr.error(res.message, 'Error');
         }
@@ -167,20 +148,30 @@ export class GeneratePallet implements OnInit {
     });
   }
 
-  // ── Search pallet records ────────────────────────────────────────────
+  onStartDateChange(value: string): void {
+    this.startDate.set(value);
+  }
+
+  onEndDateChange(value: string): void {
+    this.endDate.set(value);
+  }
+
   onSearchChange(value: string): void {
     this.searchQuery.set(value);
   }
 
   searchRecords(): void {
     const query = this.searchQuery().trim();
-    if (!query) {
-      this.toastr.warning('Please enter a search term.', 'Warning');
+    if (!query && !this.withDate()) {
+      this.toastr.warning('Please enter a search term or enable date search.', 'Warning');
       return;
     }
 
     this.isSearching.set(true);
-    this.palletService.searchPalletRecords(query).subscribe({
+    const start = this.withDate() ? this.startDate() : undefined;
+    const end = this.withDate() ? this.endDate() : undefined;
+
+    this.palletService.searchPalletRecords(query, this.withDate(), start, end).subscribe({
       next: (res) => {
         if (res.success) {
           this.palletRecords.set(res.data);
@@ -198,10 +189,11 @@ export class GeneratePallet implements OnInit {
 
   closeSearch(): void {
     this.searchQuery.set('');
+    this.startDate.set('');
+    this.endDate.set('');
     this.palletRecords.set([]);
   }
 
-  // ── Delete pallet record ─────────────────────────────────────────────
   deleteRecord(record: PalletRecord): void {
     if (!this.canDelete()) return;
 
@@ -221,16 +213,15 @@ export class GeneratePallet implements OnInit {
     });
   }
 
-  // ── Export to Excel ──────────────────────────────────────────────────
   exportToExcel(): void {
     if (!this.palletRecords().length) return;
     const ws = XLSX.utils.json_to_sheet(
       this.palletRecords().map((r) => ({
-        'SKU Code': r.skuCode,
-        'SKU Name': r.skuName,
-        Location: r.location,
+        'SKU Code': r.skucode,
+        'SKU Name': r.skuname,
+        Location: r.palletLocation,
         'Pallet No': r.palletNo,
-        Date: r.date,
+        Date: r.rcvDate,
       }))
     );
     const wb = XLSX.utils.book_new();
