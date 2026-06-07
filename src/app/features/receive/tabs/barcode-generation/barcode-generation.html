@@ -24,8 +24,9 @@
 
           <!-- Brand Dropdown -->
           <div class="input-group">
-            <label>BRAND<span class="req">*</span></label>
-            <select class="custom-select" 
+            <label for="brandSelect">BRAND<span class="req">*</span></label>
+            <select id="brandSelect"
+                    class="custom-select" 
                     [ngModel]="selectedBrand()" 
                     (ngModelChange)="selectedBrand.set($event); onBrandChange()">
               <option value="">Select Brand...</option>
@@ -35,8 +36,9 @@
 
           <!-- Sub Brand Dropdown -->
           <div class="input-group">
-            <label>SUB BRAND<span class="req">*</span></label>
-            <select class="custom-select" 
+            <label for="subBrandSelect">SUB BRAND<span class="req">*</span></label>
+            <select id="subBrandSelect"
+                    class="custom-select" 
                     [ngModel]="selectedSubBrand()" 
                     (ngModelChange)="selectedSubBrand.set($event)"
                     [disabled]="!selectedBrand()">
@@ -47,8 +49,9 @@
 
           <!-- No. of Carton / Board Input -->
           <div class="input-group">
-            <label>NO. OF CARTON / BOARD<span class="req">*</span></label>
+            <label for="noOfCartonInput">NO. OF CARTON / BOARD<span class="req">*</span></label>
             <input type="number" 
+                   id="noOfCartonInput"
                    placeholder="e.g. 1" 
                    [ngModel]="noOfCarton()" 
                    (ngModelChange)="noOfCarton.set($event)" />
@@ -56,8 +59,9 @@
 
           <!-- Barcode Qty Input -->
           <div class="input-group">
-            <label>BARCODE QTY<span class="req">*</span></label>
+            <label for="barcodeQtyInput">BARCODE QTY<span class="req">*</span></label>
             <input type="number" 
+                   id="barcodeQtyInput"
                    placeholder="e.g. 10" 
                    [ngModel]="barcodeQty()" 
                    (ngModelChange)="barcodeQty.set($event)" />
@@ -71,7 +75,7 @@
           <h3>PREVIEW</h3>
         </div>
 
-        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
+        <div class="card-body d-flex align-items-center justify-content-center">
           <div class="barcode-preview-box">
             
             <div class="preview-item">

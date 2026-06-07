@@ -1,3 +1,6 @@
+@use "/styles/componets/master-setup.scss" as *;
+
+
 .auto-receive-container {
   background: #f4f7f6;
   min-height: 100vh;
@@ -9,17 +12,6 @@
 }
 
 // ── Top Bar ────────────────────────────────────────────────────────────────
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border: 1px solid #eef2f5;
-  border-radius: 16px;
-  padding: 0.85rem 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
 .page-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -39,21 +31,7 @@
   }
 }
 
-// ── Barcode Card ───────────────────────────────────────────────────────────
-.barcode-card {
-  background: white;
-  border: 1px solid #eef2f5;
-  border-radius: 16px;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.barcode-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+// ── Barcode Row Custom Elements ──────────────────────────────────────────────
 .barcode-label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -124,40 +102,13 @@
 
 .btn-clear {
   height: 40px;
-  padding: 0 18px;
-  background: #ef4444;
-  border: none;
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: white;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   white-space: nowrap;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #dc2626;
-  }
-}
-
-// ── Shared Card ────────────────────────────────────────────────────────────
-.card {
-  background: white;
-  border: 1px solid #eef2f5;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
-}
-
-.card-header-sm {
-  padding: 1rem 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #2d3436;
-  border-bottom: 1px solid #f4f7f6;
 }
 
 // ── Main Grid ──────────────────────────────────────────────────────────────
@@ -175,60 +126,11 @@
   flex-direction: column;
 }
 
-// ── Summary Card ───────────────────────────────────────────────────────────
+// ── Summary Card Custom Styling ─────────────────────────────────────────────
 .summary-card {
   display: flex;
   flex-direction: column;
   flex: 1;
-}
-
-.summary-table-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-  padding: 0 1.5rem;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 99px;
-  }
-}
-
-.summary-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th {
-    text-align: left;
-    padding: 0.75rem 0;
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: #8395a7;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #f4f7f6;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-  }
-
-  td {
-    padding: 0.85rem 0;
-    font-size: 0.8rem;
-    color: #2d3436;
-    font-weight: 500;
-    border-bottom: 1px solid #f8fafc;
-  }
-
-  .empty-state {
-    text-align: center;
-    color: #b2bec3;
-    font-size: 0.78rem;
-    padding: 2.5rem 0;
-    border-bottom: none;
-  }
 }
 
 .notes-wrapper {
@@ -326,60 +228,7 @@
   }
 }
 
-// ── Batch Card ─────────────────────────────────────────────────────────────
-.batch-card {
-  // uses .card base
-}
-
-.batch-header {
-  // uses .card-header-sm
-}
-
-.batch-table-wrapper {
-  padding: 0 1.5rem 1.25rem;
-  overflow-y: auto;
-  min-height: 100px;
+// ── Batch Details Custom Wrapper ───────────────────────────────────────────
+.batch-table-outer {
   max-height: 200px;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 99px;
-  }
-}
-
-.batch-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th {
-    text-align: left;
-    padding: 0.85rem 0;
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: #8395a7;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #f4f7f6;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-  }
-
-  td {
-    padding: 0.85rem 0;
-    font-size: 0.8rem;
-    color: #2d3436;
-    font-weight: 500;
-    border-bottom: 1px solid #f8fafc;
-  }
-
-  .empty-state {
-    text-align: center;
-    color: #b2bec3;
-    font-size: 0.78rem;
-    padding: 2rem 0;
-    border-bottom: none;
-  }
 }

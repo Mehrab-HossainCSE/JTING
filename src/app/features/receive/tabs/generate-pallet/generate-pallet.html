@@ -15,7 +15,7 @@
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- ── Top Card: Pallet Generate — Data List ─────────────────────── -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <div class="card" style="margin-bottom: 1rem;">
+    <div class="card mb-3">
       <div class="card-header">
         <h3>Pallet Generate — Data List</h3>
       </div>
@@ -36,15 +36,14 @@
           </thead>
           <tbody>
             <tr *ngFor="let item of palletList()"
-                class="table-row"
-                [style.background]="isSelected(item) ? '#e6f7ec' : ''"
-                [style.cursor]="'pointer'"
+                class="table-row table-row-selectable"
+                [class.selected]="isSelected(item)"
                 (click)="selectRow(item)">
               <td><span class="id-pill">{{ item.skucode }}</span></td>
               <td>{{ item.skuname }}</td>
               <td>{{ item.palletCount }}</td>
               <td>
-                <span style="color: #00BB31; font-weight: 700;">
+                <span class="success-text">
                   {{ item.currentPalletCount }}
                 </span>
               </td>
@@ -52,8 +51,7 @@
               <td>{{ item.rcvDate }}</td>
             </tr>
             <tr *ngIf="palletList().length === 0 && !isLoading()">
-              <td colspan="6" class="empty-row"
-                  style="text-align: center; padding: 2rem; color: #b2bec3;">
+              <td colspan="6" class="empty-row empty-table-cell">
                 No pallet data found.
               </td>
             </tr>
@@ -69,26 +67,28 @@
       <div class="card-body">
 
         <!-- ── SKU Form Row ──────────────────────────────────────────── -->
-        <div class="allocated-row" style="margin-bottom: 1.25rem; flex-wrap: wrap;">
-          <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap;">
+        <div class="allocated-row flex-wrap mb-3">
+          <label for="skuNameInput" class="control-label">
             SKU
           </label>
-          <input type="text"
+          <input id="skuNameInput"
+                 type="text"
                  [value]="selectedItem()?.skuname || ''"
                  readonly
                  placeholder="SKU Name"
-                 style="min-width: 160px;" />
-          <input type="text"
+                 class="sku-name-input" />
+          <input id="skuCodeInput"
+                 type="text"
+                 aria-label="SKU Code"
                  [value]="selectedItem()?.skucode || ''"
                  readonly
                  placeholder="SKU Code"
-                 style="flex: 0 0 auto; width: 120px;" />
+                 class="sku-code-input" />
 
           <!-- Action buttons (pushed right) -->
-          <div class="card-footer" style="margin-left: auto; padding: 0; border: none; background: transparent;">
-            <button class="btn btn-reset"
-                    (click)="clearSelection()"
-                    style="flex: unset; padding: 0 20px;">
+          <div class="card-footer transparent-footer">
+            <button class="btn btn-reset btn-auto-width-sm"
+                    (click)="clearSelection()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -97,10 +97,9 @@
               Clear
             </button>
 
-            <button class="btn btn-save" *ngIf="canCreate()"
+            <button class="btn btn-save btn-auto-width-md" *ngIf="canCreate()"
                     (click)="saveAndPrint()"
-                    [disabled]="!selectedItem() || isLoading()"
-                    style="flex: unset; padding: 0 24px;">
+                    [disabled]="!selectedItem() || isLoading()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 9V2h12v7"/>
@@ -113,60 +112,63 @@
         </div>
 
         <!-- ── Search Row ────────────────────────────────────────────── -->
-        <div class="allocated-row" style="flex-wrap: wrap;">
-          <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap;">
+        <div class="allocated-row flex-wrap">
+          <label class="control-label">
             Search
           </label>
 
           <!-- With Date checkbox -->
-          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem;
-                        color: #636e72; cursor: pointer; white-space: nowrap; margin-left: 8px; margin-right: 8px;">
-            <input type="checkbox"
+          <label for="withDateCheckbox" class="checkbox-label mx-2">
+            <input id="withDateCheckbox"
+                   type="checkbox"
                    [checked]="withDate()"
                    (change)="onWithDateChange($any($event.target).checked)"
-                   style="width: 16px; height: 16px; accent-color: #00BB31; cursor: pointer;" />
+                   class="custom-checkbox" />
             With Date
           </label>
 
           <!-- Start Date and End Date inputs, shown only if withDate() is true -->
           <ng-container *ngIf="withDate()">
-            <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap; margin-left: 8px; margin-right: 4px;">
+            <label for="startDateInput" class="control-label ms-2 me-1">
               Start Date
             </label>
-            <input type="date"
+            <input id="startDateInput"
+                   type="date"
                    [value]="startDate()"
                    (input)="onStartDateChange($any($event.target).value)"
-                   style="width: 130px; margin-right: 8px;" />
+                   class="date-input me-2" />
 
-            <label style="font-size: 0.8rem; font-weight: 700; color: #2d3436; white-space: nowrap; margin-left: 8px; margin-right: 4px;">
+            <label for="endDateInput" class="control-label ms-2 me-1">
               End Date
             </label>
-            <input type="date"
+            <input id="endDateInput"
+                   type="date"
                    [value]="endDate()"
                    (input)="onEndDateChange($any($event.target).value)"
-                   style="width: 130px; margin-right: 8px;" />
+                   class="date-input me-2" />
           </ng-container>
 
-          <div style="position: relative; flex: 1; min-width: 200px; max-width: 280px;">
+          <div class="search-input-container">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b2bec3" stroke-width="2.5"
-                 style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                 class="search-icon">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text"
+            <input id="searchInput"
+                   type="text"
+                   aria-label="Search"
                    placeholder="Search..."
                    [value]="searchQuery()"
                    (input)="onSearchChange($any($event.target).value)"
                    (keyup.enter)="searchRecords()"
-                   style="width: 100%; padding-left: 38px; background: white; cursor: text;" />
+                   class="search-text-input" />
           </div>
 
-          <div class="card-footer" style="padding: 0; border: none; background: transparent;">
+          <div class="card-footer transparent-footer">
             <!-- Search button -->
-            <button class="btn btn-save"
+            <button class="btn btn-save btn-auto-width-md"
                     (click)="searchRecords()"
-                    [disabled]="isSearching()"
-                    style="flex: unset; padding: 0 24px;">
+                    [disabled]="isSearching()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <circle cx="11" cy="11" r="8"/>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -175,9 +177,8 @@
             </button>
 
             <!-- Close button -->
-            <button class="btn btn-reset"
-                    (click)="closeSearch()"
-                    style="flex: unset; padding: 0 20px;">
+            <button class="btn btn-reset btn-auto-width-sm"
+                    (click)="closeSearch()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -190,7 +191,7 @@
       </div>
 
       <!-- ── DATA LIST Header ────────────────────────────────────────── -->
-      <div class="card-header" style="border-top: 1px solid #f8fafc;">
+      <div class="card-header card-header-top-border">
         <h3>DATA LIST</h3>
       </div>
 
@@ -216,9 +217,8 @@
               <td>{{ record.rcvDate }}</td>
               <td>
                 <div class="row-actions">
-                  <button class="action-btn print-btn"
-                          title="Print" (click)="printRecord(record)"
-                          style="color: #00BB31; background: transparent; border: none; cursor: pointer;">
+                  <button class="action-btn print-btn print-action-btn"
+                          title="Print" (click)="printRecord(record)">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="6 9 6 2 18 2 18 9"></polyline>
@@ -230,8 +230,7 @@
               </td>
             </tr>
             <tr *ngIf="palletRecords().length === 0">
-              <td colspan="6"
-                  style="text-align: center; padding: 2.5rem; color: #b2bec3; font-size: 0.8rem;">
+              <td colspan="6" class="empty-records-cell">
                 No pallet records — click Search to load.
               </td>
             </tr>

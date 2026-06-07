@@ -10,15 +10,15 @@
 
         <div class="form-row two-col">
           <div class="input-group">
-            <label>BLOCK <span class="req">*</span></label>
-            <select class="custom-select" [(ngModel)]="form.block" (change)="onFormChange()">
+            <label for="blockSelect">BLOCK <span class="req">*</span></label>
+            <select id="blockSelect" class="custom-select" [(ngModel)]="form.block" (change)="onFormChange()">
               <option value="FG1">FG1</option>
               <option value="FG2">FG2</option>
             </select>
           </div>
           <div class="input-group">
-            <label>ARCH <span class="req">*</span></label>
-            <select class="custom-select" [(ngModel)]="form.arch" (change)="onFormChange()">
+            <label for="archSelect">ARCH <span class="req">*</span></label>
+            <select id="archSelect" class="custom-select" [(ngModel)]="form.arch" (change)="onFormChange()">
               <option value="FG-1-ARCH">FG-1-ARCH</option>
               <option value="FG-2-ARCH">FG-2-ARCH</option>
             </select>
@@ -27,16 +27,16 @@
 
         <div class="form-row two-col">
           <div class="input-group">
-            <label>LINE <span class="req">*</span></label>
-            <select class="custom-select" [(ngModel)]="form.line" (change)="onFormChange()">
+            <label for="lineSelect">LINE <span class="req">*</span></label>
+            <select id="lineSelect" class="custom-select" [(ngModel)]="form.line" (change)="onFormChange()">
               <option value="L3">L3</option>
               <option value="L1">L1</option>
               <option value="L2">L2</option>
             </select>
           </div>
           <div class="input-group">
-            <label>BOX <span class="req">*</span></label>
-            <select class="custom-select" [(ngModel)]="form.box" (change)="onFormChange()">
+            <label for="boxSelect">BOX <span class="req">*</span></label>
+            <select id="boxSelect" class="custom-select" [(ngModel)]="form.box" (change)="onFormChange()">
               <option value="FG1A01L031">FG1A01L031</option>
               <option value="FG1A01L032">FG1A01L032</option>
             </select>
@@ -44,16 +44,16 @@
         </div>
 
         <div class="input-group checkbox-group">
-          <label class="checkbox-label">
-            <input type="checkbox" [(ngModel)]="form.pa" />
+          <label for="paCheckbox" class="checkbox-label">
+            <input id="paCheckbox" type="checkbox" [(ngModel)]="form.pa" />
             <span class="checkbox-box"></span>
             PA
           </label>
         </div>
 
         <div class="input-group">
-          <label>SKU <span class="req">*</span></label>
-          <select class="custom-select" [(ngModel)]="form.sku" (change)="onFormChange()">
+          <label for="skuSelect">SKU <span class="req">*</span></label>
+          <select id="skuSelect" class="custom-select" [(ngModel)]="form.sku" (change)="onFormChange()">
             <option value="">Select SKU...</option>
             <option value="SKU001">Navy Special Filter 10s</option>
             <option value="SKU002">SKU002</option>
@@ -61,8 +61,8 @@
         </div>
 
         <div class="input-group">
-          <label>PALLET NO <span class="req">*</span></label>
-          <select class="custom-select" [(ngModel)]="form.palletNo" (change)="onPalletChange()">
+          <label for="palletNoSelect">PALLET NO <span class="req">*</span></label>
+          <select id="palletNoSelect" class="custom-select" [(ngModel)]="form.palletNo" (change)="onPalletChange()">
             <option value="">Select Pallet No...</option>
             <option value="PLT001">PLT001</option>
             <option value="PLT002">PLT002</option>
@@ -99,6 +99,7 @@
               <td class="action-cell">
                 <input
                   type="checkbox"
+                  aria-label="Select case"
                   class="case-checkbox"
                   [(ngModel)]="item.selected"
                   (change)="onCheckboxChange()"
@@ -190,9 +191,10 @@
   <!-- Remarks Row -->
   <div class="card remarks-card">
     <div class="remarks-body">
-      <div class="remarks-label">REMARKS</div>
+      <label for="remarksInput" class="remarks-label">REMARKS</label>
       <div class="remarks-input-row">
         <input
+          id="remarksInput"
           type="text"
           class="remarks-input"
           placeholder="Enter split remarks..."

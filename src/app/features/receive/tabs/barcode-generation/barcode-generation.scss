@@ -1,4 +1,5 @@
-@import "/styles/componets/master-setup.scss";
+@use "/styles/componets/master-setup.scss" as *;
+
 
 .grid-layout {
   display: grid;
@@ -8,6 +9,12 @@
 
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
+  }
+}
+
+.preview-card {
+  .card-body {
+    min-height: 250px;
   }
 }
 

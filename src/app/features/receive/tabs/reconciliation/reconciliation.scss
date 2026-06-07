@@ -1,4 +1,5 @@
-@import "/styles/componets/master-setup.scss";
+@use "/styles/componets/master-setup.scss" as *;
+
 
 .reconciliation-header {
   background: #f8fafc;
@@ -237,3 +238,14 @@
     border: none;
   }
 }
+
+.empty-row {
+  color: #b2bec3 !important;
+}
+
+.footer-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #8395a7;
+}
+

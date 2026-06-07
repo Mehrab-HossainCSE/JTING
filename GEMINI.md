@@ -64,8 +64,12 @@ JTING is a modern warehouse/inventory management application built with **Angula
 
 #### Styling
 - Use SCSS.
-- Import abstracts from `src/styles/abstracts/` for consistent variables and mixins.
-- Prefer Bootstrap utility classes for layout and spacing.
+- Prefer modern Sass module rules (`@use "/styles/componets/master-setup.scss" as *;`) instead of the deprecated `@import` directive.
+- Avoid inline CSS styles (`style="..."` attributes). Move layout/styling rules to scoped SCSS files or use Bootstrap utility classes.
+
+#### Accessibility & Templates
+- Every form field/input must have a corresponding `<label>` associated using the `for="..."` and matching `id="..."` attributes. Avoid dynamic binding (`[for]`) for this purpose as static analyzers might trigger warnings.
+- Checkboxes or table action controls without visible text labels must include an `aria-label="..."` attribute.
 
 #### Testing
 - Use **Vitest** for all unit tests.

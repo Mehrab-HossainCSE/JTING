@@ -1,21 +1,22 @@
 <div class="auto-receive-container">
 
   <!-- Top Bar -->
-  <div class="top-bar">
+  <div class="d-flex justify-content-between align-items-center bg-white border rounded-4 px-4 py-3 shadow-sm">
     <span class="page-title">Manual Product Receive (SKU)</span>
     <span class="operations-link">OPERATIONS</span>
   </div>
 
   <!-- Barcode Row -->
-  <div class="barcode-card">
-    <div class="barcode-row">
-      <span class="barcode-label">Barcode</span>
+  <div class="card p-3 shadow-sm">
+    <div class="d-flex align-items-center gap-3">
+      <label class="barcode-label" for="manualReceiveBarcodeInput">Barcode</label>
       <div class="barcode-input-wrapper">
         <svg class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
         </svg>
         <input
           type="text"
+          id="manualReceiveBarcodeInput"
           class="barcode-input"
           placeholder="Scan or enter barcode, press Enter..."
           [(ngModel)]="barcodeInput"
@@ -23,7 +24,7 @@
         />
       </div>
       <button class="btn-confirm" (click)="onConfirm()">Confirm</button>
-      <button class="btn-clear" (click)="onClear()">
+      <button class="btn btn-danger btn-clear" (click)="onClear()">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -41,8 +42,8 @@
       <!-- Summary Card -->
       <div class="card summary-card">
         <div class="card-header-sm">Summary</div>
-        <div class="summary-table-wrapper">
-          <table class="summary-table">
+        <div class="table-outer">
+          <table class="premium-table">
             <thead>
               <tr>
                 <th>SKU CODE</th>
@@ -68,6 +69,7 @@
             placeholder="Notes..."
             [(ngModel)]="notes"
             rows="3"
+            aria-label="Notes"
           ></textarea>
         </div>
       </div>
@@ -96,9 +98,9 @@
 
   <!-- Batch Details -->
   <div class="card batch-card">
-    <div class="card-header-sm batch-header">Batch Details</div>
-    <div class="batch-table-wrapper">
-      <table class="batch-table">
+    <div class="card-header-sm">Batch Details</div>
+    <div class="table-outer batch-table-outer">
+      <table class="premium-table">
         <thead>
           <tr>
             <th>#</th>

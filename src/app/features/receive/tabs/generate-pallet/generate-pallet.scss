@@ -1,1 +1,114 @@
-@import "/styles/componets/master-setup.scss";
+@use "/styles/componets/master-setup.scss" as *;
+
+
+.table-row-selectable {
+  cursor: pointer;
+  &.selected {
+    background-color: #e6f7ec !important;
+  }
+}
+
+.success-text {
+  color: #00BB31;
+  font-weight: 700;
+}
+
+.empty-table-cell {
+  text-align: center;
+  padding: 2rem;
+  color: #b2bec3;
+}
+
+.control-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2d3436;
+  white-space: nowrap;
+}
+
+.sku-name-input {
+  min-width: 160px;
+}
+
+.sku-code-input {
+  flex: 0 0 auto;
+  width: 120px;
+}
+
+.transparent-footer {
+  margin-left: auto;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.btn-auto-width-sm {
+  flex: unset !important;
+  padding: 0 20px !important;
+}
+
+.btn-auto-width-md {
+  flex: unset !important;
+  padding: 0 24px !important;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #636e72;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.custom-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #00BB31;
+  cursor: pointer;
+}
+
+.date-input {
+  width: 130px;
+}
+
+.search-input-container {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 280px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-text-input {
+  width: 100%;
+  padding-left: 38px;
+  background: white;
+  cursor: text;
+}
+
+.card-header-top-border {
+  border-top: 1px solid #f8fafc;
+}
+
+.print-action-btn {
+  color: #00BB31;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.empty-records-cell {
+  text-align: center;
+  padding: 2.5rem;
+  color: #b2bec3;
+  font-size: 0.8rem;
+}
