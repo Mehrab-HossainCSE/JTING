@@ -33,97 +33,92 @@
     </div>
   </div>
 
-  <!-- Main Grid -->
+  <!-- Main Grid (2x2 Layout) -->
   <div class="main-grid">
 
-    <!-- Left Column -->
-    <div class="left-col">
+    <!-- Grid Cell 1: Summary Card -->
+    <div class="card summary-card">
+      <div class="card-header-sm">Summary</div>
+      <div class="table-outer summary-table-outer">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>SKU CODE</th>
+              <th>SKU NAME</th>
+              <th>QTY</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="summaryItems.length === 0">
+              <td colspan="3" class="empty-state">No records yet — scan a barcode to begin.</td>
+            </tr>
+            <tr *ngFor="let item of summaryItems">
+              <td>{{ item.skuCode }}</td>
+              <td>{{ item.skuName }}</td>
+              <td>{{ item.qty }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-      <!-- Summary Card -->
-      <div class="card summary-card">
-        <div class="card-header-sm">Summary</div>
-        <div class="table-outer">
-          <table class="premium-table">
-            <thead>
-              <tr>
-                <th>SKU CODE</th>
-                <th>SKU NAME</th>
-                <th>QTY</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngIf="summaryItems.length === 0">
-                <td colspan="3" class="empty-state">No records yet — scan a barcode to begin.</td>
-              </tr>
-              <tr *ngFor="let item of summaryItems">
-                <td>{{ item.skuCode }}</td>
-                <td>{{ item.skuName }}</td>
-                <td>{{ item.qty }}</td>
-              </tr>
-            </tbody>
-          </table>
+    <!-- Grid Cell 2: Carton Counter Card -->
+    <div class="card counter-card">
+      <div class="counter-inner">
+        <div class="counter-box">
+          <span class="counter-number">{{ totalCartons }}</span>
         </div>
-        <div class="notes-wrapper">
-          <textarea
-            class="notes-input"
-            placeholder="Notes..."
-            [(ngModel)]="notes"
-            rows="3"
-            aria-label="Notes"
-          ></textarea>
+        <div class="counter-label">TOTAL CARTONS</div>
+        <div class="counter-footer">
+          <span>Scanned entries: <strong>{{ scannedEntries }}</strong></span>
+          <span class="sku-count">{{ scannedEntries }} SKU(s)</span>
         </div>
       </div>
-
     </div>
 
-    <!-- Right Column -->
-    <div class="right-col">
-
-      <!-- Carton Counter Card -->
-      <div class="card counter-card">
-        <div class="counter-inner">
-          <div class="counter-box">
-            <span class="counter-number">{{ totalCartons }}</span>
-          </div>
-          <div class="counter-label">TOTAL CARTONS</div>
-          <div class="counter-footer">
-            <span>Scanned entries: <strong>{{ scannedEntries }}</strong></span>
-            <span class="sku-count">{{ scannedEntries }} SKU(s)</span>
-          </div>
-        </div>
+    <!-- Grid Cell 3: Notes Card -->
+    <div class="card notes-card">
+      <div class="notes-wrapper">
+        <textarea
+          class="notes-input"
+          placeholder="Notes..."
+          [(ngModel)]="notes"
+          rows="3"
+          aria-label="Notes"
+        ></textarea>
       </div>
-
     </div>
-  </div>
 
-  <!-- Batch Details -->
-  <div class="card batch-card">
-    <div class="card-header-sm">Batch Details</div>
-    <div class="table-outer batch-table-outer">
-      <table class="premium-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>BATCH NO</th>
-            <th>SKU NAME</th>
-            <th>LOCATION</th>
-            <th>PALLET NO</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="batchItems.length === 0">
-            <td colspan="5" class="empty-state">No batch records yet.</td>
-          </tr>
-          <tr *ngFor="let item of batchItems; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ item.batchNo }}</td>
-            <td>{{ item.skuName }}</td>
-            <td>{{ item.location }}</td>
-            <td>{{ item.palletNo }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Grid Cell 4: Batch Details Card -->
+    <div class="card batch-card">
+      <div class="card-header-sm">Batch Details</div>
+      <div class="table-outer batch-table-outer">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>BATCH NO</th>
+              <th>SKU NAME</th>
+              <th>LOCATION</th>
+              <th>PALLET NO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="batchItems.length === 0">
+              <td colspan="5" class="empty-state">No batch records yet.</td>
+            </tr>
+            <tr *ngFor="let item of batchItems; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ item.batchNo }}</td>
+              <td>{{ item.skuName }}</td>
+              <td>{{ item.location }}</td>
+              <td>{{ item.palletNo }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
 
 </div>

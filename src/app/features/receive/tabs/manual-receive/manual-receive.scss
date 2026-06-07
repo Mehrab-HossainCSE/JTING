@@ -1,6 +1,5 @@
 @use "/styles/componets/master-setup.scss" as *;
 
-
 .auto-receive-container {
   background: #f4f7f6;
   min-height: 100vh;
@@ -111,19 +110,13 @@
   white-space: nowrap;
 }
 
-// ── Main Grid ──────────────────────────────────────────────────────────────
+// ── Main Grid (2x2 Layout) ──────────────────────────────────────────────────
 .main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto auto;
   gap: 1rem;
   align-items: stretch;
-}
-
-.left-col,
-.right-col {
-  display: flex;
-  flex-direction: column;
 }
 
 // ── Summary Card Custom Styling ─────────────────────────────────────────────
@@ -133,13 +126,27 @@
   flex: 1;
 }
 
+.summary-table-outer {
+  max-height: 160px;
+}
+
+// ── Notes Card Custom Styling ───────────────────────────────────────────────
+.notes-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .notes-wrapper {
-  padding: 1rem 1.5rem 1.25rem;
-  margin-top: auto;
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .notes-input {
   width: 100%;
+  flex: 1;
   padding: 10px 14px;
   border: 1.5px solid #e1e8ed;
   border-radius: 12px;
@@ -150,6 +157,7 @@
   font-family: inherit;
   box-sizing: border-box;
   transition: all 0.2s;
+  min-height: 80px;
 
   &::placeholder {
     color: #b2bec3;
@@ -176,23 +184,23 @@
   align-items: center;
   justify-content: center;
   background: #f0fdf4;
-  padding: 2rem 1.5rem 1.25rem;
-  gap: 0.75rem;
+  padding: 1.25rem 1.5rem 1rem;
+  gap: 0.5rem;
 }
 
 .counter-box {
-  width: 160px;
-  height: 160px;
+  width: 120px;
+  height: 120px;
   background: #00BB31;
-  border-radius: 28px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(0, 187, 49, 0.25);
+  box-shadow: 0 6px 18px rgba(0, 187, 49, 0.2);
 }
 
 .counter-number {
-  font-size: 5rem;
+  font-size: 3.5rem;
   font-weight: 800;
   color: white;
   line-height: 1;
@@ -230,5 +238,5 @@
 
 // ── Batch Details Custom Wrapper ───────────────────────────────────────────
 .batch-table-outer {
-  max-height: 200px;
+  max-height: 160px;
 }
