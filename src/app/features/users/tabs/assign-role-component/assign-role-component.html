@@ -72,16 +72,16 @@
               </div>
               <div class="col-actions">
                 <div class="action-icons">
-                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission">
+                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission">
+                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-plus-circle"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission">
+                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission">
+                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
@@ -113,16 +113,16 @@
               </div>
               <div class="col-actions">
                 <div class="action-icons">
-                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission">
+                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission">
+                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-plus-circle"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission">
+                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission">
+                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>

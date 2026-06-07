@@ -43,13 +43,9 @@ export class AssignRoleComponent implements OnInit {
     const sections = this.menuSections();
     const flat: any[] = [];
     sections.forEach(section => {
-      // If you want to include section headers as special items, you can.
-      // But for now, let's just get the items as shown in the image.
       section.items.forEach((item: any) => {
-        flat.push({
-          ...item,
-          sectionName: section.title
-        });
+        // Use original item reference instead of spreading it to ensure two-way binding works
+        flat.push(item);
       });
     });
     return flat;
