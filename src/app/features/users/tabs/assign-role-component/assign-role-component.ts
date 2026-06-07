@@ -260,6 +260,20 @@ export class AssignRoleComponent implements OnInit {
     item.delete = item.isSelected;
     
     this.menuSections.update(sections => [...sections]);
+    this.menuSections.update(sections => [...sections]);
+  }
+
+  togglePermission(item: any, permission: string) {
+    if (!this.canUpdate()) return;
+    
+    // Toggle the specific permission
+    item[permission] = !item[permission];
+    
+    // Auto-sync isSelected: if any permission is true, isSelected MUST be true
+    // if ALL permissions are false, isSelected MUST be false
+    item.isSelected = item.view || item.add || item.edit || item.delete;
+    
+    this.menuSections.update(sections => [...sections]);
   }
 
   selectAll() {

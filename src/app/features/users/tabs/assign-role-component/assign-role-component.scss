@@ -267,6 +267,16 @@ $shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
                     color: $primary-green;
                     background: rgba($primary-green, 0.08);
                   }
+
+                  &.btn-delete-action.active {
+                    color: $danger;
+                    background: rgba($danger, 0.08);
+
+                    &:hover {
+                        background: rgba($danger, 0.15);
+                        color: color.adjust($danger, $lightness: -10%);
+                    }
+                  }
                 }
               }
             }

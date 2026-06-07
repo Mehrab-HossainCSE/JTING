@@ -71,17 +71,17 @@
                 </label>
               </div>
               <div class="col-actions">
-                <div class="action-icons" [class.disabled]="!item.isSelected">
-                  <button class="btn-action" [class.active]="item.view" (click)="item.view = !item.view" title="View Permission">
+                <div class="action-icons">
+                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="item.add = !item.add" title="Add Permission">
+                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission">
                     <i class="bi bi-plus-circle"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="item.edit = !item.edit" title="Edit Permission">
+                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.delete" (click)="item.delete = !item.delete" title="Delete Permission">
+                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
@@ -112,17 +112,17 @@
                 </label>
               </div>
               <div class="col-actions">
-                <div class="action-icons" [class.disabled]="!item.isSelected">
-                  <button class="btn-action" [class.active]="item.view" (click)="item.view = !item.view" title="View Permission">
+                <div class="action-icons">
+                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="item.add = !item.add" title="Add Permission">
+                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission">
                     <i class="bi bi-plus-circle"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="item.edit = !item.edit" title="Edit Permission">
+                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.delete" (click)="item.delete = !item.delete" title="Delete Permission">
+                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
