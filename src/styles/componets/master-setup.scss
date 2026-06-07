@@ -338,6 +338,11 @@
     color: #8395a7;
     font-weight: 600;
     border-bottom: 1px solid #f8fafc;
+
+    &:last-child {
+      text-align: right;
+      padding-right: 1.5rem;
+    }
   }
   td {
     padding: 1.1rem 0;
