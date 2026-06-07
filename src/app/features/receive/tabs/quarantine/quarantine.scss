@@ -1,4 +1,5 @@
-@import "/styles/componets/master-setup.scss";
+@use "/styles/componets/master-setup.scss" as *;
+
 
 // Cascading filters grid
 .filters-grid {
@@ -98,6 +99,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 
   input {
@@ -331,3 +333,12 @@
     border: none;
   }
 }
+
+.empty-row {
+  color: #b2bec3 !important;
+}
+
+.pallet-qty-text {
+  color: #2d3436;
+}
+

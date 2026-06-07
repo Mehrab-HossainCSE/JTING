@@ -20,8 +20,8 @@
           
           <!-- SKU Dropdown -->
           <div class="filter-item">
-            <label>SKU</label>
-            <select class="custom-select" [(ngModel)]="filterSku">
+            <label for="skuFilterSelect">SKU</label>
+            <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku">
               <option value="">Select SKU...</option>
               <option *ngFor="let sku of skus" [value]="sku.code">
                 {{ sku.name }} ({{ sku.code }})
@@ -31,8 +31,8 @@
 
           <!-- BLOCK Dropdown -->
           <div class="filter-item">
-            <label>BLOCK</label>
-            <select class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
+            <label for="blockFilterSelect">BLOCK</label>
+            <select id="blockFilterSelect" class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
               <option value="">Select Block...</option>
               <option *ngFor="let b of blocks" [value]="b">{{ b }}</option>
             </select>
@@ -40,8 +40,8 @@
 
           <!-- ARCH Dropdown -->
           <div class="filter-item">
-            <label>ARCH</label>
-            <select class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
+            <label for="archFilterSelect">ARCH</label>
+            <select id="archFilterSelect" class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
               <option value="">Select Arch...</option>
               <option *ngFor="let a of filteredArches()" [value]="a">{{ a }}</option>
             </select>
@@ -49,8 +49,8 @@
 
           <!-- LINE Dropdown -->
           <div class="filter-item">
-            <label>LINE</label>
-            <select class="custom-select" [(ngModel)]="filterLine">
+            <label for="lineFilterSelect">LINE</label>
+            <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine">
               <option value="">Select Line...</option>
               <option *ngFor="let l of filteredLines()" [value]="l">{{ l }}</option>
             </select>
@@ -58,22 +58,22 @@
 
           <!-- All Select Checkbox -->
           <div class="filter-item checkbox-item">
-            <label class="all-select-label">
-              <input type="checkbox" [(ngModel)]="allSelect" (change)="toggleAllSelect()" />
+            <label for="allSelectCheckbox" class="all-select-label">
+              <input id="allSelectCheckbox" type="checkbox" [(ngModel)]="allSelect" (change)="toggleAllSelect()" />
               <span>All Select</span>
             </label>
           </div>
 
           <!-- From Date -->
           <div class="filter-item">
-            <label>FROM DATE</label>
-            <input type="date" [(ngModel)]="fromDate" class="form-input-date" />
+            <label for="fromDateInput">FROM DATE</label>
+            <input id="fromDateInput" type="date" [(ngModel)]="fromDate" class="form-input-date" />
           </div>
 
           <!-- To Date -->
           <div class="filter-item">
-            <label>TO DATE</label>
-            <input type="date" [(ngModel)]="toDate" class="form-input-date" />
+            <label for="toDateInput">TO DATE</label>
+            <input id="toDateInput" type="date" [(ngModel)]="toDate" class="form-input-date" />
           </div>
 
           <!-- Search Button -->
@@ -89,8 +89,8 @@
 
           <!-- Quarantine No -->
           <div class="filter-item qrn-item">
-            <label>QUARANTINE NO</label>
-            <input type="text" placeholder="QRN-XXXXX" [(ngModel)]="quarantineNoQuery" (keyup.enter)="search()" class="form-input-text" />
+            <label for="quarantineNoQueryInput">QUARANTINE NO</label>
+            <input id="quarantineNoQueryInput" type="text" placeholder="QRN-XXXXX" [(ngModel)]="quarantineNoQuery" (keyup.enter)="search()" class="form-input-text" />
           </div>
 
         </div>
@@ -121,13 +121,16 @@
                   <td><span class="id-pill">{{ box.location }}</span></td>
                   <td class="text-right check-col">
                     <label class="custom-checkbox">
-                      <input type="checkbox" [(ngModel)]="box.selected" (change)="updateAllSelectState()" />
+                      <input type="checkbox"
+                             aria-label="Select location"
+                             [(ngModel)]="box.selected"
+                             (change)="updateAllSelectState()" />
                       <span class="checkmark"></span>
                     </label>
                   </td>
                 </tr>
                 <tr *ngIf="filteredBoxes().length === 0">
-                  <td colspan="2" class="empty-row text-center py-4" style="color: #b2bec3;">
+                  <td colspan="2" class="empty-row text-center py-4">
                     No locations found.
                   </td>
                 </tr>
@@ -170,7 +173,7 @@
                   <td>{{ rec.createDate }}</td>
                 </tr>
                 <tr *ngIf="filteredRecords().length === 0">
-                  <td colspan="4" class="empty-row text-center py-4" style="color: #b2bec3;">
+                  <td colspan="4" class="empty-row text-center py-4">
                     No quarantine records found.
                   </td>
                 </tr>
@@ -203,7 +206,7 @@
                   <td><span class="pallet-pill">{{ pallet.palletNo }}</span></td>
                   <td>{{ pallet.batchNo }}</td>
                   <td>{{ pallet.receiveDate }}</td>
-                  <td><strong style="color: #2d3436;">{{ pallet.qty }}</strong></td>
+                  <td><strong class="pallet-qty-text">{{ pallet.qty }}</strong></td>
                   <td>
                     <span class="status-badge" [class]="pallet.status.toLowerCase()">
                       {{ pallet.status }}
@@ -229,7 +232,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="filteredPallets().length === 0">
-                  <td colspan="7" class="empty-row text-center py-4" style="color: #b2bec3;">
+                  <td colspan="7" class="empty-row text-center py-4">
                     No pallet details found.
                   </td>
                 </tr>
@@ -250,8 +253,8 @@
         <div class="remarks-row">
           
           <div class="remarks-input-wrapper">
-            <label>REMARKS</label>
-            <textarea class="remarks-textarea" 
+            <label for="remarksTextarea">REMARKS</label>
+            <textarea id="remarksTextarea" class="remarks-textarea" 
                       placeholder="Enter remarks..." 
                       [(ngModel)]="remarks"
                       rows="2"></textarea>

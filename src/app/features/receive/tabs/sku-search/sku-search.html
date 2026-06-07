@@ -20,8 +20,8 @@
           
           <!-- BLOCK Dropdown -->
           <div class="filter-item">
-            <label>BLOCK</label>
-            <select class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
+            <label for="blockFilterSelect">BLOCK</label>
+            <select id="blockFilterSelect" class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
               <option value="">Select Block...</option>
               <option *ngFor="let b of blocks" [value]="b">{{ b }}</option>
             </select>
@@ -29,8 +29,8 @@
 
           <!-- ARCH Dropdown -->
           <div class="filter-item">
-            <label>ARCH</label>
-            <select class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
+            <label for="archFilterSelect">ARCH</label>
+            <select id="archFilterSelect" class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
               <option value="">Select Arch...</option>
               <option *ngFor="let a of filteredArches()" [value]="a">{{ a }}</option>
             </select>
@@ -38,8 +38,8 @@
 
           <!-- LINE Dropdown -->
           <div class="filter-item">
-            <label>LINE</label>
-            <select class="custom-select" [(ngModel)]="filterLine">
+            <label for="lineFilterSelect">LINE</label>
+            <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine">
               <option value="">Select Line...</option>
               <option *ngFor="let l of filteredLines()" [value]="l">{{ l }}</option>
             </select>
@@ -47,8 +47,8 @@
 
           <!-- SKU Dropdown -->
           <div class="filter-item">
-            <label>SKU</label>
-            <select class="custom-select" [(ngModel)]="filterSku">
+            <label for="skuFilterSelect">SKU</label>
+            <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku">
               <option value="">Select SKU...</option>
               <option *ngFor="let sku of skus" [value]="sku.code">
                 {{ sku.name }} ({{ sku.code }})
@@ -58,28 +58,28 @@
 
           <!-- BOX Input -->
           <div class="filter-item">
-            <label>BOX</label>
-            <input type="text" placeholder="Box name..." [(ngModel)]="filterBox" class="form-input-text" />
+            <label for="boxFilterInput">BOX</label>
+            <input id="boxFilterInput" type="text" placeholder="Box name..." [(ngModel)]="filterBox" class="form-input-text" />
           </div>
 
           <!-- PALLET NO Input -->
           <div class="filter-item">
-            <label>PALLET NO</label>
-            <input type="text" placeholder="Pallet no..." [(ngModel)]="filterPalletNo" class="form-input-text" />
+            <label for="palletNoFilterInput">PALLET NO</label>
+            <input id="palletNoFilterInput" type="text" placeholder="Pallet no..." [(ngModel)]="filterPalletNo" class="form-input-text" />
           </div>
 
           <!-- UNIT Dropdown -->
           <div class="filter-item">
-            <label>UNIT</label>
-            <select class="custom-select" [(ngModel)]="filterUnit">
+            <label for="unitFilterSelect">UNIT</label>
+            <select id="unitFilterSelect" class="custom-select" [(ngModel)]="filterUnit">
               <option *ngFor="let u of units" [value]="u">{{ u }}</option>
             </select>
           </div>
 
           <!-- Search from PA Checkbox -->
           <div class="filter-item checkbox-item">
-            <label class="all-select-label">
-              <input type="checkbox" [(ngModel)]="searchFromPA" />
+            <label for="searchFromPaCheckbox" class="all-select-label">
+              <input id="searchFromPaCheckbox" type="checkbox" [(ngModel)]="searchFromPA" />
               <span>Search from PA</span>
             </label>
           </div>
@@ -149,7 +149,7 @@
               <td><strong>{{ item.qty }}</strong></td>
             </tr>
             <tr *ngIf="filteredResults().length === 0">
-              <td colspan="9" class="empty-row text-center py-5" style="color: #b2bec3;">
+              <td colspan="9" class="empty-row text-center py-5">
                 No matching SKU records found. Change filters and click search.
               </td>
             </tr>

@@ -607,6 +607,7 @@
   color: #374151;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-user-select: none;
   user-select: none;
 
   &:hover:not(.active) {
