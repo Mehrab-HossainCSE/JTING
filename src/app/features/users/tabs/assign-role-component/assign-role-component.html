@@ -9,86 +9,139 @@
   </div>
 
   <ng-container *ngIf="canView()">
-    <div class="header-section">
-      <h1 class="page-title">User Menu Distribution</h1>
-      
-      <div class="user-selector-wrapper">
-        <select id="roleSelect" [ngModel]="selectedRole()" (ngModelChange)="onRoleChange($event)" class="form-control premium-select">
-          <option value="" disabled> Select a Role </option>
-          <option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</option>
-        </select>
-        
-        <button *ngIf="canUpdate()" class="btn-save" (click)="savePermissions()" [disabled]="!selectedRole()">
-          Save
-        </button>
+    <div class="assign-role-header">
+      <div class="title-area">
+        <h1>Assign Module With Role</h1>
+        <p>Control which menus are accessible per role</p>
+      </div>
+
+      <div class="toolbar-wrapper">
+        <div class="filter-group">
+          <div class="filter-item">
+            <label for="roleSelect">Role</label>
+            <select id="roleSelect" [ngModel]="selectedRole()" (ngModelChange)="onRoleChange($event)" class="premium-select">
+              <option value="" disabled>Select a Role</option>
+              <option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</option>
+            </select>
+          </div>
+
+          <div class="divider-v"></div>
+
+          <div class="filter-item">
+            <label for="copyFromSelect">Copy from</label>
+            <select id="copyFromSelect" class="premium-select">
+              <option value="" disabled>Select a Role</option>
+              <option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</option>
+            </select>
+          </div>
+
+          <button class="btn-copy" title="Copy configuration">
+            <i class="bi bi-arrow-repeat"></i>
+            <span>Copy</span>
+          </button>
+        </div>
+
+        <div class="status-badge">
+          <span class="active-count">{{ totalActiveCount() }} / {{ totalItemsCount() }} active</span>
+        </div>
       </div>
     </div>
 
-    <div class="menu-distribution-flex">
-
-      <div class="menu-card" *ngFor="let section of menuSections()">
-        <div class="card-header">
-          <div class="header-left">
-            <label class="checkbox-container main-header">
-              <input type="checkbox" [(ngModel)]="section.isSelected" (change)="onSectionToggle(section)" [disabled]="!canUpdate()">
-              <span class="checkmark"></span>
-              <span class="label-text">{{ section.title }}</span>
-            </label>
+    <div class="menu-distribution-container">
+      <div class="distribution-columns">
+        <!-- Left Column -->
+        <div class="column">
+          <div class="table-header">
+            <div class="col-num">#</div>
+            <div class="col-name">MENU NAME</div>
+            <div class="col-active"><span class="dot"></span> IS ACTIVE</div>
+            <div class="col-actions">ACTIONS</div>
           </div>
-
-          <div class="header-right">
-            <label class="checkbox-container action-checkbox header-action" title="Toggle All View">
-              <input type="checkbox" [(ngModel)]="section.allView" (change)="onPermissionToggle(section, 'view')" [disabled]="!canUpdate()">
-              <span class="checkmark small"></span>
-              <span class="action-label">View</span>
-            </label>
-
-            <label class="checkbox-container action-checkbox header-action" title="Toggle All Add">
-              <input type="checkbox" [(ngModel)]="section.allAdd" (change)="onPermissionToggle(section, 'add')" [disabled]="!canUpdate()">
-              <span class="checkmark small"></span>
-              <span class="action-label">Add</span>
-            </label>
-
-            <label class="checkbox-container action-checkbox header-action" title="Toggle All Edit">
-              <input type="checkbox" [(ngModel)]="section.allEdit" (change)="onPermissionToggle(section, 'edit')" [disabled]="!canUpdate()">
-              <span class="checkmark small"></span>
-              <span class="action-label">Edit</span>
-            </label>
-
-          </div>
-        </div>
-        
-        <div class="card-body" *ngIf="section.items.length > 0">
-          <div class="menu-item" *ngFor="let item of section.items">
-            <div class="item-main">
-              <label class="checkbox-container">
-                <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(section, item)" [disabled]="!canUpdate()">
-                <span class="checkmark"></span>
-                <span class="item-name">{{ item.name }}</span>
-              </label>
-            </div>
-            
-            <div class="item-actions">
-              <label class="checkbox-container action-checkbox">
-                <input type="checkbox" [(ngModel)]="item.view" [disabled]="!canUpdate()">
-                <span class="checkmark small"></span>
-                <span class="action-label">View</span>
-              </label>
-
-              <label class="checkbox-container action-checkbox">
-                <input type="checkbox" [(ngModel)]="item.add" [disabled]="!canUpdate()">
-                <span class="checkmark small"></span>
-                <span class="action-label">Add</span>
-              </label>
-
-              <label class="checkbox-container action-checkbox">
-                <input type="checkbox" [(ngModel)]="item.edit" [disabled]="!canUpdate()">
-                <span class="checkmark small"></span>
-                <span class="action-label">Edit</span>
-              </label>
+          <div class="table-body">
+            <div class="table-row" *ngFor="let item of leftColumnItems(); let i = index">
+              <div class="col-num">{{ i + 1 }}</div>
+              <div class="col-name">
+                <span class="indicator" [class.active]="item.isSelected"></span>
+                <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
+              </div>
+              <div class="col-active">
+                <label class="switch">
+                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)" [disabled]="!canUpdate()">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-actions">
+                <div class="action-icons" [class.disabled]="!item.isSelected">
+                  <button class="btn-action" [class.active]="item.view" (click)="item.view = !item.view" title="View Permission">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn-action" [class.active]="item.add" (click)="item.add = !item.add" title="Add Permission">
+                    <i class="bi bi-plus-circle"></i>
+                  </button>
+                  <button class="btn-action" [class.active]="item.edit" (click)="item.edit = !item.edit" title="Edit Permission">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn-action" [class.active]="item.delete" (click)="item.delete = !item.delete" title="Delete Permission">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Right Column -->
+        <div class="column">
+          <div class="table-header">
+            <div class="col-num">#</div>
+            <div class="col-name">MENU NAME</div>
+            <div class="col-active"><span class="dot"></span> IS ACTIVE</div>
+            <div class="col-actions">ACTIONS</div>
+          </div>
+          <div class="table-body">
+            <div class="table-row" *ngFor="let item of rightColumnItems(); let i = index">
+              <div class="col-num">{{ leftColumnItems().length + i + 1 }}</div>
+              <div class="col-name">
+                <span class="indicator" [class.active]="item.isSelected"></span>
+                <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
+              </div>
+              <div class="col-active">
+                <label class="switch">
+                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)" [disabled]="!canUpdate()">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-actions">
+                <div class="action-icons" [class.disabled]="!item.isSelected">
+                  <button class="btn-action" [class.active]="item.view" (click)="item.view = !item.view" title="View Permission">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn-action" [class.active]="item.add" (click)="item.add = !item.add" title="Add Permission">
+                    <i class="bi bi-plus-circle"></i>
+                  </button>
+                  <button class="btn-action" [class.active]="item.edit" (click)="item.edit = !item.edit" title="Edit Permission">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn-action" [class.active]="item.delete" (click)="item.delete = !item.delete" title="Delete Permission">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Footer -->
+      <div class="footer-actions">
+        <div class="left-btns">
+          <button class="btn-outline" (click)="selectAll()">Select All</button>
+          <button class="btn-outline" (click)="clearAll()">Clear All</button>
+        </div>
+        <button class="btn-save-permissions" (click)="savePermissions()" [disabled]="!selectedRole() || !canUpdate()">
+          <i class="bi bi-floppy"></i>
+          <span>Save Permissions</span>
+        </button>
       </div>
     </div>
   </ng-container>

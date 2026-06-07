@@ -39,6 +39,37 @@ export class AssignRoleComponent implements OnInit {
   canView = computed(() => this.permissions().canView);
   canUpdate = computed(() => this.permissions().canUpdate);
 
+  flatMenuItems = computed(() => {
+    const sections = this.menuSections();
+    const flat: any[] = [];
+    sections.forEach(section => {
+      // If you want to include section headers as special items, you can.
+      // But for now, let's just get the items as shown in the image.
+      section.items.forEach((item: any) => {
+        flat.push({
+          ...item,
+          sectionName: section.title
+        });
+      });
+    });
+    return flat;
+  });
+
+  totalItemsCount = computed(() => this.flatMenuItems().length);
+  totalActiveCount = computed(() => this.flatMenuItems().filter(i => i.isSelected).length);
+
+  leftColumnItems = computed(() => {
+    const items = this.flatMenuItems();
+    const half = Math.ceil(items.length / 2);
+    return items.slice(0, half);
+  });
+
+  rightColumnItems = computed(() => {
+    const items = this.flatMenuItems();
+    const half = Math.ceil(items.length / 2);
+    return items.slice(half);
+  });
+
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
 
@@ -229,6 +260,46 @@ export class AssignRoleComponent implements OnInit {
     item.delete = item.isSelected;
     
     this.menuSections.update(sections => [...sections]);
+  }
+
+  selectAll() {
+    this.menuSections.update(sections => {
+      sections.forEach(section => {
+        section.isSelected = true;
+        section.allView = true;
+        section.allAdd = true;
+        section.allEdit = true;
+        section.allDelete = true;
+        section.items.forEach((item: any) => {
+          item.isSelected = true;
+          item.view = true;
+          item.add = true;
+          item.edit = true;
+          item.delete = true;
+        });
+      });
+      return [...sections];
+    });
+  }
+
+  clearAll() {
+    this.menuSections.update(sections => {
+      sections.forEach(section => {
+        section.isSelected = false;
+        section.allView = false;
+        section.allAdd = false;
+        section.allEdit = false;
+        section.allDelete = false;
+        section.items.forEach((item: any) => {
+          item.isSelected = false;
+          item.view = false;
+          item.add = false;
+          item.edit = false;
+          item.delete = false;
+        });
+      });
+      return [...sections];
+    });
   }
 
   savePermissions(): void {
