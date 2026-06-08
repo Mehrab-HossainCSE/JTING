@@ -1,19 +1,13 @@
 <div class="split-pallet-container">
 
-  <!-- Top Bar -->
-  <div class="premium-top-bar">
-    <h2 class="page-title">Split Pallet Management</h2>
-    <span class="operations-tag">Inventory Re-organization</span>
-  </div>
+  <!-- Top Three-Column Grid -->
+  <div class="top-grid">
 
-  <!-- Main Grid -->
-  <div class="main-grid">
-
-    <!-- Grid Cell 1: Configuration Form -->
-    <div class="card">
-      <div class="card-header-sm">Pallet Configuration</div>
+    <!-- Left: Split Pallet Form -->
+    <div class="card form-card">
+      <div class="card-header-sm">Split Pallet</div>
       <div class="card-body">
-        
+
         <div class="form-row two-col">
           <div class="input-group">
             <label for="blockSelect">BLOCK <span class="req">*</span></label>
@@ -49,11 +43,11 @@
           </div>
         </div>
 
-        <div class="input-group checkbox-group py-2">
+        <div class="input-group checkbox-group">
           <label for="paCheckbox" class="checkbox-label">
             <input id="paCheckbox" type="checkbox" [(ngModel)]="form.pa" />
             <span class="checkbox-box"></span>
-            PA (Pre-Advice)
+            PA
           </label>
         </div>
 
@@ -75,39 +69,38 @@
           </select>
         </div>
 
-        <button class="btn-submit" (click)="onSubmit()">
-          Process Selection
-        </button>
+        <button class="btn-submit" (click)="onSubmit()">Submit</button>
 
       </div>
     </div>
 
-    <!-- Grid Cell 2: Case Selection List -->
-    <div class="card">
-      <div class="card-header-sm d-flex justify-content-between align-items-center">
-        <span>Case Selection List</span>
-        <span class="badge bg-primary-soft text-primary">{{ selectedCount }} selected</span>
+    <!-- Middle: Selected Case Table -->
+    <div class="card table-card">
+      <div class="card-header-sm">
+        Selected Case
+        <span class="selected-count">{{ selectedCount }} selected</span>
       </div>
-      <div class="table-outer">
-        <table class="premium-table">
+      <div class="case-table-wrapper">
+        <table class="case-table">
           <thead>
             <tr>
-              <th class="ps-4">SKU NAME</th>
+              <th>SKU NAME</th>
               <th>SEQUENCE NO</th>
-              <th class="text-end pe-4">SELECT</th>
+              <th>ACTION</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="caseItems.length === 0">
-              <td colspan="3" class="empty-state">Load pallet details to select cases.</td>
+              <td colspan="3" class="empty-state">No records yet — submit the form to load cases.</td>
             </tr>
-            <tr *ngFor="let item of caseItems" class="table-row" [class.selected-row]="item.selected">
-              <td class="ps-4"><strong>{{ item.skuName }}</strong></td>
-              <td><code>{{ item.sequenceNo }}</code></td>
-              <td class="text-end pe-4">
+            <tr *ngFor="let item of caseItems" class="case-row" [class.selected]="item.selected">
+              <td>{{ item.skuName }}</td>
+              <td>{{ item.sequenceNo }}</td>
+              <td class="action-cell">
                 <input
                   type="checkbox"
-                  class="form-check-input case-check"
+                  aria-label="Select case"
+                  class="case-checkbox"
                   [(ngModel)]="item.selected"
                   (change)="onCheckboxChange()"
                 />
@@ -118,71 +111,101 @@
       </div>
     </div>
 
-    <!-- Grid Cell 3: Resulting Pallets -->
-    <div class="card">
-      <div class="card-header-sm">Pallet Transformation Summary</div>
-      <div class="card-body result-panels">
-        
-        <div class="transformation-actions mb-3">
-          <button class="btn-print-sm" (click)="onPrintOld()">
-            <i class="bi bi-printer me-1"></i> Print Old
+    <!-- Right: Pallet After Split -->
+    <div class="card pallet-card">
+      <div class="card-header-sm">Pallet After Split</div>
+
+      <div class="card-body pallet-body">
+        <div class="print-actions">
+          <button class="btn-print" (click)="onPrintOld()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Old
           </button>
-          <button class="btn-print-sm secondary" (click)="onPrintNew()">
-            <i class="bi bi-printer me-1"></i> Print New
+          <button class="btn-print" (click)="onPrintNew()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print New
           </button>
         </div>
 
-        <div class="transformation-grid">
-          <!-- Old Pallet -->
-          <div class="pallet-summary old">
-            <div class="summary-header">OLD PALLET</div>
-            <div class="summary-row"><span>NO:</span> <strong>{{ oldPallet.palletNo || '—' }}</strong></div>
-            <div class="summary-row"><span>ARCH:</span> <strong>{{ oldPallet.arch || '—' }}</strong></div>
-            <div class="summary-row"><span>LINE:</span> <strong>{{ oldPallet.line || '—' }}</strong></div>
-            <div class="summary-row"><span>BOX:</span> <strong>{{ oldPallet.box || '—' }}</strong></div>
-            <div class="summary-row total"><span>TOTAL:</span> <strong>{{ oldPallet.total || '0' }}</strong></div>
+        <!-- Old Pallet Details -->
+        <div class="pallet-section old-section">
+          <div class="section-title old-title">Old Pallet Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Pallet No</span>
+            <span class="detail-value">{{ oldPallet.palletNo || '—' }}</span>
           </div>
+          <div class="detail-row">
+            <span class="detail-label">Arch</span>
+            <span class="detail-value">{{ oldPallet.arch || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Line</span>
+            <span class="detail-value">{{ oldPallet.line || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Box</span>
+            <span class="detail-value">{{ oldPallet.box || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Total</span>
+            <span class="detail-value">{{ oldPallet.total || '—' }}</span>
+          </div>
+          <div class="seq-row">
+            <span class="seq-label">Sequence No</span>
+          </div>
+        </div>
 
-          <!-- New Pallet -->
-          <div class="pallet-summary new">
-            <div class="summary-header">NEW PALLET</div>
-            <div class="summary-row"><span>NO:</span> <strong>{{ newPallet.palletNo || '—' }}</strong></div>
-            <div class="summary-row"><span>ARCH:</span> <strong>{{ newPallet.arch || '—' }}</strong></div>
-            <div class="summary-row"><span>LINE:</span> <strong>{{ newPallet.line || '—' }}</strong></div>
-            <div class="summary-row"><span>BOX:</span> <strong>{{ newPallet.box || '—' }}</strong></div>
-            <div class="summary-row total"><span>TOTAL:</span> <strong>{{ newPallet.total || '0' }}</strong></div>
+        <!-- New Pallet Details -->
+        <div class="pallet-section new-section">
+          <div class="section-title new-title">New Pallet Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Pallet No</span>
+            <span class="detail-value">{{ newPallet.palletNo || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Arch</span>
+            <span class="detail-value">{{ newPallet.arch || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Line</span>
+            <span class="detail-value">{{ newPallet.line || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Box</span>
+            <span class="detail-value">{{ newPallet.box || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Total</span>
+            <span class="detail-value">{{ newPallet.total || '—' }}</span>
+          </div>
+          <div class="seq-row">
+            <span class="seq-label">Sequence No</span>
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- Grid Cell 4: Execution -->
-    <div class="card">
-      <div class="card-header-sm">Execute Split Operation</div>
-      <div class="card-body execution-body">
-        <div class="input-group mb-4">
-          <label for="remarksInput">REMARKS</label>
-          <textarea
-            id="remarksInput"
-            class="form-control premium-textarea"
-            rows="4"
-            placeholder="Reason for splitting pallet..."
-            [(ngModel)]="remarks"
-          ></textarea>
-        </div>
+  </div>
 
-        <button class="btn-split-final" (click)="onSplitNow()">
-          <i class="bi bi-scissors me-2"></i> Confirm Split Operation
+  <!-- Remarks Row -->
+  <div class="card remarks-card">
+    <div class="remarks-body">
+      <label for="remarksInput" class="remarks-label">REMARKS</label>
+      <div class="remarks-input-row">
+        <input
+          id="remarksInput"
+          type="text"
+          class="remarks-input"
+          placeholder="Enter split remarks..."
+          [(ngModel)]="remarks"
+        />
+        <button class="btn-split-now" (click)="onSplitNow()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+          Split Now
         </button>
-
-        <div class="execution-warning mt-3">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-          This action will permanently re-allocate selected cases to a new pallet.
-        </div>
       </div>
     </div>
-
   </div>
 
 </div>
