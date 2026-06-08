@@ -1,9 +1,21 @@
+@import '../../../styles/abstracts/variables';
 @import "/styles/componets/master-setup.scss";
 
-.page-container { 
-    padding: 0; 
+:host {
+  display: block; // Change from flex to block to allow natural growth
 }
-h2 { 
-    color: #333; 
-    font-weight: 600; 
+
+.master-setup-container {
+  background-color: $bg-light;
+  min-height: calc(100vh - 84px);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+
+  .content-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 2rem;
+  }
 }

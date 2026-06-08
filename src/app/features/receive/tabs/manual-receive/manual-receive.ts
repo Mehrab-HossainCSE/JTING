@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductReceiveService } from '../../../../core/services/receiveServices/product-receive-service';
@@ -20,7 +20,8 @@ interface SummaryItem {
   templateUrl: './manual-receive.html',
   styleUrl: './manual-receive.scss',
 })
-export class ManualReceive implements OnInit {
+export class ManualReceive implements OnInit, AfterViewInit {
+  @ViewChild('barcodeInputRef') barcodeInputRef!: ElementRef<HTMLInputElement>;
   private receiveService = inject(ProductReceiveService);
   private storageService = inject(StorageService);
   private toastr = inject(ToastrService);
@@ -29,6 +30,7 @@ export class ManualReceive implements OnInit {
   barcodeInput = signal<string>('');
   scannedItems = signal<ProductReceiveItem[]>([]);
   batchItems = signal<any[]>([]);
+  isLoading = signal<boolean>(false);
 
   // Computed signals
   summaryItems = computed(() => {
@@ -73,6 +75,16 @@ export class ManualReceive implements OnInit {
     this.loadBatchDetails();
   }
 
+  ngAfterViewInit(): void {
+    this.focusInput();
+  }
+
+  private focusInput(): void {
+    setTimeout(() => {
+      this.barcodeInputRef?.nativeElement?.focus();
+    }, 0);
+  }
+
   private loadScannedItemsFromStorage(): void {
     try {
       const encrypted = this.storageService.getItem<string>('scanned_barcodes_manual');
@@ -113,10 +125,12 @@ export class ManualReceive implements OnInit {
 
   onBarcodeEnter(): void {
     const code = this.barcodeInput().trim();
-    if (!code) return;
+    if (!code || this.isLoading()) return;
 
+    this.isLoading.set(true);
     this.receiveService.barcodeScanManual(code).subscribe({
       next: (response) => {
+        this.isLoading.set(false);
         if (response && response.success && response.data) {
           const newItem = response.data;
           
@@ -129,12 +143,16 @@ export class ManualReceive implements OnInit {
           this.toastr.success(response.message || 'Product scanned manually successfully.', 'Success');
           this.barcodeInput.set('');
           this.loadBatchDetails();
+          this.focusInput();
         } else {
           this.toastr.error(response?.message || 'Failed to scan product manually.', 'Error');
+          this.focusInput();
         }
       },
       error: (error) => {
+        this.isLoading.set(false);
         this.errorHandler.handleErrorWithToster(error);
+        this.focusInput();
       }
     });
   }
