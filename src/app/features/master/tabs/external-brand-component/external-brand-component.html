@@ -1,184 +1,181 @@
 <!-- ── Main Content ───────────────────────────────────────────────────────── -->
-<div class="content-body">
-  <div class="grid-layout">
+<div class="grid-layout">
 
-    <div *ngIf="!canView()" class="no-permission-card">
-      <div class="card">
-        <div class="card-body">
-          <h3>Access Denied</h3>
-          <p>You do not have permission to view external brands.</p>
-        </div>
+  <div *ngIf="!canView()" class="no-permission-card">
+    <div class="card">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view external brands.</p>
       </div>
     </div>
+  </div>
 
-    <div *ngIf="canView()">
-      <!-- ── Left Card: Form ────────────────────────────────────────────────── -->
-      <div class="card form-card">
-        <div class="card-header">
-          <h3>{{ editingExtBrandId() ? 'Edit External Brand' : 'Add New External Brand' }}</h3>
-          <p>Register a new external brand mapping</p>
-        </div>
-
-        <div class="card-body">
-          <div class="operations-tag">OPERATIONS</div>
-
-          <form [formGroup]="extBrandForm">
-            <div class="input-group">
-              <label>EXTERNAL BRAND NAME<span class="req">*</span></label>
-              <input type="text"
-                     placeholder="e.g. NAVY"
-                     formControlName="extBrandName"
-                     [class.is-invalid]="isInvalid('extBrandName')" />
-              <span class="error-message" *ngIf="isInvalid('extBrandName')">{{ getError('extBrandName') }}</span>
-            </div>
-
-            <div class="status-box">
-              <label>STATUS</label>
-              <label class="toggle-switch">
-                <input type="checkbox" formControlName="isActive">
-                <span class="slider"></span>
-                <span class="toggle-label">{{ extBrandForm.get('isActive')?.value ? 'Active' : 'Inactive' }}</span>
-              </label>
-            </div>
-          </form>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn btn-reset" (click)="resetForm()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-              <path d="M21 3v5h-5"/>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-              <path d="M8 16H3v5"/>
-            </svg>
-            Reset
-          </button>
-          <button class="btn btn-save" *ngIf="canSave()" (click)="saveExtBrand()" [disabled]="isLoading()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/>
-              <polyline points="7 3 7 8 15 8"/>
-            </svg>
-            {{ editingExtBrandId() ? 'Update Brand' : 'Save Brand' }}
-          </button>
-        </div>
+  <div *ngIf="canView()" class="contents-passthrough">
+    <!-- ── Left Card: Form ────────────────────────────────────────────────── -->
+    <div class="card form-card">
+      <div class="card-header">
+        <h3>{{ editingExtBrandId() ? 'Edit External Brand' : 'Add New External Brand' }}</h3>
+        <p>Register a new external brand mapping</p>
       </div>
-    </div>
 
-    <!-- ── Right Card: Data List ──────────────────────────────────────────── -->
-    <div class="card list-card">
-      <div class="card-header list-header-top">
-        <div class="title-with-badge">
-          <h3>Data List</h3>
-          <span class="count">{{ filteredExtBrandList().length }}</span>
-        </div>
-        <div class="actions">
-          <div class="search-bar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2.5">
-              <circle cx="11" cy="11" r="8"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            <input type="text" placeholder="Search..."
-                   [value]="extBrandSearch()"
-                   (input)="onSearchChange($any($event.target).value)" />
+      <div class="card-body">
+        <div class="operations-tag">OPERATIONS</div>
+
+        <form [formGroup]="extBrandForm">
+          <div class="input-group">
+            <label>EXTERNAL BRAND NAME<span class="req">*</span></label>
+            <input type="text"
+                   placeholder="e.g. NAVY"
+                   formControlName="extBrandName"
+                   [class.is-invalid]="isInvalid('extBrandName')" />
+            <span class="error-message" *ngIf="isInvalid('extBrandName')">{{ getError('extBrandName') }}</span>
           </div>
-          <button class="btn-export" (click)="exportToExcel()"
-                  [disabled]="filteredExtBrandList().length === 0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Export
-          </button>
-        </div>
+
+          <div class="status-box">
+            <label>STATUS</label>
+            <label class="toggle-switch">
+              <input type="checkbox" formControlName="isActive">
+              <span class="slider"></span>
+              <span class="toggle-label">{{ extBrandForm.get('isActive')?.value ? 'Active' : 'Inactive' }}</span>
+            </label>
+          </div>
+        </form>
       </div>
 
-      <div *ngIf="isLoading()" class="loading-state">Loading...</div>
+      <div class="card-footer">
+        <button class="btn btn-reset" (click)="resetForm()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M8 16H3v5"/>
+          </svg>
+          Reset
+        </button>
+        <button class="btn btn-save" *ngIf="canSave()" (click)="saveExtBrand()" [disabled]="isLoading()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          {{ editingExtBrandId() ? 'Update Brand' : 'Save Brand' }}
+        </button>
+      </div>
+    </div>
+  </div>
 
-      <!-- ── Table with scrollbar ──────────────────────────────────────────── -->
-      <div class="table-outer">
-        <table class="premium-table">
-          <thead>
-            <tr>
-              <th>EXT BRAND ID</th>
-              <th>EXTERNAL BRAND NAME</th>
-              <th>STATUS</th>
-              <th>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of paginatedExtBrandList()" class="table-row">
-              <td><span class="id-pill">{{ item.extBrandId }}</span></td>
-              <td>{{ item.extBrandName }}</td>
-              <td>
-                <span class="status-badge" [class.active]="item.isActive" [class.inactive]="!item.isActive">
-                  {{ item.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td>
-                <div class="row-actions">
-                  <button *ngIf="canUpdate()" class="action-btn edit-btn" title="Edit"
-                          (click)="editExtBrand(item)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="paginatedExtBrandList().length === 0">
-              <td colspan="4" class="empty-row">No external brands found.</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- ── Right Card: Data List ──────────────────────────────────────────── -->
+  <div class="card list-card">
+    <div class="card-header list-header-top">
+      <div class="title-with-badge">
+        <h3>Data List</h3>
+        <span class="count">{{ filteredExtBrandList().length }}</span>
+      </div>
+      <div class="actions">
+        <div class="search-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Search..."
+                 [value]="extBrandSearch()"
+                 (input)="onSearchChange($any($event.target).value)" />
+        </div>
+        <button class="btn-export" (click)="exportToExcel()"
+                [disabled]="filteredExtBrandList().length === 0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading()" class="loading-state">Loading...</div>
+
+    <!-- ── Table with scrollbar ──────────────────────────────────────────── -->
+    <div class="table-outer">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>EXT BRAND ID</th>
+            <th>EXTERNAL BRAND NAME</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paginatedExtBrandList()" class="table-row">
+            <td><span class="id-pill">{{ item.extBrandId }}</span></td>
+            <td>{{ item.extBrandName }}</td>
+            <td>
+              <span class="status-badge" [class.active]="item.isActive" [class.inactive]="!item.isActive">
+                {{ item.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button *ngIf="canUpdate()" class="action-btn edit-btn" title="Edit"
+                        (click)="editExtBrand(item)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="paginatedExtBrandList().length === 0">
+            <td colspan="4" class="empty-row">No external brands found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Footer: Records info + Pagination + Items per page ───────────── -->
+    <div class="card-footer table-footer">
+      <!-- Records info -->
+      <div class="records-info">
+        Showing
+        {{ (currentPage() - 1) * pageSize() + 1 }}–{{ Math.min(currentPage() * pageSize(), filteredExtBrandList().length) }}
+        of {{ filteredExtBrandList().length }} records
       </div>
 
-      <!-- ── Footer: Records info + Pagination + Items per page ───────────── -->
-      <div class="card-footer table-footer">
-        <!-- Records info -->
-        <div class="records-info">
-          Showing
-          {{ (currentPage() - 1) * pageSize() + 1 }}–{{ Math.min(currentPage() * pageSize(), filteredExtBrandList().length) }}
-          of {{ filteredExtBrandList().length }} records
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination">
-          <button class="page-btn" title="First page" [disabled]="currentPage() === 1" (click)="goToPage(1)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
-          </button>
-          <button class="page-btn" title="Previous page" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <span *ngFor="let page of pageNumbers()" class="page-num" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</span>
-          <button class="page-btn" title="Next page" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-          <button class="page-btn" title="Last page" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-          </button>
-        </div>
-
-        <!-- Items per page -->
-        <div class="page-size-selector">
-          <select [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
-            <option value="all">All</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-          </select>
-          <span>Items per page</span>
-        </div>
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn" title="First page" [disabled]="currentPage() === 1" (click)="goToPage(1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
+        <button class="page-btn" title="Previous page" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span *ngFor="let page of pageNumbers()" class="page-num" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</span>
+        <button class="page-btn" title="Next page" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="page-btn" title="Last page" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
       </div>
-      
+
+      <!-- Items per page -->
+      <div class="page-size-selector">
+        <select [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
+          <option value="all">All</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+        </select>
+        <span>Items per page</span>
+      </div>
     </div>
   </div>
 </div>
