@@ -130,44 +130,15 @@
   max-height: 160px;
 }
 
-// ── Notes Card Custom Styling ───────────────────────────────────────────────
-.notes-card {
+// ── Barcodes Card Custom Styling ─────────────────────────────────────────────
+.barcodes-card {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
 }
 
-.notes-wrapper {
-  padding: 1.25rem 1.5rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.notes-input {
-  width: 100%;
-  flex: 1;
-  padding: 10px 14px;
-  border: 1.5px solid #e1e8ed;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: #2d3436;
-  background: white;
-  resize: none;
-  font-family: inherit;
-  box-sizing: border-box;
-  transition: all 0.2s;
-  min-height: 80px;
-
-  &::placeholder {
-    color: #b2bec3;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #00BB31;
-    box-shadow: 0 0 0 4px rgba(0, 187, 49, 0.06);
-  }
+.barcodes-table-outer {
+  max-height: 160px;
 }
 
 // ── Counter Card ───────────────────────────────────────────────────────────
@@ -239,4 +210,8 @@
 // ── Batch Details Custom Wrapper ───────────────────────────────────────────
 .batch-table-outer {
   max-height: 160px;
+}
+
+.barcode-cell {
+  max-width: 170px;
 }

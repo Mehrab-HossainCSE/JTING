@@ -95,3 +95,13 @@ JTING is a modern warehouse/inventory management application built with **Angula
 - **Auth:** Token-based authentication (JWT) stored in `localStorage` via `StorageService`.
 - **Navigation:** Dynamic sidebar based on user roles and permissions fetched from the backend.
 - **Notifications:** Use `ToastrService` for success/error feedback.
+
+## VS Code Integration & Troubleshooting
+
+### Angular Language Service Caching
+- **Problem**: When refactoring class properties in TypeScript from standard arrays/objects to reactive **Angular Signals** (`signal`, `computed`), the VS Code Angular Language Service extension can cache stale types, causing false diagnostics in HTML templates (e.g., `This expression is not callable. Type '...' has no call signatures.`).
+- **Solutions**:
+  1. Open the VS Code command palette (`Ctrl + Shift + P` or `F1`).
+  2. Run the **`Angular: Restart Angular Language Service`** command.
+  3. If warnings persist, reload the workspace window by running **`Developer: Reload Window`**.
+

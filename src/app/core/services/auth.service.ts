@@ -46,6 +46,8 @@ export class AuthService {
     this.storageService.removeItem('refreshToken');
     this.storageService.removeItem('userInfo');
     this.storageService.removeItem('menus');
+    this.storageService.removeItem('scanned_barcodes');
+    this.storageService.removeItem('scanned_barcodes_manual');
     this._isLoggedIn.set(false);
     this.menuService.clearMenus();
     this.router.navigate(['/login']);

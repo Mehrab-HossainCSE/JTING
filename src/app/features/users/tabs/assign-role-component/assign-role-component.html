@@ -19,7 +19,8 @@
         <div class="filter-group">
           <div class="filter-item">
             <label for="roleSelect">Role</label>
-            <select id="roleSelect" [ngModel]="selectedRole()" (ngModelChange)="onRoleChange($event)" class="premium-select">
+            <select id="roleSelect" [ngModel]="selectedRole()" (ngModelChange)="onRoleChange($event)"
+              class="premium-select">
               <option value="" disabled>Select a Role</option>
               <option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</option>
             </select>
@@ -27,7 +28,7 @@
 
           <div class="divider-v"></div>
 
-          <div class="filter-item">
+          <!-- <div class="filter-item">
             <label for="copyFromSelect">Copy from</label>
             <select id="copyFromSelect" class="premium-select">
               <option value="" disabled>Select a Role</option>
@@ -38,7 +39,7 @@
           <button class="btn-copy" title="Copy configuration">
             <i class="bi bi-arrow-repeat"></i>
             <span>Copy</span>
-          </button>
+          </button> -->
         </div>
 
         <div class="status-badge">
@@ -54,8 +55,23 @@
           <div class="table-header">
             <div class="col-num">#</div>
             <div class="col-name">MENU NAME</div>
-            <div class="col-active"><span class="dot"></span> IS ACTIVE</div>
-            <div class="col-actions">ACTIONS</div>
+            <div class="col-actions">
+              <span class="actions-title">ACTIONS</span>
+              <div class="header-checkboxes">
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" id="leftViewAll" [checked]="allLeftView()" (change)="toggleColumnPermission('left', 'view', $event)" class="premium-checkbox" aria-label="Select all view permissions for left column" [disabled]="!canUpdate()">
+                  <label for="leftViewAll" class="visually-hidden">Select all view</label>
+                </div>
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" id="leftAddAll" [checked]="allLeftAdd()" (change)="toggleColumnPermission('left', 'add', $event)" class="premium-checkbox" aria-label="Select all add permissions for left column" [disabled]="!canUpdate()">
+                  <label for="leftAddAll" class="visually-hidden">Select all add</label>
+                </div>
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" id="leftEditAll" [checked]="allLeftEdit()" (change)="toggleColumnPermission('left', 'edit', $event)" class="premium-checkbox" aria-label="Select all edit permissions for left column" [disabled]="!canUpdate()">
+                  <label for="leftEditAll" class="visually-hidden">Select all edit</label>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="table-body">
             <div class="table-row" *ngFor="let item of leftColumnItems(); let i = index">
@@ -64,26 +80,30 @@
                 <span class="indicator" [class.active]="item.isSelected"></span>
                 <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
               </div>
-              <div class="col-active">
+              <!-- <div class="col-active">
                 <label class="switch">
-                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)" [disabled]="!canUpdate()">
+                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)"
+                    [disabled]="!canUpdate()">
                   <span class="slider round"></span>
                 </label>
-              </div>
+              </div> -->
               <div class="col-actions">
                 <div class="action-icons">
-                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission" [disabled]="!canUpdate()">
+                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')"
+                    title="View Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission" [disabled]="!canUpdate()">
+                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')"
+                    title="Add Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-plus-circle"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission" [disabled]="!canUpdate()">
+                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')"
+                    title="Edit Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
+                  <!-- <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-trash"></i>
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </div>
@@ -95,8 +115,23 @@
           <div class="table-header">
             <div class="col-num">#</div>
             <div class="col-name">MENU NAME</div>
-            <div class="col-active"><span class="dot"></span> IS ACTIVE</div>
-            <div class="col-actions">ACTIONS</div>
+            <div class="col-actions">
+              <span class="actions-title">ACTIONS</span>
+              <div class="header-checkboxes">
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" id="rightViewAll" [checked]="allRightView()" (change)="toggleColumnPermission('right', 'view', $event)" class="premium-checkbox" aria-label="Select all view permissions for right column" [disabled]="!canUpdate()">
+                  <label for="rightViewAll" class="visually-hidden">Select all view</label>
+                </div>
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" id="rightAddAll" [checked]="allRightAdd()" (change)="toggleColumnPermission('right', 'add', $event)" class="premium-checkbox" aria-label="Select all add permissions for right column" [disabled]="!canUpdate()">
+                  <label for="rightAddAll" class="visually-hidden">Select all add</label>
+                </div>
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" id="rightEditAll" [checked]="allRightEdit()" (change)="toggleColumnPermission('right', 'edit', $event)" class="premium-checkbox" aria-label="Select all edit permissions for right column" [disabled]="!canUpdate()">
+                  <label for="rightEditAll" class="visually-hidden">Select all edit</label>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="table-body">
             <div class="table-row" *ngFor="let item of rightColumnItems(); let i = index">
@@ -105,26 +140,31 @@
                 <span class="indicator" [class.active]="item.isSelected"></span>
                 <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
               </div>
-              <div class="col-active">
+              <!-- <div class="col-active">
                 <label class="switch">
-                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)" [disabled]="!canUpdate()">
+                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)"
+                    [disabled]="!canUpdate()">
                   <span class="slider round"></span>
                 </label>
-              </div>
+              </div> -->
               <div class="col-actions">
                 <div class="action-icons">
-                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')" title="View Permission" [disabled]="!canUpdate()">
+                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')"
+                    title="View Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')" title="Add Permission" [disabled]="!canUpdate()">
+                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')"
+                    title="Add Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-plus-circle"></i>
                   </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')" title="Edit Permission" [disabled]="!canUpdate()">
+                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')"
+                    title="Edit Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
+                  <!-- <button class="btn-action btn-delete-action" [class.active]="item.delete"
+                    (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
                     <i class="bi bi-trash"></i>
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </div>
