@@ -66,6 +66,36 @@ export class AssignRoleComponent implements OnInit {
     return items.slice(half);
   });
 
+  allLeftView = computed(() => {
+    const items = this.leftColumnItems();
+    return items.length > 0 && items.every(item => item.view);
+  });
+
+  allLeftAdd = computed(() => {
+    const items = this.leftColumnItems();
+    return items.length > 0 && items.every(item => item.add);
+  });
+
+  allLeftEdit = computed(() => {
+    const items = this.leftColumnItems();
+    return items.length > 0 && items.every(item => item.edit);
+  });
+
+  allRightView = computed(() => {
+    const items = this.rightColumnItems();
+    return items.length > 0 && items.every(item => item.view);
+  });
+
+  allRightAdd = computed(() => {
+    const items = this.rightColumnItems();
+    return items.length > 0 && items.every(item => item.add);
+  });
+
+  allRightEdit = computed(() => {
+    const items = this.rightColumnItems();
+    return items.length > 0 && items.every(item => item.edit);
+  });
+
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
 
@@ -268,6 +298,19 @@ export class AssignRoleComponent implements OnInit {
     // Auto-sync isSelected: if any permission is true, isSelected MUST be true
     // if ALL permissions are false, isSelected MUST be false
     item.isSelected = item.view || item.add || item.edit || item.delete;
+    
+    this.menuSections.update(sections => [...sections]);
+  }
+
+  toggleColumnPermission(column: 'left' | 'right', permission: 'view' | 'add' | 'edit', event: Event): void {
+    if (!this.canUpdate()) return;
+    const checked = (event.target as HTMLInputElement).checked;
+    const items = column === 'left' ? this.leftColumnItems() : this.rightColumnItems();
+    
+    items.forEach(item => {
+      item[permission] = checked;
+      item.isSelected = item.view || item.add || item.edit || item.delete;
+    });
     
     this.menuSections.update(sections => [...sections]);
   }
