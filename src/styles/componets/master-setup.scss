@@ -22,19 +22,24 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  // padding: 0 1.5rem 1.5rem 1.5rem;
   overflow: hidden;
 
-  // This ensures the component root, nested .content-body, or structural wrappers are flexible
-  & > *:not(router-outlet),
-  .content-body,
+  // This ensures the component root (tab component) fills the space
+  & > router-outlet + * {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  // Support for manual wrapper if used
   .contents-passthrough {
     display: flex !important;
     flex-direction: column !important;
     flex: 1 !important;
     min-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    overflow: hidden !important;
   }
 }
 
@@ -81,15 +86,27 @@
 
 .grid-layout {
   display: grid;
-  grid-template-columns: 340px 1fr; // Slightly narrowed form card
+  grid-template-columns: 340px 1fr;
   gap: 1.25rem;
   align-items: stretch;
   flex: 1;
-  min-height: 0; // Crucial for scrolling
+  min-height: 0;
+  height: 100%; // Fill the parent flex container
+  overflow: hidden; // Prevent grid from expanding parent
+
+  // Ensure children of grid (especially .contents-passthrough) also behave correctly
+  & > * {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
 
   .card {
     height: 100%;
-    min-height: 0; // Crucial for scrolling
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 }
 
