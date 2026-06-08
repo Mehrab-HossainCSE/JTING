@@ -96,4 +96,14 @@ export class SplitPallet {
     // Split action — hook up to your service here
     alert(`Split completed: ${this.selectedCount} case(s) moved to new pallet.`);
   }
+
+  onPrintOld(): void {
+    if (!this.oldPallet.palletNo) return;
+    alert(`Printing Old Pallet: ${this.oldPallet.palletNo}`);
+  }
+
+  onPrintNew(): void {
+    if (!this.newPallet.palletNo) return;
+    alert(`Printing New Pallet: ${this.newPallet.palletNo}`);
+  }
 }
