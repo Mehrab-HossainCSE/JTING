@@ -1,36 +1,44 @@
 <div class="auto-receive-container">
 
   <!-- Top Bar -->
-  <div class="d-flex justify-content-between align-items-center bg-white border rounded-4 px-4 py-3 shadow-sm">
-    <span class="page-title">Auto Product Receive (SKU)</span>
-    <span class="operations-link">OPERATIONS</span>
+  <div class="premium-top-bar">
+    <h2 class="page-title">Auto Product Receive (SKU)</h2>
+    <span class="operations-tag">Automated Stock Entry</span>
   </div>
 
   <!-- Barcode Row -->
-  <div class="card p-3 shadow-sm">
-    <div class="d-flex align-items-center gap-3">
-      <label class="barcode-label" for="autoReceiveBarcodeInput">Barcode</label>
-      <div class="barcode-input-wrapper">
-        <svg class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-        </svg>
-        <input
-          type="text"
-          id="autoReceiveBarcodeInput"
-          class="barcode-input"
-          placeholder="Scan or enter barcode, press Enter..."
-          [ngModel]="barcodeInput()"
-          (ngModelChange)="barcodeInput.set($event)"
-          (keyup.enter)="onBarcodeEnter()"
-        />
+  <div class="barcode-section">
+    <div class="card p-3">
+      <div class="barcode-flex">
+        <label class="barcode-label" for="autoReceiveBarcodeInput">Product Barcode</label>
+        <div class="barcode-input-wrapper">
+          <svg *ngIf="isLoading()" class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
+          <svg *ngIf="!isLoading()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><line x1="8" y1="7" x2="8" y2="17"></line><line x1="12" y1="7" x2="12" y2="17"></line><line x1="16" y1="7" x2="16" y2="17"></line>
+          </svg>
+          <input
+            type="text"
+            id="autoReceiveBarcodeInput"
+            class="barcode-input"
+            placeholder="Scan product barcode, press Enter..."
+            [ngModel]="barcodeInput()"
+            (ngModelChange)="barcodeInput.set($event)"
+            (keyup.enter)="onBarcodeEnter()"
+            #barcodeInputRef
+          />
+        </div>
+        <button class="btn-confirm" (click)="onConfirm()">
+          Confirm Entry
+        </button>
+        <button class="btn btn-outline-danger btn-clear" (click)="onClear()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+          Reset All
+        </button>
       </div>
-      <button class="btn-confirm" (click)="onConfirm()">Confirm</button>
-      <button class="btn btn-danger btn-clear" (click)="onClear()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-        Clear
-      </button>
     </div>
   </div>
 
@@ -38,25 +46,25 @@
   <div class="main-grid">
 
     <!-- Grid Cell 1: Summary Card -->
-    <div class="card summary-card">
-      <div class="card-header-sm">Summary</div>
-      <div class="table-outer summary-table-outer">
+    <div class="card">
+      <div class="card-header-sm">Stock Summary</div>
+      <div class="table-outer">
         <table class="premium-table">
           <thead>
             <tr>
               <th>SKU CODE</th>
               <th>SKU NAME</th>
-              <th>QTY</th>
+              <th class="text-end">QTY</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="summaryItems().length === 0">
-              <td colspan="3" class="empty-state">No records yet — scan a barcode to begin.</td>
+              <td colspan="3" class="empty-state">Scan a barcode to see summary</td>
             </tr>
-            <tr *ngFor="let item of summaryItems()">
-              <td>{{ item.skuCode }}</td>
+            <tr *ngFor="let item of summaryItems()" class="table-row">
+              <td><strong>{{ item.skuCode }}</strong></td>
               <td>{{ item.skuName }}</td>
-              <td>{{ item.qty }}</td>
+              <td class="text-end"><span class="badge bg-success-soft text-success">{{ item.qty }}</span></td>
             </tr>
           </tbody>
         </table>
@@ -65,40 +73,49 @@
 
     <!-- Grid Cell 2: Carton Counter Card -->
     <div class="card counter-card">
-      <div class="counter-inner">
-        <div class="counter-box">
+      <div class="counter-content">
+        <div class="counter-ring">
           <span class="counter-number">{{ totalCartons() }}</span>
         </div>
-        <div class="counter-label">TOTAL CARTONS</div>
-        <div class="counter-footer">
-          <span>Scanned entries: <strong>{{ scannedEntries() }}</strong></span>
-          <span class="sku-count">{{ skuCount() }} SKU(s)</span>
+        <div class="counter-label">Total Cartons Scanned</div>
+        
+        <div class="counter-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ scannedEntries() }}</span>
+                <span class="stat-label">Entries</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ skuCount() }}</span>
+                <span class="stat-label">Unique SKUs</span>
+            </div>
         </div>
       </div>
     </div>
 
     <!-- Grid Cell 3: Scanned Barcodes Card -->
-    <div class="card barcodes-card">
-      <div class="card-header-sm">Recent Scanned Barcodes (Last 5)</div>
-      <div class="table-outer barcodes-table-outer">
+    <div class="card">
+      <div class="card-header-sm">Last 5 Scans</div>
+      <div class="table-outer">
         <table class="premium-table">
           <thead>
             <tr>
               <th>#</th>
               <th>BARCODE</th>
               <th>SKU NAME</th>
-              <th>TIME</th>
+              <th class="text-end">TIME</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="latestScannedItems().length === 0">
-              <td colspan="4" class="empty-state">No barcodes scanned yet.</td>
+              <td colspan="4" class="empty-state">No recent activity</td>
             </tr>
-            <tr *ngFor="let item of latestScannedItems(); let i = index">
+            <tr *ngFor="let item of latestScannedItems(); let i = index" class="table-row">
               <td>{{ i + 1 }}</td>
-              <td class="text-truncate barcode-cell" [title]="item.barcode">{{ item.barcode }}</td>
-              <td>{{ item.skuname }}</td>
-              <td>{{ item.pTimeA }}</td>
+              <td class="text-truncate" style="max-width: 140px;" [title]="item.barcode">
+                <code>{{ item.barcode }}</code>
+              </td>
+              <td class="text-truncate" style="max-width: 140px;">{{ item.skuname }}</td>
+              <td class="text-end text-muted small">{{ item.pTimeA }}</td>
             </tr>
           </tbody>
         </table>
@@ -106,29 +123,27 @@
     </div>
 
     <!-- Grid Cell 4: Batch Details Card -->
-    <div class="card batch-card">
-      <div class="card-header-sm">Batch Details</div>
-      <div class="table-outer batch-table-outer">
+    <div class="card">
+      <div class="card-header-sm">Batch Information</div>
+      <div class="table-outer">
         <table class="premium-table">
           <thead>
             <tr>
-              <th>#</th>
               <th>BATCH NO</th>
               <th>SKU NAME</th>
               <th>LOCATION</th>
-              <th>PALLET NO</th>
+              <th class="text-end">PALLET</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="batchItems().length === 0">
-              <td colspan="5" class="empty-state">No batch records yet.</td>
+              <td colspan="4" class="empty-state">Batch details will appear here</td>
             </tr>
-            <tr *ngFor="let item of batchItems(); let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ item.batchNo }}</td>
-              <td>{{ item.skuname }}</td>
+            <tr *ngFor="let item of batchItems(); let i = index" class="table-row">
+              <td><span class="text-primary font-monospace">{{ item.batchNo }}</span></td>
+              <td class="text-truncate" style="max-width: 120px;">{{ item.skuname }}</td>
               <td>{{ item.boxName || item.lineName || item.controlName || 'N/A' }}</td>
-              <td>{{ item.palletNo }}</td>
+              <td class="text-end"><strong>#{{ item.palletNo }}</strong></td>
             </tr>
           </tbody>
         </table>
