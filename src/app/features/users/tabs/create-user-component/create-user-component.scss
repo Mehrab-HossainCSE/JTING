@@ -39,13 +39,16 @@
         .card-body {
             display: flex;
             flex-direction: column;
+            flex: 1; // Ensure it fills space
             overflow: hidden;
             padding: 0;
+            min-height: 0;
             
             .table-outer {
                 flex: 1;
                 overflow-y: auto;
                 min-height: 0;
+                padding: 0 1.5rem;
             }
         }
     }
