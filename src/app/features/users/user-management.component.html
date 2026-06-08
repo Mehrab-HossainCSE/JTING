@@ -1,4 +1,4 @@
-<div class="user-management-page">
+<div class="user-management-page" [class.full-scroll-layout]="activeChildPath() === 'assign-role'">
   <div class="card tabs-card" *ngIf="tabs().length">
     <div class="tabs-grid">
       @for (tab of tabs(); track tab.id) {
