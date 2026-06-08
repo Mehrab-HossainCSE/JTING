@@ -1,5 +1,6 @@
 import { Component, signal, computed, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import * as XLSX from 'xlsx';
 
@@ -11,11 +12,13 @@ import { PalletGenerateItem, PalletRecord, PalletGenerateCreatePayload } from '.
 
 @Component({
   selector: 'app-generate-pallet',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './generate-pallet.html',
   styleUrl: './generate-pallet.scss',
 })
 export class GeneratePallet implements OnInit {
+  private http = inject(HttpClient);
   private palletService = inject(PalleteGenerateService);
   private toastr = inject(ToastrService);
   private errorHandler = inject(ErrorHandlerService);
@@ -51,6 +54,7 @@ export class GeneratePallet implements OnInit {
     if (this.canView()) {
       this.loadPalletGenerateList();
     }
+    this.testPrintPallet('15109111010126000080238');
   }
 
   private loadPermissionsFromStorage(): void {
@@ -194,8 +198,53 @@ export class GeneratePallet implements OnInit {
     this.palletRecords.set([]);
   }
 
+  testPrintPallet(palletNo: string): void {
+    this.isLoading.set(true);
+    this.palletService.printPallet(palletNo).subscribe({
+      next: (pdfBlob) => {
+        this.isLoading.set(false);
+        const fileURL = window.URL.createObjectURL(pdfBlob);
+
+        const iframe = document.createElement('iframe');
+        // Hide off-screen instead of using display: none so the browser renders it
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        iframe.style.top = '-9999px';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = 'none';
+
+        iframe.onload = () => {
+          setTimeout(() => {
+            if (iframe.contentWindow) {
+              iframe.contentWindow.focus();
+              iframe.contentWindow.print();
+            }
+          }, 500); // Wait for the PDF plugin to initialize
+
+          // Clean up the iframe and object URL after printing
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+            window.URL.revokeObjectURL(fileURL);
+          }, 10000);
+        };
+
+        iframe.src = fileURL;
+        document.body.appendChild(iframe);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
+  }
+
   printRecord(record: PalletRecord): void {
-    // Print functionality to be implemented later
+    if (record && record.palletNo) {
+      this.testPrintPallet(record.palletNo);
+    } else {
+      this.toastr.warning('Pallet number is missing.', 'Warning');
+    }
   }
 
   exportToExcel(): void {

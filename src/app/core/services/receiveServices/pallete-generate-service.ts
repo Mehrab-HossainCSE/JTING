@@ -33,5 +33,12 @@ export class PalleteGenerateService {
   deletePalletRecord(palletNo: string): Observable<ApiResponse<any>> {
     return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/pallet/records/${palletNo}`);
   }
+
+  printPallet(palletNo: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/Report/Print-Pallet`, {
+      params: { palletNo },
+      responseType: 'blob',
+    });
+  }
 }
 
