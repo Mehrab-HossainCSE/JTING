@@ -9,8 +9,12 @@
   flex-direction: column;
   min-height: auto;
   height: auto;
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 0;
+
+  .bg-success-soft {
+    background-color: #f0fdf4 !important;
+  }
 }
 
 // ── Top Bar ────────────────────────────────────────────────────────────────
@@ -177,7 +181,49 @@
       overflow: visible;
       
       .premium-table {
-        margin-bottom: 0;
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+
+        thead th {
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 14px 24px;
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr {
+            background: #ffffff;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f1f5f9;
+
+            td {
+                padding: 14px 24px;
+                font-size: 0.875rem;
+                color: #1e293b;
+                vertical-align: middle;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &:hover {
+                background: #f1f5f9;
+            }
+        }
+
+        .empty-state {
+            padding: 4rem 0;
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+        }
       }
     }
   }
