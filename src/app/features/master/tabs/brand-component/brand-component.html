@@ -100,8 +100,7 @@
           <button class="page-btn" title="Last page" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></button>
         </div>
         <div class="page-size-selector">
-          <label for="brandPageSizeSelect" class="visually-hidden">Items per page</label>
-          <select id="brandPageSizeSelect" [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
+          <select [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
             <option value="all">All</option><option value="10">10</option><option value="20">20</option><option value="100">100</option><option value="200">200</option>
           </select>
           <span>Items per page</span>

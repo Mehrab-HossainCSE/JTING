@@ -112,3 +112,9 @@
   color: #b2bec3;
   font-size: 0.8rem;
 }
+
+.pallet-generate-list-wrapper,
+.data-list-wrapper {
+  max-height: 315px;
+  overflow-y: auto;
+}

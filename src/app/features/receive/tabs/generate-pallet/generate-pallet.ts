@@ -24,7 +24,6 @@ export class GeneratePallet implements OnInit {
   private errorHandler = inject(ErrorHandlerService);
   private storageService = inject(StorageService);
 
-  // ── State ────────────────────────────────────────────────────────────
   palletList = signal<PalletGenerateItem[]>([]);
   selectedItem = signal<PalletGenerateItem | null>(null);
   withDate = signal(false);
@@ -35,7 +34,6 @@ export class GeneratePallet implements OnInit {
   isLoading = signal(false);
   isSearching = signal(false);
 
-  // ── Permissions ──────────────────────────────────────────────────────
   permissions = signal({
     canView: false,
     canCreate: false,
@@ -48,13 +46,11 @@ export class GeneratePallet implements OnInit {
   canUpdate = computed(() => this.permissions().canUpdate);
   canDelete = computed(() => this.permissions().canDelete);
 
-  // ── Lifecycle ────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
     if (this.canView()) {
       this.loadPalletGenerateList();
     }
-    this.testPrintPallet('15109111010126000080238');
   }
 
   private loadPermissionsFromStorage(): void {
@@ -81,7 +77,6 @@ export class GeneratePallet implements OnInit {
     });
   }
 
-  // ── Load top table data ──────────────────────────────────────────────
   loadPalletGenerateList(): void {
     this.isLoading.set(true);
     this.palletService.getPalletGenerateList().subscribe({
@@ -100,7 +95,6 @@ export class GeneratePallet implements OnInit {
     });
   }
 
-  // ── Row selection ────────────────────────────────────────────────────
   selectRow(item: PalletGenerateItem): void {
     this.selectedItem.set(item);
   }
@@ -115,12 +109,10 @@ export class GeneratePallet implements OnInit {
     this.withDate.set(false);
   }
 
-  // ── With Date toggle ─────────────────────────────────────────────────
   onWithDateChange(checked: boolean): void {
     this.withDate.set(checked);
   }
 
-  // ── Save & Print ─────────────────────────────────────────────────────
   saveAndPrint(): void {
     const item = this.selectedItem();
     if (!item) return;
@@ -140,10 +132,16 @@ export class GeneratePallet implements OnInit {
         if (res.success) {
           this.toastr.success('Pallet generated successfully.', 'Success');
           this.loadPalletGenerateList();
+          const palletNo = typeof res.data === 'string' ? res.data : res.data?.palletNo;
+          if (palletNo) {
+            this.testPrintPallet(palletNo);
+          } else {
+            this.isLoading.set(false);
+          }
         } else {
           this.toastr.error(res.message, 'Error');
+          this.isLoading.set(false);
         }
-        this.isLoading.set(false);
       },
       error: (err) => {
         this.errorHandler.handleErrorWithToster(err);
@@ -198,39 +196,55 @@ export class GeneratePallet implements OnInit {
     this.palletRecords.set([]);
   }
 
+  private printBlob(pdfBlob: Blob): void {
+    const fileURL = window.URL.createObjectURL(pdfBlob);
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '-9999px';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }
+      }, 500);
+
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+        window.URL.revokeObjectURL(fileURL);
+      }, 10000);
+    };
+
+    iframe.src = fileURL;
+    document.body.appendChild(iframe);
+  }
+
   testPrintPallet(palletNo: string): void {
     this.isLoading.set(true);
     this.palletService.printPallet(palletNo).subscribe({
       next: (pdfBlob) => {
         this.isLoading.set(false);
-        const fileURL = window.URL.createObjectURL(pdfBlob);
+        this.printBlob(pdfBlob);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
+  }
 
-        const iframe = document.createElement('iframe');
-        // Hide off-screen instead of using display: none so the browser renders it
-        iframe.style.position = 'absolute';
-        iframe.style.left = '-9999px';
-        iframe.style.top = '-9999px';
-        iframe.style.width = '0';
-        iframe.style.height = '0';
-        iframe.style.border = 'none';
-
-        iframe.onload = () => {
-          setTimeout(() => {
-            if (iframe.contentWindow) {
-              iframe.contentWindow.focus();
-              iframe.contentWindow.print();
-            }
-          }, 500); // Wait for the PDF plugin to initialize
-
-          // Clean up the iframe and object URL after printing
-          setTimeout(() => {
-            document.body.removeChild(iframe);
-            window.URL.revokeObjectURL(fileURL);
-          }, 10000);
-        };
-
-        iframe.src = fileURL;
-        document.body.appendChild(iframe);
+  reprintPallet(palletNo: string): void {
+    this.isLoading.set(true);
+    this.palletService.reprintPallet(palletNo).subscribe({
+      next: (pdfBlob) => {
+        this.isLoading.set(false);
+        this.printBlob(pdfBlob);
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -241,7 +255,7 @@ export class GeneratePallet implements OnInit {
 
   printRecord(record: PalletRecord): void {
     if (record && record.palletNo) {
-      this.testPrintPallet(record.palletNo);
+      this.reprintPallet(record.palletNo);
     } else {
       this.toastr.warning('Pallet number is missing.', 'Warning');
     }

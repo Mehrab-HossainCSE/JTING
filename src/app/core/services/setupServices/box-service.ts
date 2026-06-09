@@ -22,6 +22,11 @@ export class BoxService {
     return this.http.get<ApiResponse<Box>>(`${this.apiUrl}/GetById/${id}`);
   }
 
+
+  getSplitBoxByLineId(lineId: string): Observable<ApiResponse<Box[]>> {
+    return this.http.get<ApiResponse<Box[]>>(`${this.apiUrl}/GetSplitBoxByLineId/${lineId}`);
+  }
+
   getByLineId(lineId: string): Observable<ApiResponse<Box[]>> {
     return this.http.get<ApiResponse<Box[]>>(`${this.apiUrl}/GetByLineId/${lineId}`);
   }

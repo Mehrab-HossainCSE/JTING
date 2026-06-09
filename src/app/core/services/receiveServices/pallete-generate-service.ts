@@ -40,5 +40,12 @@ export class PalleteGenerateService {
       responseType: 'blob',
     });
   }
+
+  reprintPallet(palletNo: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/Report/Reprint-Pallet`, {
+      params: { palletNo },
+      responseType: 'blob',
+    });
+  }
 }
 

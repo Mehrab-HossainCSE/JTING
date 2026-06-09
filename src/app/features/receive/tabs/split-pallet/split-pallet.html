@@ -1,6 +1,6 @@
 <div class="split-pallet-container">
 
-  <!-- Top Three-Column Grid -->
+  <!-- Top Two-Column Grid -->
   <div class="top-grid">
 
     <!-- Left: Split Pallet Form -->
@@ -11,16 +11,18 @@
         <div class="form-row two-col">
           <div class="input-group">
             <label for="blockSelect">BLOCK <span class="req">*</span></label>
-            <select id="blockSelect" class="custom-select" [(ngModel)]="form.block" (change)="onFormChange()">
-              <option value="FG1">FG1</option>
-              <option value="FG2">FG2</option>
+            <select id="blockSelect" class="custom-select" [(ngModel)]="form.block"
+              (change)="onBlockChange(form.block)">
+              <option value="">Select Block...</option>
+              <option *ngFor="let b of blocks()" [value]="b.blockId">{{ b.blockName }}</option>
             </select>
           </div>
           <div class="input-group">
             <label for="archSelect">ARCH <span class="req">*</span></label>
-            <select id="archSelect" class="custom-select" [(ngModel)]="form.arch" (change)="onFormChange()">
-              <option value="FG-1-ARCH">FG-1-ARCH</option>
-              <option value="FG-2-ARCH">FG-2-ARCH</option>
+            <select id="archSelect" class="custom-select" [(ngModel)]="form.arch" (change)="onArchChange(form.arch)"
+              [disabled]="!form.block">
+              <option value="">Select Arch...</option>
+              <option *ngFor="let a of archives()" [value]="a.archId">{{ a.archName }}</option>
             </select>
           </div>
         </div>
@@ -28,21 +30,59 @@
         <div class="form-row two-col">
           <div class="input-group">
             <label for="lineSelect">LINE <span class="req">*</span></label>
-            <select id="lineSelect" class="custom-select" [(ngModel)]="form.line" (change)="onFormChange()">
-              <option value="L3">L3</option>
-              <option value="L1">L1</option>
-              <option value="L2">L2</option>
+            <select id="lineSelect" class="custom-select" [(ngModel)]="form.line" (change)="onLineChange(form.line)"
+              [disabled]="!form.arch">
+              <option value="">Select Line...</option>
+              <option *ngFor="let l of lines()" [value]="l.lineId">{{ l.lineName }}</option>
             </select>
           </div>
           <div class="input-group">
             <label for="boxSelect">BOX <span class="req">*</span></label>
-            <select id="boxSelect" class="custom-select" [(ngModel)]="form.box" (change)="onFormChange()">
-              <option value="FG1A01L031">FG1A01L031</option>
-              <option value="FG1A01L032">FG1A01L032</option>
+            <select id="boxSelect" class="custom-select" [(ngModel)]="form.box" (change)="onFormChange()"
+              [disabled]="!form.line">
+              <option value="">Select Box...</option>
+              <option *ngFor="let bx of boxes()" [value]="bx.boxId">{{ bx.boxName }}</option>
             </select>
           </div>
         </div>
 
+        <!-- Readonly Mockup Fields -->
+        <div class="form-row two-col">
+          <div class="input-group">
+            <label for="palletNoInput">PALLET NO</label>
+            <input id="palletNoInput" type="text" [(ngModel)]="form.palletNoInput" readonly />
+          </div>
+          <div class="input-group">
+            <label for="qtyInput">QTY (CS)</label>
+            <input id="qtyInput" type="number" [(ngModel)]="form.qty" readonly />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="dateInput">DATE</label>
+          <input id="dateInput" type="date" [(ngModel)]="form.date" readonly />
+        </div>
+
+        <!-- Destination Auto Checkbox -->
+        <div class="input-group checkbox-group">
+          <label for="destAutoCheckbox" class="checkbox-label">
+            <input id="destAutoCheckbox" type="checkbox" [(ngModel)]="form.destinationAuto" />
+            <span class="checkbox-box"></span>
+            DESTINATION AUTO
+          </label>
+        </div>
+
+        <!-- Manual Box Dropdown -->
+        <div class="input-group">
+          <label for="manualSelect">MANUAL</label>
+          <select id="manualSelect" class="custom-select" [(ngModel)]="form.manual" [disabled]="form.destinationAuto">
+            <option value="">Select manual...</option>
+            <option value="M001">Manual Option 1</option>
+            <option value="M002">Manual Option 2</option>
+          </select>
+        </div>
+
+        <!-- PA Checkbox -->
         <div class="input-group checkbox-group">
           <label for="paCheckbox" class="checkbox-label">
             <input id="paCheckbox" type="checkbox" [(ngModel)]="form.pa" />
@@ -74,62 +114,84 @@
       </div>
     </div>
 
-    <!-- Middle: Selected Case Table -->
-    <div class="card table-card">
-      <div class="card-header-sm">
-        Selected Case
-        <span class="selected-count">{{ selectedCount }} selected</span>
+    <!-- Right Column: Selected Case & Remarks -->
+    <div class="top-right-column">
+
+      <!-- Middle/Right: Selected Case Table -->
+      <div class="card table-card">
+        <div class="card-header-sm">
+          Selected Case
+          <span class="selected-count">{{ selectedCount }} selected</span>
+        </div>
+        <div class="case-table-wrapper">
+          <table class="case-table">
+            <thead>
+              <tr>
+                <th>SKU NAME</th>
+                <th>SEQUENCE NO</th>
+                <th class="text-end">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="caseItems().length === 0">
+                <td colspan="3" class="empty-state">No records yet — submit the form to load cases.</td>
+              </tr>
+              <tr *ngFor="let item of caseItems()" class="case-row" [class.selected]="item.selected">
+                <td>{{ item.skuName }}</td>
+                <td>{{ item.sequenceNo }}</td>
+                <td class="action-cell">
+                  <input type="checkbox" aria-label="Select case" class="case-checkbox" [(ngModel)]="item.selected"
+                    (change)="onCheckboxChange()" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="case-table-wrapper">
-        <table class="case-table">
-          <thead>
-            <tr>
-              <th>SKU NAME</th>
-              <th>SEQUENCE NO</th>
-              <th class="text-end">ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="caseItems.length === 0">
-              <td colspan="3" class="empty-state">No records yet — submit the form to load cases.</td>
-            </tr>
-            <tr *ngFor="let item of caseItems" class="case-row" [class.selected]="item.selected">
-              <td>{{ item.skuName }}</td>
-              <td>{{ item.sequenceNo }}</td>
-              <td class="action-cell">
-                <input
-                  type="checkbox"
-                  aria-label="Select case"
-                  class="case-checkbox"
-                  [(ngModel)]="item.selected"
-                  (change)="onCheckboxChange()"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+      <!-- Remarks Row -->
+      <div class="card remarks-card">
+        <div class="remarks-body">
+          <label for="remarksInput" class="remarks-label">REMARKS</label>
+          <div class="remarks-input-row">
+            <input id="remarksInput" type="text" class="remarks-input" placeholder="Enter split remarks..."
+              [(ngModel)]="remarks" />
+            <button class="btn-split-now" (click)="onSplitNow()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="18" r="3" />
+                <circle cx="6" cy="6" r="3" />
+                <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+                <line x1="6" y1="9" x2="6" y2="21" />
+              </svg>
+              Split Now
+            </button>
+          </div>
+        </div>
       </div>
+
     </div>
 
-    <!-- Right: Pallet After Split -->
-    <div class="card pallet-card">
-      <div class="card-header-sm">Pallet After Split</div>
+  <!-- Bottom Grids Section -->
+  <div class="bottom-grids-section">
 
-      <div class="card-body pallet-body">
-        <div class="print-actions">
+    <!-- Row 1: Old Pallet Details & Sequence No -->
+    <div class="bottom-row-grid">
+      <!-- Left: Old Pallet Details -->
+      <div class="card detail-card old-section">
+        <div class="card-header-sm split-header">
+          <span>Old Pallet Details</span>
           <button class="btn-print" (click)="onPrintOld()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
             Print Old
           </button>
-          <button class="btn-print" (click)="onPrintNew()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            Print New
-          </button>
         </div>
-
-        <!-- Old Pallet Details -->
-        <div class="pallet-section old-section">
-          <div class="section-title old-title">Old Pallet Details</div>
+        <div class="card-body pallet-body">
           <div class="detail-row">
             <span class="detail-label">Pallet No</span>
             <span class="detail-value">{{ oldPallet.palletNo || '—' }}</span>
@@ -150,14 +212,42 @@
             <span class="detail-label">Total</span>
             <span class="detail-value">{{ oldPallet.total || '—' }}</span>
           </div>
-          <div class="seq-row">
-            <span class="seq-label">Sequence No</span>
-          </div>
         </div>
+      </div>
 
-        <!-- New Pallet Details -->
-        <div class="pallet-section new-section">
-          <div class="section-title new-title">New Pallet Details</div>
+      <!-- Right: Old Pallet Sequence No Grid -->
+      <div class="card seq-card old-section">
+        <div class="card-header-sm">Sequence No</div>
+        <div class="card-body seq-body">
+          <div class="seq-grid" *ngIf="oldPalletSequenceNos().length > 0; else noOldSeq">
+            <span *ngFor="let seq of oldPalletSequenceNos()" class="seq-badge">
+              {{ seq }}
+            </span>
+          </div>
+          <ng-template #noOldSeq>
+            <div class="empty-state">No sequence numbers assigned.</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: New Pallet Details & Sequence No -->
+    <div class="bottom-row-grid">
+      <!-- Left: New Pallet Details -->
+      <div class="card detail-card new-section">
+        <div class="card-header-sm split-header">
+          <span>New Pallet Details</span>
+          <button class="btn-print" (click)="onPrintNew()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            Print New
+          </button>
+        </div>
+        <div class="card-body pallet-body">
           <div class="detail-row">
             <span class="detail-label">Pallet No</span>
             <span class="detail-value">{{ newPallet.palletNo || '—' }}</span>
@@ -178,34 +268,25 @@
             <span class="detail-label">Total</span>
             <span class="detail-value">{{ newPallet.total || '—' }}</span>
           </div>
-          <div class="seq-row">
-            <span class="seq-label">Sequence No</span>
-          </div>
         </div>
+      </div>
 
+      <!-- Right: New Pallet Sequence No Grid -->
+      <div class="card seq-card new-section">
+        <div class="card-header-sm">Sequence No</div>
+        <div class="card-body seq-body">
+          <div class="seq-grid" *ngIf="newPalletSequenceNos().length > 0; else noNewSeq">
+            <span *ngFor="let seq of newPalletSequenceNos()" class="seq-badge">
+              {{ seq }}
+            </span>
+          </div>
+          <ng-template #noNewSeq>
+            <div class="empty-state">No sequence numbers assigned.</div>
+          </ng-template>
+        </div>
       </div>
     </div>
 
-  </div>
-
-  <!-- Remarks Row -->
-  <div class="card remarks-card">
-    <div class="remarks-body">
-      <label for="remarksInput" class="remarks-label">REMARKS</label>
-      <div class="remarks-input-row">
-        <input
-          id="remarksInput"
-          type="text"
-          class="remarks-input"
-          placeholder="Enter split remarks..."
-          [(ngModel)]="remarks"
-        />
-        <button class="btn-split-now" (click)="onSplitNow()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
-          Split Now
-        </button>
-      </div>
-    </div>
   </div>
 
 </div>

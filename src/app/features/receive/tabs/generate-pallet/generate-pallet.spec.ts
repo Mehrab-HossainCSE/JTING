@@ -43,6 +43,7 @@ describe('GeneratePallet', () => {
     searchPalletRecords: () => of({ success: true, data: [], message: '', errors: null, errorCode: null, traceId: null }),
     deletePalletRecord: () => of({ success: true, data: null, message: '', errors: null, errorCode: null, traceId: null }),
     printPallet: () => of(new Blob()),
+    reprintPallet: () => of(new Blob()),
   };
 
   const errorHandlerMock = {
