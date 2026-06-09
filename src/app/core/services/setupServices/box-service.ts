@@ -12,7 +12,7 @@ import { BossAssaign } from '../../models/setups/box/boss-assaign';
 export class BoxService {
   private apiUrl = `${environment.apiUrl}/BoxSetup`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<ApiResponse<Box[]>> {
     return this.http.get<ApiResponse<Box[]>>(this.apiUrl);
@@ -21,7 +21,6 @@ export class BoxService {
   getById(id: string): Observable<ApiResponse<Box>> {
     return this.http.get<ApiResponse<Box>>(`${this.apiUrl}/GetById/${id}`);
   }
-
 
   getSplitBoxByLineId(lineId: string): Observable<ApiResponse<Box[]>> {
     return this.http.get<ApiResponse<Box[]>>(`${this.apiUrl}/GetSplitBoxByLineId/${lineId}`);
