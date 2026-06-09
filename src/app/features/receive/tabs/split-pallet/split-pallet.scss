@@ -20,10 +20,9 @@
   gap: 8px;
 }
 
-// ── Top Three-Column Grid ──────────────────────────────────────────────────
 .top-grid {
   display: grid;
-  grid-template-columns: 320px 1fr 340px;
+  grid-template-columns: 340px 1fr;
   gap: 1rem;
   align-items: stretch;
 }
@@ -70,7 +69,7 @@
   input[type='checkbox'] {
     display: none;
 
-    &:checked + .checkbox-box {
+    &:checked+.checkbox-box {
       background: #00BB31;
       border-color: #00BB31;
 
@@ -153,8 +152,14 @@
   max-height: 320px;
   padding: 0 1.25rem;
 
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
   &::-webkit-scrollbar-thumb {
     background: #d1d5db;
     border-radius: 99px;
@@ -356,7 +361,9 @@
   transition: all 0.2s;
   box-sizing: border-box;
 
-  &::placeholder { color: #b2bec3; }
+  &::placeholder {
+    color: #b2bec3;
+  }
 
   &:focus {
     outline: none;
@@ -389,5 +396,71 @@
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+// ── Bottom Grids Section ───────────────────────────────────────────────────
+.bottom-grids-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.bottom-row-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.split-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.seq-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.seq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 6px;
+}
+
+.seq-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.old-section {
+  .seq-badge {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    &:hover {
+      background: #fef3c7;
+    }
+  }
+}
+
+.new-section {
+  .seq-badge {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    &:hover {
+      background: #dcfce7;
+    }
   }
 }

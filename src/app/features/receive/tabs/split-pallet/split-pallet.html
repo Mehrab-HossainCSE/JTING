@@ -90,20 +90,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="caseItems.length === 0">
+            <tr *ngIf="caseItems().length === 0">
               <td colspan="3" class="empty-state">No records yet — submit the form to load cases.</td>
             </tr>
-            <tr *ngFor="let item of caseItems" class="case-row" [class.selected]="item.selected">
+            <tr *ngFor="let item of caseItems()" class="case-row" [class.selected]="item.selected">
               <td>{{ item.skuName }}</td>
               <td>{{ item.sequenceNo }}</td>
               <td class="action-cell">
-                <input
-                  type="checkbox"
-                  aria-label="Select case"
-                  class="case-checkbox"
-                  [(ngModel)]="item.selected"
-                  (change)="onCheckboxChange()"
-                />
+                <input type="checkbox" aria-label="Select case" class="case-checkbox" [(ngModel)]="item.selected"
+                  (change)="onCheckboxChange()" />
               </td>
             </tr>
           </tbody>
@@ -118,11 +113,21 @@
       <div class="card-body pallet-body">
         <div class="print-actions">
           <button class="btn-print" (click)="onPrintOld()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
             Print Old
           </button>
           <button class="btn-print" (click)="onPrintNew()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
             Print New
           </button>
         </div>
@@ -193,15 +198,16 @@
     <div class="remarks-body">
       <label for="remarksInput" class="remarks-label">REMARKS</label>
       <div class="remarks-input-row">
-        <input
-          id="remarksInput"
-          type="text"
-          class="remarks-input"
-          placeholder="Enter split remarks..."
-          [(ngModel)]="remarks"
-        />
+        <input id="remarksInput" type="text" class="remarks-input" placeholder="Enter split remarks..."
+          [(ngModel)]="remarks" />
         <button class="btn-split-now" (click)="onSplitNow()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="18" r="3" />
+            <circle cx="6" cy="6" r="3" />
+            <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+            <line x1="6" y1="9" x2="6" y2="21" />
+          </svg>
           Split Now
         </button>
       </div>
