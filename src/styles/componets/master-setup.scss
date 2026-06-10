@@ -716,12 +716,15 @@
   border-radius: 12px;
   border: 1px solid #e2e8f0;
 
-  span {
+  span,
+  label {
     font-size: 0.7rem;
     font-weight: 700;
     color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: 0; /* Override any global label margin */
+    cursor: pointer;
   }
 
   select {
