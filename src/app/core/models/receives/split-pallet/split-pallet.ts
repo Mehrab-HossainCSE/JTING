@@ -20,6 +20,10 @@ export interface PalletPickingSku {
 
 export interface SplitPalletPayload {
   barcodes: string[];
+  secquenceNo?: string[];
+  secquenceNos?: string[];
+  sequenceNo?: string[];
+  sequenceNos?: string[];
   isPA: boolean;
   controlName: string;
   batchNo: string;
