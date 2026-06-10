@@ -85,10 +85,24 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 1.25rem;
-  align-items: start;
+  align-items: stretch; // Match heights of left and right columns
 
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
+  }
+
+  .left-col, .right-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .box-location-card {
+    height: 100%;
+    .table-outer {
+      flex: 1;
+      max-height: none; // Allow it to expand to match right column height
+    }
   }
 }
 
