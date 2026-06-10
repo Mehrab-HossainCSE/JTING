@@ -62,6 +62,13 @@
     &::-webkit-scrollbar { width: 5px; }
     &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
   }
+
+  .card-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    background: #f8fafc;
+    flex-shrink: 0;
+  }
 }
 
 // ── Specific Card Spans ───────────────────────────────────────────────────
@@ -152,15 +159,15 @@
 .btn-submit {
   width: 100%;
   height: 40px;
-  background: #1e293b;
+  background: #00BB31;
   color: white;
   border: none;
   border-radius: 10px;
   font-weight: 700;
-  margin-top: 5px;
   cursor: pointer;
   transition: all 0.2s;
-  &:hover { background: #0f172a; transform: translateY(-1px); }
+  box-shadow: 0 4px 12px rgba(0, 187, 49, 0.2);
+  &:hover { background: #00a32b; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 187, 49, 0.3); }
 }
 
 // ── Table Styles ───────────────────────────────────────────────────────────
