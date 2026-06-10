@@ -181,7 +181,15 @@ export class SplitPallet implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.form.sku || !this.form.palletNo) return;
+    if (!this.form.sku || !this.form.palletNo) {
+      this.toastr.warning('Please select SKU and Pallet No.', 'Validation Warning');
+      return;
+    }
+
+    if (!this.form.destinationAuto && !this.form.manual) {
+      this.toastr.warning('Please select a manual option.', 'Validation Warning');
+      return;
+    }
 
     // Simulate loading cases based on selected pallet
     this.caseItems.set(Array.from({ length: 8 }, (_, i) => ({

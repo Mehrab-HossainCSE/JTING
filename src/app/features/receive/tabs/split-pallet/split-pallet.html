@@ -44,8 +44,25 @@
         </div>
 
         <div class="input-group checkbox-group">
+          <label for="destinationAutoCheckbox" class="checkbox-label">
+            <input id="destinationAutoCheckbox" type="checkbox" [(ngModel)]="form.destinationAuto" (change)="onFormChange()" />
+            <span class="checkbox-box"></span>
+            Auto Manual
+          </label>
+        </div>
+
+        <div class="input-group">
+          <label for="manualSelect">SELECT MANUAL <span *ngIf="!form.destinationAuto" class="req">*</span></label>
+          <select id="manualSelect" class="custom-select" [(ngModel)]="form.manual" [disabled]="form.destinationAuto" (change)="onFormChange()">
+            <option value="">Select Manual...</option>
+            <option value="MANUAL001">Manual Option 1</option>
+            <option value="MANUAL002">Manual Option 2</option>
+          </select>
+        </div>
+
+        <div class="input-group checkbox-group">
           <label for="paCheckbox" class="checkbox-label">
-            <input id="paCheckbox" type="checkbox" [(ngModel)]="form.pa" />
+            <input id="paCheckbox" type="checkbox" [(ngModel)]="form.pa" (change)="onFormChange()" />
             <span class="checkbox-box"></span>
             PA
           </label>
@@ -113,7 +130,7 @@
 
       <div class="card-body pallet-body">
         <div class="pallet-columns-flex">
-          
+
           <!-- Old Pallet Side -->
           <div class="pallet-column">
             <button class="btn-print w-100 mb-2" (click)="onPrintOld()">
@@ -215,9 +232,9 @@
             </div>
           </div>
 
+        </div>
       </div>
     </div>
-  </div>
 
     <!-- Row 2, Spanning Col 1 & 2: Execution / Remarks -->
     <div class="card remarks-card">
