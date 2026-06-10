@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -10,8 +10,9 @@ import { ApiResponse } from '../../models/ApiResponse.model';
 })
 export class DepartmentService {
   private apiUrl = `${environment.apiUrl}/Department`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   getAll(): Observable<ApiResponse<Department[]>> {
     debugger;
