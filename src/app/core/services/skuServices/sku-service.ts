@@ -11,10 +11,14 @@ import { ApiResponse } from '../../models/ApiResponse.model';
 export class SkuService {
   private apiUrl = `${environment.apiUrl}/SkuSetup`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<ApiResponse<Sku[]>> {
     return this.http.get<ApiResponse<Sku[]>>(this.apiUrl);
+  }
+
+  getSKUWithOutESL(): Observable<ApiResponse<Sku[]>> {
+    return this.http.get<ApiResponse<Sku[]>>(`${this.apiUrl}/GetSKUWithOutESL`);
   }
 
   getById(id: string): Observable<ApiResponse<Sku>> {

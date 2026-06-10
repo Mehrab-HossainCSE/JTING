@@ -89,6 +89,48 @@
 }
 
 // ── Form Styles ────────────────────────────────────────────────────────────
+.readonly-display {
+  width: 100%;
+  height: 38px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  overflow-x: auto;
+  white-space: nowrap;
+  
+  &::-webkit-scrollbar { display: none; }
+  scrollbar-width: none;
+}
+
+.input-group-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  gap: 12px;
+
+  .row-label {
+    width: 75px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+    margin-bottom: 0; // Reset default margin-bottom
+  }
+
+  .readonly-display {
+    flex: 1;
+  }
+}
+
 .form-row.two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -174,6 +216,13 @@
   transition: all 0.2s;
   box-shadow: 0 4px 12px rgba(0, 187, 49, 0.2);
   &:hover { background: #00a32b; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 187, 49, 0.3); }
+  &:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
 }
 
 // ── Table Styles ───────────────────────────────────────────────────────────
@@ -181,6 +230,12 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  max-height: 400px;
+
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  &::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 }
 
 .case-table {
@@ -271,6 +326,18 @@
   font-size: 0.725rem;
   .detail-label { color: #64748b; font-weight: 600; }
   .detail-value { color: #1e293b; font-weight: 700; }
+
+  &.column-layout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    
+    .detail-value {
+      font-size: 0.65rem;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+  }
 }
 
 .seq-section {
@@ -301,10 +368,12 @@
   font-size: 0.725rem;
   font-weight: 600;
   color: #334155;
+  max-height: 150px;
   .seq-item { padding: 3px 0; border-bottom: 1px solid #f8fafc; }
   &::-webkit-scrollbar { width: 3px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  &::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 }
 
 // ── Remarks Input ──────────────────────────────────────────────────────────

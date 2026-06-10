@@ -13,6 +13,10 @@ import { Block } from '../../../../core/models/setups/block/block';
 import { Arch } from '../../../../core/models/setups/arch/arch';
 import { Line } from '../../../../core/models/setups/line/line';
 import { Box } from '../../../../core/models/setups/box/box';
+import { PalletSplit } from '../../../../core/services/receiveServices/pallet-split';
+import { Sku } from '../../../../core/models/setups/sku/sku';
+import { SkuService } from '../../../../core/services/skuServices/sku-service';
+import { PalletPickingSku } from '../../../../core/models/receives/split-pallet/split-pallet';
 
 interface CaseItem {
   skuName: string;
@@ -30,6 +34,7 @@ interface PalletDetail {
 
 @Component({
   selector: 'app-split-pallet',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './split-pallet.html',
   styleUrl: './split-pallet.scss',
@@ -44,6 +49,8 @@ export class SplitPallet implements OnInit {
   private archService = inject(ArchService);
   private lineService = inject(LineService);
   private boxService = inject(BoxService);
+  private palletSplitService = inject(PalletSplit);
+  private skuService = inject(SkuService);
 
   blocks = signal<Block[]>([]);
   selectedBlock = signal<Block | null>(null);
@@ -55,6 +62,9 @@ export class SplitPallet implements OnInit {
   selectedArch = signal<Arch | null>(null);
   filteredLines = signal<Line[]>([]);
   filteredBoxes = signal<Box[]>([]);
+  manualBoxes = signal<Box[]>([]);
+  skus = signal<Sku[]>([]);
+  pickingPallets = signal<PalletPickingSku[]>([]);
 
   form = {
     block: '',
@@ -92,6 +102,7 @@ export class SplitPallet implements OnInit {
 
   ngOnInit(): void {
     this.loadBlocks();
+    this.loadSkus();
   }
 
   loadBlocks(): void {
@@ -101,6 +112,19 @@ export class SplitPallet implements OnInit {
           this.blocks.set(res.data);
         } else {
           this.toastr.error(res.message || 'Failed to load blocks');
+        }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err),
+    });
+  }
+
+  loadSkus(): void {
+    this.skuService.getSKUWithOutESL().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.skus.set(res.data);
+        } else {
+          this.toastr.error(res.message || 'Failed to load SKUs');
         }
       },
       error: (err) => this.errorHandler.handleErrorWithToster(err),
@@ -171,17 +195,151 @@ export class SplitPallet implements OnInit {
   }
 
   onFormChange(): void {
+    if (this.form.destinationAuto) {
+      this.form.manual = '';
+    }
     // Reset case list on form field change
     this.caseItems.set([]);
     this.selectedCount = 0;
   }
 
-  onPalletChange(): void {
+  onBoxChange(boxId: string): void {
     this.onFormChange();
+    if (!boxId) return;
+
+    this.palletSplitService.getSplitDataByBoxId(boxId).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const items = res.data.map(item => ({
+            skuName: item.skuname,
+            sequenceNo: item.secquenceNo,
+            selected: false,
+            palletNo: item.palletNo,
+            skuCode: item.skucode,
+            barcode: item.barcode,
+            batchNo: item.batchNo,
+            controlName: item.controlName
+          }));
+          this.caseItems.set(items);
+
+          if (res.data.length > 0) {
+            const palletNo = res.data[0].palletNo;
+            this.form.palletNo = palletNo;
+            this.form.palletNoInput = palletNo;
+            this.form.sku = res.data[0].skucode;
+
+            this.palletSplitService.getQtyAndDateByPalletNo(palletNo).subscribe({
+              next: (resQty) => {
+                if (resQty.success && resQty.data && resQty.data.length > 0) {
+                  this.form.date = resQty.data[0].rcvDate ? resQty.data[0].rcvDate.split('T')[0] : '';
+                  this.form.qty = resQty.data[0].qty;
+
+                  this.oldPallet = {
+                    palletNo: palletNo,
+                    arch: this.form.arch,
+                    line: this.form.line,
+                    box: this.form.box,
+                    total: resQty.data[0].qty
+                  };
+                }
+              },
+              error: (err) => this.errorHandler.handleErrorWithToster(err)
+            });
+          }
+        } else {
+          this.toastr.error(res.message || 'Failed to load box split data');
+        }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err)
+    });
+
+    this.boxService.getAll().subscribe({
+      next: (resBoxes) => {
+        if (resBoxes.success) {
+          this.manualBoxes.set(resBoxes.data);
+        } else {
+          this.toastr.error(resBoxes.message || 'Failed to load manual boxes');
+        }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err)
+    });
+  }
+
+  onPalletChange(palletNo: string): void {
+    this.onFormChange();
+    if (!palletNo) return;
+
+    this.palletSplitService.getSplitDataByPalletNo(palletNo).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const items = res.data.map(item => ({
+            skuName: item.skuname,
+            sequenceNo: item.secquenceNo,
+            selected: false,
+            palletNo: item.palletNo,
+            skuCode: item.skucode,
+            barcode: item.barcode,
+            batchNo: item.batchNo,
+            controlName: item.controlName
+          }));
+          this.caseItems.set(items);
+
+          if (res.data.length > 0) {
+            this.palletSplitService.getQtyAndDateByPalletNo(palletNo).subscribe({
+              next: (resQty) => {
+                if (resQty.success && resQty.data && resQty.data.length > 0) {
+                  this.form.date = resQty.data[0].rcvDate ? resQty.data[0].rcvDate.split('T')[0] : '';
+                  this.form.qty = resQty.data[0].qty;
+
+                  this.oldPallet = {
+                    palletNo: palletNo,
+                    arch: this.form.arch,
+                    line: this.form.line,
+                    box: this.form.box,
+                    total: resQty.data[0].qty
+                  };
+                }
+              },
+              error: (err) => this.errorHandler.handleErrorWithToster(err)
+            });
+          }
+        } else {
+          this.toastr.error(res.message || 'Failed to load pallet split data');
+        }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err)
+    });
+  }
+
+  onPaChange(): void {
+    if (!this.form.pa) {
+      this.form.sku = '';
+      this.form.palletNo = '';
+    }
+    //this.onFormChange();
+  }
+
+  onSkuChange(skuCode: string): void {
+    this.onFormChange();
+    this.pickingPallets.set([]);
+    this.form.palletNo = '';
+
+    if (!skuCode) return;
+
+    this.palletSplitService.getPalletNoFromPickingBySku(skuCode).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.pickingPallets.set(res.data);
+        } else {
+          this.toastr.error(res.message || 'Failed to load pallet numbers');
+        }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err),
+    });
   }
 
   onSubmit(): void {
-    if (!this.form.sku || !this.form.palletNo) {
+    if (this.form.pa && (!this.form.sku || !this.form.palletNo)) {
       this.toastr.warning('Please select SKU and Pallet No.', 'Validation Warning');
       return;
     }
