@@ -254,10 +254,9 @@
           
           <div class="remarks-input-wrapper">
             <label for="remarksTextarea">REMARKS</label>
-            <textarea id="remarksTextarea" class="remarks-textarea" 
+            <input id="remarksTextarea" type="text" class="remarks-input" 
                       placeholder="Enter remarks..." 
-                      [(ngModel)]="remarks"
-                      rows="2"></textarea>
+                      [(ngModel)]="remarks" />
           </div>
 
           <button class="btn btn-save make-quarantine-btn" 
