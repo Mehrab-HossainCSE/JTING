@@ -220,8 +220,6 @@ export class SplitPallet implements OnInit {
             controlName: item.controlName
           }));
           this.caseItems.set(items);
-          //this.oldPalletSequenceNos.set(items.map(item => item.sequenceNo));
-          //this.newPalletSequenceNos.set([]);
 
           if (res.data.length > 0) {
             const palletNo = res.data[0].palletNo;
@@ -234,14 +232,6 @@ export class SplitPallet implements OnInit {
                 if (resQty.success && resQty.data && resQty.data.length > 0) {
                   this.form.date = resQty.data[0].rcvDate ? resQty.data[0].rcvDate.split('T')[0] : '';
                   this.form.qty = resQty.data[0].qty;
-
-                  // this.oldPallet = {
-                  //   palletNo: palletNo,
-                  //   arch: this.form.arch,
-                  //   line: this.form.line,
-                  //   box: this.form.box,
-                  //   total: resQty.data[0].qty
-                  // };
                 }
               },
               error: (err) => this.errorHandler.handleErrorWithToster(err)
@@ -281,7 +271,6 @@ export class SplitPallet implements OnInit {
       this.form.sku = '';
       this.form.palletNo = '';
     }
-    //this.onFormChange();
   }
 
   onSkuChange(skuCode: string): void {
@@ -305,6 +294,14 @@ export class SplitPallet implements OnInit {
 
   onSubmit(): void {
     if (!this.form.pa) return;
+
+    if (!this.form.box) {
+      this.toastr.warning('Please select Box Number.', 'Validation Warning');
+      this.form.pa = false;
+      this.form.sku = '';
+      this.form.palletNo = '';
+      return;
+    }
 
     if (!this.form.sku || !this.form.palletNo) {
       this.toastr.warning('Please select SKU and Pallet No.', 'Validation Warning');
@@ -333,16 +330,6 @@ export class SplitPallet implements OnInit {
             controlName: item.controlName
           }));
           this.caseItems.set(items);
-          this.palletSplitService.getQtyAndDateByPalletNo(palletNo).subscribe({
-            next: (resQty) => {
-              if (resQty.success && resQty.data && resQty.data.length > 0) {
-                this.form.date = resQty.data[0].rcvDate ? resQty.data[0].rcvDate.split('T')[0] : '';
-                this.form.qty = resQty.data[0].qty;
-              }
-            },
-            error: (err) => this.errorHandler.handleErrorWithToster(err)
-          });
-
           this.toastr.success('Cases loaded successfully for the selected Pallet.', 'Success');
         } else {
           this.toastr.error(res.message || 'Failed to load pallet split data');
@@ -353,13 +340,11 @@ export class SplitPallet implements OnInit {
   }
 
   onCheckboxChange(): void {
-    // Trigger signal updates
     this.caseItems.update((items) => [...items]);
     this.selectedCount = this.caseItems().filter((i) => i.selected).length;
   }
 
   onSplitNow(): void {
-    debugger;
     if (this.selectedCount === 0) {
       this.toastr.warning('Please select at least one case to split.', 'Validation Warning');
       return;
@@ -396,42 +381,26 @@ export class SplitPallet implements OnInit {
           this.toastr.success(res.message || 'Pallet split completed successfully.');
 
           const data = res.data;
+          const oldPal = data.oldSkuList || {};
+          const newPal = data.newSkuList || {};
 
-          // Extract old pallet details from response data
-          const oldPal = data.oldPalletDetails || data.oldPallet || {};
-          const oldPalNo = oldPal.palletNo || data.oldPalletNo || (this.form.pa ? this.form.palletNo : this.form.palletNoInput);
-          const oldArch = oldPal.arch || data.oldArch || this.form.arch;
-          const oldLine = oldPal.line || data.oldLine || this.form.line;
-          const oldBox = oldPal.box || data.oldBox || this.form.box;
-          const oldTotal = oldPal.total !== undefined ? oldPal.total : (data.oldTotal !== undefined ? data.oldTotal : nonSelectedItems.length);
-          const oldSeqs = oldPal.sequenceNos || oldPal.sequences || data.oldSequenceNos || data.oldSequences || nonSelectedItems.map(i => i.sequenceNo);
-
-          // Extract new pallet details from response data
-          const newPal = data.newPalletDetails || data.newPallet || {};
-          const newPalNo = newPal.palletNo || data.newPalletNo || 'NEW-PLT-001';
-          const newArch = newPal.arch || data.newArch || this.form.arch;
-          const newLine = newPal.line || data.newLine || this.form.line;
-          const newBox = newPal.box || data.newBox || (this.form.destinationAuto ? this.form.box : this.form.manual);
-          const newTotal = newPal.total !== undefined ? newPal.total : (data.newTotal !== undefined ? data.newTotal : selectedItems.length);
-          const newSeqs = newPal.sequenceNos || newPal.sequences || data.newSequenceNos || data.newSequences || selectedItems.map(i => i.sequenceNo);
-
-          this.oldPalletSequenceNos.set(oldSeqs);
-          this.newPalletSequenceNos.set(newSeqs);
+          this.oldPalletSequenceNos.set(data.oldPalletSecquenceNo || []);
+          this.newPalletSequenceNos.set(data.newPalletSecquenceNo || []);
 
           this.oldPallet = {
-            palletNo: oldPalNo,
-            arch: oldArch,
-            line: oldLine,
-            box: oldBox,
-            total: oldTotal
+            palletNo: oldPal.palletNo || '',
+            arch: oldPal.archName || '',
+            line: oldPal.lineName || '',
+            box: oldPal.boxName || '',
+            total: oldPal.qty || 0
           };
 
           this.newPallet = {
-            palletNo: newPalNo,
-            arch: newArch,
-            line: newLine,
-            box: newBox,
-            total: newTotal
+            palletNo: newPal.palletNo || '',
+            arch: newPal.archName || '',
+            line: newPal.lineName || '',
+            box: newPal.boxName || '',
+            total: newPal.qty || 0
           };
         } else {
           this.toastr.error(res.message || 'Failed to split pallet.');
