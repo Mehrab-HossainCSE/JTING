@@ -17,6 +17,7 @@ import { PalletSplit } from '../../../../core/services/receiveServices/pallet-sp
 import { Sku } from '../../../../core/models/setups/sku/sku';
 import { SkuService } from '../../../../core/services/skuServices/sku-service';
 import { PalletPickingSku, SplitPalletPayload } from '../../../../core/models/receives/split-pallet/split-pallet';
+import { PalleteGenerateService } from '../../../../core/services/receiveServices/pallete-generate-service';
 
 interface CaseItem {
   skuName: string;
@@ -56,6 +57,7 @@ export class SplitPallet implements OnInit {
   private boxService = inject(BoxService);
   private palletSplitService = inject(PalletSplit);
   private skuService = inject(SkuService);
+  private palletGenerateService = inject(PalleteGenerateService);
 
   blocks = signal<Block[]>([]);
   selectedBlock = signal<Block | null>(null);
@@ -410,13 +412,60 @@ export class SplitPallet implements OnInit {
     });
   }
 
+  private printBlob(pdfBlob: Blob): void {
+    const fileURL = window.URL.createObjectURL(pdfBlob);
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '-9999px';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }
+      }, 500);
+
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+        window.URL.revokeObjectURL(fileURL);
+      }, 10000);
+    };
+
+    iframe.src = fileURL;
+    document.body.appendChild(iframe);
+  }
+
   onPrintOld(): void {
-    if (!this.oldPallet.palletNo) return;
-    alert(`Printing Old Pallet: ${this.oldPallet.palletNo}`);
+    if (!this.oldPallet.palletNo) {
+      this.toastr.warning('No Old Pallet Number Found.', 'Validation Warning');
+      return;
+    };
+
+    this.palletGenerateService.reprintPallet(this.oldPallet.palletNo).subscribe({
+      next: (pdfBlob) => {
+        this.printBlob(pdfBlob);
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err),
+    });
   }
 
   onPrintNew(): void {
-    if (!this.newPallet.palletNo) return;
-    alert(`Printing New Pallet: ${this.newPallet.palletNo}`);
+    if (!this.newPallet.palletNo) {
+      this.toastr.warning('No New Pallet Number Found.', 'Validation Warning');
+      return;
+    }
+
+    this.palletGenerateService.reprintPallet(this.newPallet.palletNo).subscribe({
+      next: (pdfBlob) => {
+        this.printBlob(pdfBlob);
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err),
+    });
   }
 }

@@ -9,6 +9,7 @@ import { BlockService } from '../../../../core/services/setupServices/block-serv
 import { ArchService } from '../../../../core/services/setupServices/arch-service';
 import { LineService } from '../../../../core/services/setupServices/line-service';
 import { BoxService } from '../../../../core/services/setupServices/box-service';
+import { PalleteGenerateService } from '../../../../core/services/receiveServices/pallete-generate-service';
 
 describe('SplitPallet', () => {
   let component: SplitPallet;
@@ -37,6 +38,9 @@ describe('SplitPallet', () => {
   const boxServiceMock = {
     getByLineId: () => of({ success: true, data: [], message: '', errors: null, errorCode: null, traceId: null }),
   };
+  const palletGenerateServiceMock = {
+    reprintPallet: () => of(new Blob()),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -49,6 +53,7 @@ describe('SplitPallet', () => {
         { provide: ArchService, useValue: archServiceMock },
         { provide: LineService, useValue: lineServiceMock },
         { provide: BoxService, useValue: boxServiceMock },
+        { provide: PalleteGenerateService, useValue: palletGenerateServiceMock },
       ],
     }).compileComponents();
 
