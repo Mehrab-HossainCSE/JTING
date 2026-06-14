@@ -213,9 +213,9 @@
 // 6. Footer inside Card 3
 .reconciliation-footer {
   flex-shrink: 0;
-  padding: 1.25rem 1.75rem;
-  background: white;
-  border-top: 1px solid #f1f5f9;
+  padding: 1.25rem 1.75rem !important;
+  background: white !important; 
+  border-top: 1.25px solid #f1f5f9 !important; 
   display: flex;
   align-items: center;
   justify-content: space-between;
