@@ -15,6 +15,7 @@ import { Arch } from '../../../../core/models/setups/arch/arch';
 import { Line } from '../../../../core/models/setups/line/line';
 import { QuarantineService } from '../../../../core/services/receiveServices/quarantine-service';
 import { BoxLocation, QuarantineRecord, PalletDetail } from '../../../../core/models/receives/quarantine/quarantine';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-quarantine',
@@ -32,6 +33,7 @@ export class Quarantine implements OnInit {
   private archService = inject(ArchService);
   private lineService = inject(LineService);
   private quarantineService = inject(QuarantineService);
+  private errorHandler = inject(ErrorHandlerService);
 
 
   // ── Permissions ──────────────────────────────────────────────────────
@@ -56,17 +58,9 @@ export class Quarantine implements OnInit {
   // State Signals
   boxesState = signal<BoxLocation[]>([]);
 
-  recordsState = signal<QuarantineRecord[]>([
-    { quarantineNo: 'QRN-00001', skuDescription: 'Navy Special Filter 10s - 15107995', palletQty: 24, createDate: '4/5/2026' },
-    { quarantineNo: 'QRN-00002', skuDescription: 'Navy Special Filter 10s - 15107995', palletQty: 20, createDate: '4/5/2026' },
-  ]);
+  recordsState = signal<QuarantineRecord[]>([]);
 
-  palletsState = signal<PalletDetail[]>([
-    { boxLocation: 'FG1A04L01B01', palletNo: 'PLT-2024-001', batchNo: 'B-41761090', receiveDate: '4/5/2026', qty: 24, status: 'Pending', skuCode: '15107995' },
-    { boxLocation: 'FG1A04L01B02', palletNo: 'PLT-2024-002', batchNo: 'B-41761091', receiveDate: '4/5/2026', qty: 20, status: 'Reviewing', skuCode: '15107995' },
-    { boxLocation: 'FG1A04L02B01', palletNo: 'PLT-2024-003', batchNo: 'B-41761092', receiveDate: '4/5/2026', qty: 30, status: 'Pending', skuCode: '15107992' },
-    { boxLocation: 'FG1A01L01B01', palletNo: 'PLT-2024-004', batchNo: 'B-41761093', receiveDate: '4/5/2026', qty: 15, status: 'Reviewing', skuCode: '15108001' },
-  ]);
+  palletsState = signal<PalletDetail[]>([]);
 
   // Filters State
   filterSku = '';
@@ -127,7 +121,7 @@ export class Quarantine implements OnInit {
         }
       },
       error: (err) => {
-        this.toastr.error('Error fetching SKUs from database', 'Error');
+        this.errorHandler.handleErrorWithToster(err);
       }
     });
   }
@@ -151,7 +145,7 @@ export class Quarantine implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error('Error fetching blocks from database', 'Error');
+          this.errorHandler.handleErrorWithToster(err);
         }
       });
     }
@@ -173,7 +167,7 @@ export class Quarantine implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error('Error fetching arches from database', 'Error');
+          this.errorHandler.handleErrorWithToster(err);
         }
       });
     }
@@ -193,7 +187,7 @@ export class Quarantine implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error('Error fetching lines from database', 'Error');
+          this.errorHandler.handleErrorWithToster(err);
         }
       });
     }
@@ -219,7 +213,7 @@ export class Quarantine implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error('Error fetching locations from database', 'Error');
+          this.errorHandler.handleErrorWithToster(err);
         }
       });
     }
@@ -234,7 +228,54 @@ export class Quarantine implements OnInit {
     this.activeFromDate.set(this.fromDate);
     this.activeToDate.set(this.toDate);
     this.activeQuarantineNo.set(this.quarantineNoQuery.trim());
-    this.toastr.success('Search filters applied', 'Filters');
+
+    if (this.fromDate && this.toDate) {
+      this.quarantineService.getQuarantineByDate(this.fromDate, this.toDate).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            const mappedRecords: QuarantineRecord[] = res.data.map((item: any) => ({
+              quarantineNo: item.quarantineNo,
+              skuDescription: `${item.skuname} - ${item.skucode}`,
+              palletQty: item.qty,
+              createDate: item.createDate
+            }));
+            this.recordsState.set(mappedRecords);
+            this.toastr.success('Search filters applied', 'Filters');
+          } else {
+            this.toastr.error(res.message || 'No records found', 'Error');
+          }
+        },
+        error: (err) => {
+          this.errorHandler.handleErrorWithToster(err);
+        }
+      });
+    } else {
+      this.toastr.success('Search filters applied', 'Filters');
+    }
+  }
+
+  onRecordClick(rec: QuarantineRecord): void {
+    this.quarantineService.getQuarantineDetailsData(rec.quarantineNo).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const mappedPallets: PalletDetail[] = res.data.map((item: any) => ({
+            boxLocation: item.controlName,
+            palletNo: item.palletNo,
+            batchNo: item.batchNo,
+            receiveDate: item.rcvDate,
+            qty: item.qty,
+            status: item.status,
+            skuCode: item.skuCode || item.skucode || ''
+          }));
+          this.palletsState.set(mappedPallets);
+        } else {
+          this.toastr.error(res.message || 'Failed to load details', 'Error');
+        }
+      },
+      error: (err) => {
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
   }
 
   // ── Filtered Computations ────────────────────────────────────────────
@@ -325,46 +366,59 @@ export class Quarantine implements OnInit {
     }
 
     const matchedPallets = this.palletsState().filter(p => selectedLocations.includes(p.boxLocation));
-    if (matchedPallets.length === 0) {
-      this.toastr.warning('No matching pallets found in the selected locations to quarantine.', 'Warning');
-      return;
-    }
-
     const totalQty = matchedPallets.reduce((sum, p) => sum + p.qty, 0);
-    const skuCode = matchedPallets[0].skuCode;
+    const skuCode = this.filterSku || (matchedPallets.length > 0 ? matchedPallets[0].skuCode : '');
     const skuName = this.skus().find(s => s.skucode === skuCode)?.skuname || 'Unknown SKU';
 
     // Generate new Quarantine Record
     const nextNum = this.recordsState().length + 1;
     const qrnNo = `QRN-${nextNum.toString().padStart(5, '0')}`;
-    const newRecord: QuarantineRecord = {
+
+    const payload = {
+      controlNames: selectedLocations,
       quarantineNo: qrnNo,
-      skuDescription: `${skuName} - ${skuCode}`,
-      palletQty: totalQty,
-      createDate: new Date().toLocaleDateString(),
+      remarks: this.remarks.trim()
     };
 
-    // Update Pallets status to 'Pending' in quarantine
-    this.palletsState.update(list =>
-      list.map(p => {
-        if (selectedLocations.includes(p.boxLocation)) {
-          return { ...p, status: 'Pending' };
+    this.quarantineService.setLocationQuarantine(payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          const newRecord: QuarantineRecord = {
+            quarantineNo: qrnNo,
+            skuDescription: `${skuName} - ${skuCode}`,
+            palletQty: totalQty,
+            createDate: new Date().toLocaleDateString(),
+          };
+
+          // Update Pallets status to 'Pending' in quarantine
+          this.palletsState.update(list =>
+            list.map(p => {
+              if (selectedLocations.includes(p.boxLocation)) {
+                return { ...p, status: 'Pending' };
+              }
+              return p;
+            })
+          );
+
+          // Add to records list
+          this.recordsState.update(list => [newRecord, ...list]);
+
+          // Reset remarks and selection
+          this.remarks = '';
+          this.boxesState.update(list =>
+            list.map(b => ({ ...b, selected: false }))
+          );
+          this.allSelect = false;
+
+          this.toastr.success(res.message || `Quarantine record ${qrnNo} created successfully!`, 'Success');
+        } else {
+          this.toastr.error(res.message || 'Failed to create quarantine record', 'Error');
         }
-        return p;
-      })
-    );
-
-    // Add to records list
-    this.recordsState.update(list => [newRecord, ...list]);
-
-    // Reset remarks and selection
-    this.remarks = '';
-    this.boxesState.update(list =>
-      list.map(b => ({ ...b, selected: false }))
-    );
-    this.allSelect = false;
-
-    this.toastr.success(`Quarantine record ${qrnNo} created successfully!`, 'Success');
+      },
+      error: (err) => {
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
   }
 
   // ── Release Pallet ───────────────────────────────────────────────────

@@ -172,7 +172,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let rec of filteredRecords()" class="table-row">
+                <tr *ngFor="let rec of filteredRecords()" class="table-row clickable-row" (click)="onRecordClick(rec)">
                   <td><span class="id-pill qrn-pill">{{ rec.quarantineNo }}</span></td>
                   <td>{{ rec.skuDescription }}</td>
                   <td><span class="qty-pill">{{ rec.palletQty }}</span></td>

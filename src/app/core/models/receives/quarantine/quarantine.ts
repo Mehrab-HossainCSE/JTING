@@ -19,6 +19,6 @@ export interface PalletDetail {
   batchNo: string;
   receiveDate: string;
   qty: number;
-  status: 'Pending' | 'Reviewing' | 'Released' | 'Destroyed';
+  status: string;
   skuCode: string;
 }

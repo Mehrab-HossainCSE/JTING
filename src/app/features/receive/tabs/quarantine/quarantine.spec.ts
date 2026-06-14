@@ -7,6 +7,8 @@ import { SkuService } from '../../../../core/services/skuServices/sku-service';
 import { BlockService } from '../../../../core/services/setupServices/block-service';
 import { ArchService } from '../../../../core/services/setupServices/arch-service';
 import { LineService } from '../../../../core/services/setupServices/line-service';
+import { QuarantineService } from '../../../../core/services/receiveServices/quarantine-service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 
 describe('Quarantine', () => {
   let component: Quarantine;
@@ -39,6 +41,17 @@ describe('Quarantine', () => {
     getAllByArch: () => of({ success: true, data: [] })
   };
 
+  const quarantineServiceMock = {
+    getSkuAndLineWiseLocation: () => of({ success: true, data: [] }),
+    setLocationQuarantine: () => of({ success: true, data: null }),
+    getQuarantineByDate: () => of({ success: true, data: [] }),
+    getQuarantineDetailsData: () => of({ success: true, data: [] })
+  };
+
+  const errorHandlerMock = {
+    handleErrorWithToster: () => {}
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Quarantine],
@@ -48,7 +61,9 @@ describe('Quarantine', () => {
         { provide: SkuService, useValue: skuServiceMock },
         { provide: BlockService, useValue: blockServiceMock },
         { provide: ArchService, useValue: archServiceMock },
-        { provide: LineService, useValue: lineServiceMock }
+        { provide: LineService, useValue: lineServiceMock },
+        { provide: QuarantineService, useValue: quarantineServiceMock },
+        { provide: ErrorHandlerService, useValue: errorHandlerMock }
       ]
     }).compileComponents();
 
