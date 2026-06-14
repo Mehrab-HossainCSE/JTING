@@ -5,36 +5,16 @@ import { ToastrService } from 'ngx-toastr';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
-
-interface SkuItem {
-  code: string;
-  name: string;
-}
-
-interface BoxLocation {
-  location: string;
-  selected: boolean;
-  block: string;
-  arch: string;
-  line: string;
-}
-
-interface QuarantineRecord {
-  quarantineNo: string;
-  skuDescription: string;
-  palletQty: number;
-  createDate: string;
-}
-
-interface PalletDetail {
-  boxLocation: string;
-  palletNo: string;
-  batchNo: string;
-  receiveDate: string;
-  qty: number;
-  status: 'Pending' | 'Reviewing' | 'Released' | 'Destroyed';
-  skuCode: string;
-}
+import { SkuService } from '../../../../core/services/skuServices/sku-service';
+import { ArchService } from '../../../../core/services/setupServices/arch-service';
+import { BlockService } from '../../../../core/services/setupServices/block-service';
+import { LineService } from '../../../../core/services/setupServices/line-service';
+import { Sku } from '../../../../core/models/setups/sku/sku';
+import { Block } from '../../../../core/models/setups/block/block';
+import { Arch } from '../../../../core/models/setups/arch/arch';
+import { Line } from '../../../../core/models/setups/line/line';
+import { QuarantineService } from '../../../../core/services/receiveServices/quarantine-service';
+import { BoxLocation, QuarantineRecord, PalletDetail } from '../../../../core/models/receives/quarantine/quarantine';
 
 @Component({
   selector: 'app-quarantine',
@@ -44,8 +24,15 @@ interface PalletDetail {
   styleUrl: './quarantine.scss',
 })
 export class Quarantine implements OnInit {
-  private toastr         = inject(ToastrService);
+  private toastr = inject(ToastrService);
   private storageService = inject(StorageService);
+
+  private skuService = inject(SkuService);
+  private blockService = inject(BlockService);
+  private archService = inject(ArchService);
+  private lineService = inject(LineService);
+  private quarantineService = inject(QuarantineService);
+
 
   // ── Permissions ──────────────────────────────────────────────────────
   permissions = signal({
@@ -55,54 +42,19 @@ export class Quarantine implements OnInit {
     canDelete: true,
   });
 
-  canView   = computed(() => this.permissions().canView);
+  canView = computed(() => this.permissions().canView);
   canCreate = computed(() => this.permissions().canCreate);
   canUpdate = computed(() => this.permissions().canUpdate);
   canDelete = computed(() => this.permissions().canDelete);
 
-  // ── Mock Data lists ──────────────────────────────────────────────────
-  skus: SkuItem[] = [
-    { code: '15107995', name: 'Navy Special Filter 10s' },
-    { code: '15107992', name: 'Navy Special Filter 20s' },
-    { code: '15108001', name: 'Navy Option 10s' },
-    { code: '15109078', name: 'Sheikh Full Flavour 10s' },
-    { code: '15109099', name: 'Real Filter Kings 20s' },
-  ];
-
-  blocks: string[] = ['FG1', 'FG2', 'FG3', 'N1', 'N2'];
-  archesMap: Record<string, string[]> = {
-    'FG1': ['FG-1-ARCH-1', 'FG-1-ARCH-2', 'FG-1-ARCH-3', 'FG-1-ARCH-4'],
-    'FG2': ['FG-2-ARCH-1', 'FG-2-ARCH-2'],
-    'FG3': ['FG-3-ARCH-1', 'FG-3-ARCH-2', 'FG-3-ARCH-3'],
-    'N1': ['N-1-ARCH-1'],
-    'N2': ['N-2-ARCH-1', 'N-2-ARCH-2'],
-  };
-
-  linesMap: Record<string, string[]> = {
-    'FG-1-ARCH-1': ['L1', 'L2'],
-    'FG-1-ARCH-2': ['L1', 'L3'],
-    'FG-1-ARCH-3': ['L2', 'L3'],
-    'FG-1-ARCH-4': ['L1', 'L2', 'L3'],
-    'FG-2-ARCH-1': ['L1', 'L2'],
-    'FG-2-ARCH-2': ['L2', 'L3'],
-    'FG-3-ARCH-1': ['L1'],
-    'FG-3-ARCH-2': ['L2'],
-    'FG-3-ARCH-3': ['L3'],
-    'N-1-ARCH-1': ['L1', 'L2'],
-    'N-2-ARCH-1': ['L1'],
-    'N-2-ARCH-2': ['L2', 'L3'],
-  };
+  // ── Dropdown Option Signals ──────────────────────────────────────────
+  skus = signal<Sku[]>([]);
+  blocks = signal<Block[]>([]);
+  arches = signal<Arch[]>([]);
+  lines = signal<Line[]>([]);
 
   // State Signals
-  boxesState = signal<BoxLocation[]>([
-    { location: 'FG1A04L01B01', selected: false, block: 'FG1', arch: 'FG-1-ARCH-4', line: 'L1' },
-    { location: 'FG1A04L01B02', selected: false, block: 'FG1', arch: 'FG-1-ARCH-4', line: 'L1' },
-    { location: 'FG1A04L02B01', selected: false, block: 'FG1', arch: 'FG-1-ARCH-4', line: 'L2' },
-    { location: 'FG1A01L01B01', selected: false, block: 'FG1', arch: 'FG-1-ARCH-1', line: 'L1' },
-    { location: 'FG1A01L01B02', selected: false, block: 'FG1', arch: 'FG-1-ARCH-1', line: 'L1' },
-    { location: 'FG2A01L02B01', selected: false, block: 'FG2', arch: 'FG-2-ARCH-1', line: 'L2' },
-    { location: 'FG3A02L02B02', selected: false, block: 'FG3', arch: 'FG-3-ARCH-2', line: 'L2' },
-  ]);
+  boxesState = signal<BoxLocation[]>([]);
 
   recordsState = signal<QuarantineRecord[]>([
     { quarantineNo: 'QRN-00001', skuDescription: 'Navy Special Filter 10s - 15107995', palletQty: 24, createDate: '4/5/2026' },
@@ -141,6 +93,7 @@ export class Quarantine implements OnInit {
   // ── Lifecycle ────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
+    this.loadSkus();
   }
 
   private loadPermissionsFromStorage(): void {
@@ -156,7 +109,7 @@ export class Quarantine implements OnInit {
 
     if (qMenu) {
       this.permissions.set({
-        canView:   !!qMenu.canView,
+        canView: !!qMenu.canView,
         canCreate: !!qMenu.canCreate,
         canUpdate: !!qMenu.canUpdate,
         canDelete: !!qMenu.canDelete,
@@ -164,26 +117,112 @@ export class Quarantine implements OnInit {
     }
   }
 
-  // ── Cascading Dropdowns ──────────────────────────────────────────────
-  filteredArches = computed(() => {
-    const block = this.filterBlock;
-    if (!block) return [];
-    return this.archesMap[block] || [];
-  });
+  loadSkus(): void {
+    this.skuService.getSKUWithOutESL().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.skus.set(res.data);
+        } else {
+          this.toastr.error(res.message || 'Failed to load SKUs', 'Error');
+        }
+      },
+      error: (err) => {
+        this.toastr.error('Error fetching SKUs from database', 'Error');
+      }
+    });
+  }
 
-  filteredLines = computed(() => {
-    const arch = this.filterArch;
-    if (!arch) return [];
-    return this.linesMap[arch] || [];
-  });
+  // ── Cascading Dropdowns ──────────────────────────────────────────────
+  onSkuChange(): void {
+    this.filterBlock = '';
+    this.filterArch = '';
+    this.filterLine = '';
+    this.blocks.set([]);
+    this.arches.set([]);
+    this.lines.set([]);
+
+    if (this.filterSku) {
+      this.blockService.getAllBySkuCode(this.filterSku).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.blocks.set(res.data);
+          } else {
+            this.toastr.error(res.message || 'Failed to load blocks', 'Error');
+          }
+        },
+        error: (err) => {
+          this.toastr.error('Error fetching blocks from database', 'Error');
+        }
+      });
+    }
+  }
 
   onBlockChange(): void {
     this.filterArch = '';
     this.filterLine = '';
+    this.arches.set([]);
+    this.lines.set([]);
+
+    if (this.filterBlock && this.filterSku) {
+      this.archService.getAllByBlockAndSku(this.filterBlock, this.filterSku).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.arches.set(res.data);
+          } else {
+            this.toastr.error(res.message || 'Failed to load arches', 'Error');
+          }
+        },
+        error: (err) => {
+          this.toastr.error('Error fetching arches from database', 'Error');
+        }
+      });
+    }
   }
 
   onArchChange(): void {
     this.filterLine = '';
+    this.lines.set([]);
+
+    if (this.filterArch) {
+      this.lineService.getAllByArch(this.filterArch).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.lines.set(res.data);
+          } else {
+            this.toastr.error(res.message || 'Failed to load lines', 'Error');
+          }
+        },
+        error: (err) => {
+          this.toastr.error('Error fetching lines from database', 'Error');
+        }
+      });
+    }
+  }
+
+  onLineChange(): void {
+    if (this.filterLine && this.filterSku) {
+      const qNo = this.quarantineNoQuery.trim();
+      this.quarantineService.getSkuAndLineWiseLocation(this.filterLine, this.filterSku, qNo).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            const mappedBoxes: BoxLocation[] = res.data.map((item: any) => ({
+              location: item.controlName,
+              selected: false,
+              block: this.filterBlock,
+              arch: this.filterArch,
+              line: this.filterLine
+            }));
+            this.boxesState.set(mappedBoxes);
+            this.updateAllSelectState();
+          } else {
+            this.toastr.error(res.message || 'Failed to load locations', 'Error');
+          }
+        },
+        error: (err) => {
+          this.toastr.error('Error fetching locations from database', 'Error');
+        }
+      });
+    }
   }
 
   // ── Search Handler ───────────────────────────────────────────────────
@@ -221,7 +260,7 @@ export class Quarantine implements OnInit {
     return this.recordsState().filter(rec => {
       if (sku && !rec.skuDescription.includes(sku)) return false;
       if (qNo && !rec.quarantineNo.toLowerCase().includes(qNo.toLowerCase())) return false;
-      
+
       if (fDate || tDate) {
         const dateObj = new Date(rec.createDate);
         if (fDate && dateObj < new Date(fDate)) return false;
@@ -293,7 +332,7 @@ export class Quarantine implements OnInit {
 
     const totalQty = matchedPallets.reduce((sum, p) => sum + p.qty, 0);
     const skuCode = matchedPallets[0].skuCode;
-    const skuName = this.skus.find(s => s.code === skuCode)?.name || 'Unknown SKU';
+    const skuName = this.skus().find(s => s.skucode === skuCode)?.skuname || 'Unknown SKU';
 
     // Generate new Quarantine Record
     const nextNum = this.recordsState().length + 1;
@@ -392,7 +431,7 @@ export class Quarantine implements OnInit {
           <div class="mb-3">
             <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #636e72;">SKU</label>
             <select id="swal-sku" class="form-select" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
-              ${this.skus.map(s => `<option value="${s.code}">${s.name} (${s.code})</option>`).join('')}
+              ${this.skus().map(s => `<option value="${s.skucode}">${s.skuname} (${s.skucode})</option>`).join('')}
             </select>
           </div>
           <div class="mb-3">
@@ -415,7 +454,7 @@ export class Quarantine implements OnInit {
     }).then((result: SweetAlertResult) => {
       if (result.isConfirmed && result.value) {
         const { skuCode, qty } = result.value;
-        const skuName = this.skus.find(s => s.code === skuCode)?.name || 'Unknown SKU';
+        const skuName = this.skus().find(s => s.skucode === skuCode)?.skuname || 'Unknown SKU';
         const nextNum = this.recordsState().length + 1;
         const qrnNo = `QRN-${nextNum.toString().padStart(5, '0')}`;
 

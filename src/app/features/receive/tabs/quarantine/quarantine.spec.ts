@@ -2,6 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Quarantine } from './quarantine';
 import { ToastrService } from 'ngx-toastr';
 import { StorageService } from '../../../../core/services/storage.service';
+import { of } from 'rxjs';
+import { SkuService } from '../../../../core/services/skuServices/sku-service';
+import { BlockService } from '../../../../core/services/setupServices/block-service';
+import { ArchService } from '../../../../core/services/setupServices/arch-service';
+import { LineService } from '../../../../core/services/setupServices/line-service';
 
 describe('Quarantine', () => {
   let component: Quarantine;
@@ -18,12 +23,32 @@ describe('Quarantine', () => {
     getAngularItem: () => []
   };
 
+  const skuServiceMock = {
+    getSKUWithOutESL: () => of({ success: true, data: [] })
+  };
+
+  const blockServiceMock = {
+    getAllBySkuCode: () => of({ success: true, data: [] })
+  };
+
+  const archServiceMock = {
+    getAllByBlockAndSku: () => of({ success: true, data: [] })
+  };
+
+  const lineServiceMock = {
+    getAllByArch: () => of({ success: true, data: [] })
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Quarantine],
       providers: [
         { provide: ToastrService, useValue: toastrMock },
-        { provide: StorageService, useValue: storageMock }
+        { provide: StorageService, useValue: storageMock },
+        { provide: SkuService, useValue: skuServiceMock },
+        { provide: BlockService, useValue: blockServiceMock },
+        { provide: ArchService, useValue: archServiceMock },
+        { provide: LineService, useValue: lineServiceMock }
       ]
     }).compileComponents();
 

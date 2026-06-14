@@ -21,10 +21,10 @@
           <!-- SKU Dropdown -->
           <div class="filter-item">
             <label for="skuFilterSelect">SKU</label>
-            <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku">
+            <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku" (change)="onSkuChange()">
               <option value="">Select SKU...</option>
-              <option *ngFor="let sku of skus" [value]="sku.code">
-                {{ sku.name }} ({{ sku.code }})
+              <option *ngFor="let sku of skus()" [value]="sku.skucode">
+                {{ sku.skuname }} ({{ sku.skucode }})
               </option>
             </select>
           </div>
@@ -34,7 +34,9 @@
             <label for="blockFilterSelect">BLOCK</label>
             <select id="blockFilterSelect" class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
               <option value="">Select Block...</option>
-              <option *ngFor="let b of blocks" [value]="b">{{ b }}</option>
+              <option *ngFor="let b of blocks()" [value]="b.blockId">
+                {{ b.blockName || b.blockId }}
+              </option>
             </select>
           </div>
 
@@ -43,16 +45,20 @@
             <label for="archFilterSelect">ARCH</label>
             <select id="archFilterSelect" class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
               <option value="">Select Arch...</option>
-              <option *ngFor="let a of filteredArches()" [value]="a">{{ a }}</option>
+              <option *ngFor="let a of arches()" [value]="a.archId">
+                {{ a.archName || a.archId }}
+              </option>
             </select>
           </div>
 
           <!-- LINE Dropdown -->
           <div class="filter-item">
             <label for="lineFilterSelect">LINE</label>
-            <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine">
+            <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine" (change)="onLineChange()">
               <option value="">Select Line...</option>
-              <option *ngFor="let l of filteredLines()" [value]="l">{{ l }}</option>
+              <option *ngFor="let l of lines()" [value]="l.lineId">
+                {{ l.lineName || l.lineId }}
+              </option>
             </select>
           </div>
 

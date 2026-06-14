@@ -2,6 +2,10 @@ import { Component, signal, computed, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { SkuService } from '../../../../../../core/services/skuServices/sku-service';
+import { BlockService } from '../../../../../../core/services/setupServices/block-service';
+import { ArchService } from '../../../../../../core/services/setupServices/arch-service';
+import { LineService } from '../../../../../../core/services/setupServices/line-service';
 
 interface ReconciliationRow {
   sku: string;
@@ -26,6 +30,13 @@ interface ReconciliationRow {
 })
 export class RecReceive {
   private toastr = inject(ToastrService);
+
+  private skuService = inject(SkuService);
+  private blockService = inject(BlockService);
+  private archService = inject(ArchService);
+  private lineService = inject(LineService);
+
+
 
   // ── Permissions ──────────────────────────────────────────────────────
   permissions = signal({

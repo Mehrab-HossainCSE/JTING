@@ -102,7 +102,7 @@
     }
   }
 
-  .file-upload-item { width: 220px; }
+  .file-upload-item { width: 340px; }
   
   .custom-file-wrapper {
     display: flex;
@@ -132,6 +132,33 @@
     }
   }
 
+  .btn {
+    height: 40px;
+    padding: 0 24px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .submit-btn {
+    background: #00BB31;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 187, 49, 0.15);
+    &:hover:not(:disabled) {
+      background: #009928;
+      box-shadow: 0 6px 14px rgba(0, 187, 49, 0.25);
+    }
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
   .form-buttons-item {
     margin-left: auto;
     display: flex;
@@ -139,17 +166,6 @@
     gap: 12px;
     align-items: center;
 
-    .btn {
-      height: 40px;
-      padding: 0 24px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-    }
     .upload-btn { background: #00BB31; color: white; box-shadow: 0 4px 10px rgba(0, 187, 49, 0.1); }
     .clear-btn { background: white; border: 1.5px solid #e2e8f0; color: #64748b; }
   }

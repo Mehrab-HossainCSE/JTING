@@ -11,10 +11,14 @@ import { ApiResponse } from '../../models/ApiResponse.model';
 export class BlockService {
   private apiUrl = `${environment.apiUrl}/BlockSetup`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<ApiResponse<Block[]>> {
     return this.http.get<ApiResponse<Block[]>>(this.apiUrl);
+  }
+
+  getAllBySkuCode(skuCode: string): Observable<ApiResponse<Block[]>> {
+    return this.http.get<ApiResponse<Block[]>>(`${this.apiUrl}/GetAllBySkuCode/${skuCode}`);
   }
 
   getById(id: string): Observable<ApiResponse<Block>> {

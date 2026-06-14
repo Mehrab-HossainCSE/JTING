@@ -11,10 +11,16 @@ import { ApiResponse } from '../../models/ApiResponse.model';
 export class ArchService {
   private apiUrl = `${environment.apiUrl}/ArchSetup`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<ApiResponse<Arch[]>> {
     return this.http.get<ApiResponse<Arch[]>>(this.apiUrl);
+  }
+
+  // http://192.168.0.132:8082/api/ArchSetup/GetAllByBlock/15107992/02
+
+  getAllByBlockAndSku(blockId: string, skuCode: string): Observable<ApiResponse<Arch[]>> {
+    return this.http.get<ApiResponse<Arch[]>>(`${this.apiUrl}/GetAllByBlock/${skuCode}/${blockId}`);
   }
 
   getById(id: string): Observable<ApiResponse<Arch>> {

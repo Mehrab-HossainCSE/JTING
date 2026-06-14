@@ -11,10 +11,14 @@ import { ApiResponse } from '../../models/ApiResponse.model';
 export class LineService {
   private apiUrl = `${environment.apiUrl}/LineSetup`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<ApiResponse<Line[]>> {
     return this.http.get<ApiResponse<Line[]>>(this.apiUrl);
+  }
+
+  getAllByArch(archId: string): Observable<ApiResponse<Line[]>> {
+    return this.http.get<ApiResponse<Line[]>>(`${this.apiUrl}/GetAllByArch/${archId}`);
   }
 
   getById(id: string): Observable<ApiResponse<Line>> {
@@ -24,7 +28,7 @@ export class LineService {
   getByAreaId(areaId: number): Observable<ApiResponse<Line[]>> {
     return this.http.get<ApiResponse<Line[]>>(`${this.apiUrl}/GetByAreaId/${areaId}`);
   }
-  
+
   getByArchId(archId: string): Observable<ApiResponse<Line[]>> {
     return this.http.get<ApiResponse<Line[]>>(`${this.apiUrl}/GetByArchId/${archId}`);
   }
