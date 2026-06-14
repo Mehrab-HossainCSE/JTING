@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-rec-delivery',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: '../rec-receive/rec-receive.html', // Sharing same template for now
+  templateUrl: './rec-delivery.html',
   styleUrls: ['../../reconciliation.scss']
 })
 export class RecDelivery {

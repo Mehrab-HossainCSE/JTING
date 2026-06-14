@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-rec-picking',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: '../rec-receive/rec-receive.html',
+  templateUrl: './rec-picking.html',
   styleUrls: ['../../reconciliation.scss']
 })
 export class RecPicking {

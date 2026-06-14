@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-rec-counting',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: '../rec-receive/rec-receive.html',
+  templateUrl: './rec-counting.html',
   styleUrls: ['../../reconciliation.scss']
 })
 export class RecCounting {

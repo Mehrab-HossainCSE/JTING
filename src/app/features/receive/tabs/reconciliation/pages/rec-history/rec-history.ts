@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-rec-history',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: '../rec-receive/rec-receive.html',
+  templateUrl: './rec-history.html',
   styleUrls: ['../../reconciliation.scss']
 })
 export class RecHistory {
@@ -24,7 +24,7 @@ export class RecHistory {
   isLoading = signal(false);
 
   onFileSelected(event: any): void { }
-  uploadFile(): void { this.toastr.info('History query simulated.', 'History'); }
+  uploadFile(): void { this.toastr.info('History upload simulated.', 'History'); }
   clearData(): void { }
   saveData(): void { }
   printResults(): void { }
