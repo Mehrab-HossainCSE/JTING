@@ -20,10 +20,18 @@
 .top-grid {
   display: grid;
   grid-template-columns: 300px 1fr 440px;
-  grid-template-rows: 1fr auto; // Row 1 grows, Row 2 (remarks) fits content
+  grid-template-rows: 1fr; 
   gap: 1rem;
   align-items: stretch;
   flex: 1;
+  min-height: 0;
+}
+
+.middle-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
   min-height: 0;
 }
 
@@ -72,14 +80,9 @@
 }
 
 // ── Specific Card Spans ───────────────────────────────────────────────────
-.pallet-card {
-  grid-column: 3;
-  grid-row: 1 / span 2; // Spans both top and bottom row on the right
-}
-
 .remarks-card {
-  grid-column: 1 / span 2; // Spans left and middle column
-  grid-row: 2;
+  height: auto;
+  flex-shrink: 0;
   .remarks-body {
     padding: 1rem 1.25rem;
     display: flex;
@@ -226,11 +229,15 @@
 }
 
 // ── Table Styles ───────────────────────────────────────────────────────────
+.table-card {
+  flex: 1;
+  min-height: 0;
+}
+
 .case-table-wrapper {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  max-height: 400px;
 
   &::-webkit-scrollbar { width: 5px; }
   &::-webkit-scrollbar-track { background: transparent; }
