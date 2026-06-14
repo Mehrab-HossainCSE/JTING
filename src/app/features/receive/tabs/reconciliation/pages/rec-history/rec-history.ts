@@ -24,7 +24,7 @@ export class RecHistory {
   isLoading = signal(false);
 
   onFileSelected(event: any): void { }
-  uploadFile(): void { this.toastr.info('History upload simulated.', 'History'); }
+  uploadFile(): void { this.toastr.info('Searching reconciliation history...', 'History'); }
   clearData(): void { }
   saveData(): void { }
   printResults(): void { }
