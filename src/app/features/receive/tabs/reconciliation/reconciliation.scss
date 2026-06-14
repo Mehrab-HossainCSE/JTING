@@ -1,13 +1,22 @@
 @use "/styles/componets/master-setup.scss" as *;
 
-// 1. Root Layout - Fixing the scroll issue
-.reconciliation-layout-wrapper {
-  height: calc(100vh - 120px); // Adjust based on parent header
+:host {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  flex: 1;
   min-height: 0;
-  padding: 0; 
+  height: 100%;
+}
+
+// 1. Root Layout - Aggressive deduction to kill any page scroll
+.reconciliation-layout-wrapper {
+  height: calc(100vh - 185px); // Adjusted to be very safe
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; // Increased gap for visual clarity
+  min-height: 0;
+  padding: 0;
+  overflow: hidden; 
 }
 
 // 2. Navigation Area (Card 1)
@@ -18,13 +27,13 @@
 .sub-tabs-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 
   .sub-tab-btn {
     text-decoration: none;
     background: #f8fafc;
     border: 1.5px solid #e2e8f0;
-    padding: 6px 20px;
+    padding: 6px 22px;
     font-size: 0.8rem;
     font-weight: 700;
     color: #64748b;
@@ -35,11 +44,7 @@
       background: #00BB31;
       border-color: #00BB31;
       color: white;
-    }
-
-    &:hover:not(.active) {
-      border-color: #00BB31;
-      color: #00BB31;
+      box-shadow: 0 4px 10px rgba(0, 187, 49, 0.15);
     }
   }
 }
@@ -51,12 +56,12 @@
   flex-direction: column;
   min-height: 0;
 
-  // Make the routed component host act as a flex container
   router-outlet + * {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
+    gap: 1.25rem; // Added gap between params-card and results-card
   }
 }
 
@@ -86,18 +91,14 @@
     }
 
     .custom-select, .form-input-date {
-      height: 42px;
+      height: 40px;
       padding: 0 14px;
-      border: 1.5px solid #e1e8ed;
-      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
       font-size: 0.85rem;
       font-weight: 600;
       color: #334155;
       width: 145px;
-      &:focus {
-        outline: none;
-        border-color: #00BB31;
-      }
     }
   }
 
@@ -106,24 +107,24 @@
   .custom-file-wrapper {
     display: flex;
     align-items: center;
-    height: 42px;
-    border: 1.5px solid #e1e8ed;
-    border-radius: 12px;
+    height: 40px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
     padding: 0 14px;
     gap: 12px;
     cursor: pointer;
-    &:hover { border-color: #00BB31; background: #f0fdf4; }
-    .file-icon { color: #94a3b8; font-size: 1.1rem; }
+    background: #ffffff;
+    &:hover { border-color: #00BB31; }
     .file-name-text { font-size: 0.85rem; font-weight: 700; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   }
 
   .checkbox-param-item {
-    padding-bottom: 8px;
+    padding-bottom: 6px;
     .all-select-label {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
       color: #475569;
       cursor: pointer;
@@ -131,7 +132,6 @@
     }
   }
 
-  // Side-by-side Buttons
   .form-buttons-item {
     margin-left: auto;
     display: flex;
@@ -140,26 +140,18 @@
     align-items: center;
 
     .btn {
-      height: 42px;
+      height: 40px;
       padding: 0 24px;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 0.85rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       border: none;
-      transition: all 0.2s;
     }
-    .upload-btn {
-      background: #00BB31; color: white;
-      box-shadow: 0 4px 10px rgba(0, 187, 49, 0.2);
-      &:hover:not(:disabled) { background: #00a32b; transform: translateY(-1px); }
-    }
-    .clear-btn {
-      background: white; border: 1.5px solid #e1e8ed; color: #64748b;
-      &:hover { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
-    }
+    .upload-btn { background: #00BB31; color: white; box-shadow: 0 4px 10px rgba(0, 187, 49, 0.1); }
+    .clear-btn { background: white; border: 1.5px solid #e2e8f0; color: #64748b; }
   }
 }
 
@@ -169,11 +161,13 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  margin-bottom: 0 !important;
 
   .results-title {
     font-size: 1rem;
     font-weight: 800;
     color: #1e293b;
+    margin: 0;
   }
 }
 
@@ -193,7 +187,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #f8fafc; // Very light gray header as per high-fidelity standards
+      background: white;
       
       tr th {
         padding: 14px 12px;
@@ -201,25 +195,17 @@
         font-weight: 800;
         color: #94a3b8;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
         border-bottom: 2px solid #f1f5f9;
         text-align: left;
       }
     }
 
-    tbody {
-      tr {
-        transition: all 0.2s;
-        &:hover { background: #fcfdfe; }
-        
-        td {
-          padding: 14px 12px;
-          font-size: 0.85rem;
-          color: #475569;
-          font-weight: 600;
-          border-bottom: 1px solid #f1f5f9;
-        }
-      }
+    tbody td {
+      padding: 14px 12px;
+      font-size: 0.85rem;
+      color: #475569;
+      font-weight: 600;
+      border-bottom: 1px solid #f1f5f9;
     }
   }
 }
@@ -227,7 +213,7 @@
 // 6. Footer inside Card 3
 .reconciliation-footer {
   flex-shrink: 0;
-  padding: 1.5rem 1.75rem;
+  padding: 1.25rem 1.75rem;
   background: white;
   border-top: 1px solid #f1f5f9;
   display: flex;
@@ -237,51 +223,29 @@
   .receive-no-input-wrapper {
     display: flex;
     align-items: center;
-    gap: 12px;
-    .footer-label { font-size: 0.85rem; font-weight: 700; color: #334155; }
+    gap: 16px;
+    .footer-label { font-size: 0.85rem; font-weight: 700; color: #1e293b; }
     .receive-no-input {
-      height: 42px;
-      width: 250px;
-      border-radius: 10px;
-      border: 1.5px solid #e1e8ed;
+      height: 40px;
+      width: 260px;
+      border: 1.5px solid #e2e8f0;
       background: #f8fafc;
-      padding: 0 14px;
-      font-size: 0.85rem;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
       font-weight: 600;
-      &:focus { outline: none; border-color: #00BB31; background: white; }
+      &:focus { border-color: #00BB31; background: white; outline: none; }
     }
   }
 
   .footer-buttons-group {
     display: flex;
     gap: 12px;
-    .btn {
-      height: 42px;
-      padding: 0 20px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-    }
-    .btn-print { background: white; border: 1.5px solid #e1e8ed; color: #475569; }
+    .btn { height: 40px; padding: 0 24px; border-radius: 10px; font-weight: 700; display: flex; align-items: center; }
+    .btn-print { background: white; border: 1.5px solid #e2e8f0; color: #475569; }
     .btn-save { background: #00BB31; color: white; border: none; }
   }
 }
 
-// Common Table Decorations
-.batch-badge {
-    background: #f8fafc;
-    color: #475569;
-    padding: 2px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    border: 1px solid #e2e8f0;
-}
-  
-.diff-value {
-    font-weight: 800;
-    &.positive { color: #00BB31; }
-    &.negative { color: #ff7675; }
-}
+.batch-badge { background: #f8fafc; color: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #e1e8f0; }
+.diff-value { font-weight: 800; &.positive { color: #00BB31; } &.negative { color: #ff7675; } }
