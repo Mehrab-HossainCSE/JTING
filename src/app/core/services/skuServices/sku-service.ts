@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Sku } from '../../models/setups/sku/sku';
+import { SkuSetting } from '../../models/setups/sku/sku-setting';
+import { SkuSearchRequest, SkuSearchResult } from '../../models/setups/sku/sku-search';
 import { ApiResponse } from '../../models/ApiResponse.model';
 
 @Injectable({
@@ -14,7 +16,11 @@ export class SkuService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<ApiResponse<Sku[]>> {
-    return this.http.get<ApiResponse<Sku[]>>(this.apiUrl);
+    return this.http.get<ApiResponse<Sku[]>>(`${this.apiUrl}/GetAll`);
+  }
+
+  getSetting(): Observable<ApiResponse<SkuSetting[]>> {
+    return this.http.get<ApiResponse<SkuSetting[]>>(`${this.apiUrl}/GetSetting`);
   }
 
   getSKUWithOutESL(): Observable<ApiResponse<Sku[]>> {
@@ -23,6 +29,10 @@ export class SkuService {
 
   getById(id: string): Observable<ApiResponse<Sku>> {
     return this.http.get<ApiResponse<Sku>>(`${this.apiUrl}/GetById/${id}`);
+  }
+
+  getSkuBySearchData(data: SkuSearchRequest): Observable<ApiResponse<SkuSearchResult[]>> {
+    return this.http.post<ApiResponse<SkuSearchResult[]>>(`${this.apiUrl}/GetSkuBySearchData`, data);
   }
 
   create(sku: Partial<Sku>): Observable<ApiResponse<Sku>> {

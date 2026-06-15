@@ -23,7 +23,9 @@
             <label for="blockFilterSelect">BLOCK</label>
             <select id="blockFilterSelect" class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
               <option value="">Select Block...</option>
-              <option *ngFor="let b of blocks" [value]="b">{{ b }}</option>
+              <option *ngFor="let b of blocks()" [value]="b.blockId">
+                {{ b.blockName || b.blockId }}
+              </option>
             </select>
           </div>
 
@@ -32,7 +34,9 @@
             <label for="archFilterSelect">ARCH</label>
             <select id="archFilterSelect" class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
               <option value="">Select Arch...</option>
-              <option *ngFor="let a of filteredArches()" [value]="a">{{ a }}</option>
+              <option *ngFor="let a of arches()" [value]="a.archId">
+                {{ a.archName || a.archId }}
+              </option>
             </select>
           </div>
 
@@ -41,7 +45,9 @@
             <label for="lineFilterSelect">LINE</label>
             <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine">
               <option value="">Select Line...</option>
-              <option *ngFor="let l of filteredLines()" [value]="l">{{ l }}</option>
+              <option *ngFor="let l of lines()" [value]="l.lineId">
+                {{ l.lineName || l.lineId }}
+              </option>
             </select>
           </div>
 
@@ -50,8 +56,8 @@
             <label for="skuFilterSelect">SKU</label>
             <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku">
               <option value="">Select SKU...</option>
-              <option *ngFor="let sku of skus" [value]="sku.code">
-                {{ sku.name }} ({{ sku.code }})
+              <option *ngFor="let sku of skus()" [value]="sku.skucode">
+                {{ sku.skuname }} ({{ sku.skucode }})
               </option>
             </select>
           </div>
@@ -72,7 +78,7 @@
           <div class="filter-item">
             <label for="unitFilterSelect">UNIT</label>
             <select id="unitFilterSelect" class="custom-select" [(ngModel)]="filterUnit">
-              <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+              <option *ngFor="let u of units()" [value]="u.name">{{ u.name }}</option>
             </select>
           </div>
 
@@ -138,13 +144,13 @@
           </thead>
           <tbody>
             <tr *ngFor="let item of filteredResults()" class="table-row">
-              <td><span class="id-pill">{{ item.block }}</span></td>
-              <td>{{ item.arch }}</td>
-              <td><span class="line-badge">{{ item.line }}</span></td>
+              <td><span class="id-pill">{{ item.blockName }}</span></td>
+              <td>{{ item.archName }}</td>
+              <td><span class="line-badge">{{ item.lineName }}</span></td>
               <td><span class="id-pill sku-pill">{{ item.skuCode }}</span></td>
-              <td>{{ item.assignedSku }}</td>
-              <td>{{ item.batch }}</td>
-              <td><span class="box-pill">{{ item.boxName }}</span></td>
+              <td>{{ item.skuname }}</td>
+              <td>{{ item.batchNo }}</td>
+              <td><span class="box-pill">{{ item.controlName }}</span></td>
               <td><span class="pallet-pill">{{ item.currentPallet }}</span></td>
               <td><strong>{{ item.qty }}</strong></td>
             </tr>
