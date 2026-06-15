@@ -136,7 +136,7 @@ export class Quarantine implements OnInit {
     this.lines.set([]);
 
     if (this.filterSku) {
-      this.blockService.getAllBySkuCode(this.filterSku).subscribe({
+      this.quarantineService.getAllBySkuCode(this.filterSku).subscribe({
         next: (res) => {
           if (res.success && res.data) {
             this.blocks.set(res.data);
@@ -370,19 +370,20 @@ export class Quarantine implements OnInit {
     const skuCode = this.filterSku || (matchedPallets.length > 0 ? matchedPallets[0].skuCode : '');
     const skuName = this.skus().find(s => s.skucode === skuCode)?.skuname || 'Unknown SKU';
 
-    // Generate new Quarantine Record
+    // Generate new Quarantine Record (fallback temporary ID if backend doesn't return one)
     const nextNum = this.recordsState().length + 1;
-    const qrnNo = `QRN-${nextNum.toString().padStart(5, '0')}`;
+    const fallbackQrnNo = `QRN-${nextNum.toString().padStart(5, '0')}`;
 
     const payload = {
       controlNames: selectedLocations,
-      quarantineNo: qrnNo,
+      quarantineNo: '',
       remarks: this.remarks.trim()
     };
 
     this.quarantineService.setLocationQuarantine(payload).subscribe({
       next: (res) => {
         if (res.success) {
+          const qrnNo = res.data?.quarantineNo || res.data || fallbackQrnNo;
           const newRecord: QuarantineRecord = {
             quarantineNo: qrnNo,
             skuDescription: `${skuName} - ${skuCode}`,

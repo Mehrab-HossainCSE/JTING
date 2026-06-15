@@ -11,6 +11,13 @@ export class QuarantineService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/Quarantine`;
 
+
+  //http://192.168.0.132:8082/api/Quarantine/GetAllBySkuCode/15108001
+  getAllBySkuCode(skuCode: string): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/GetAllBySkuCode/${skuCode}`);
+  }
+
+
   getSkuAndLineWiseLocation(lineId: string, skuCode: string, qurantineNo: string): Observable<ApiResponse<any>> {
     const params = new HttpParams()
       .set('LineId', lineId)
