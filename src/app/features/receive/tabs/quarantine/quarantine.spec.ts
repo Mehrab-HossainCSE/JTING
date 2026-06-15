@@ -45,7 +45,8 @@ describe('Quarantine', () => {
     getSkuAndLineWiseLocation: () => of({ success: true, data: [] }),
     setLocationQuarantine: () => of({ success: true, data: null }),
     getQuarantineByDate: () => of({ success: true, data: [] }),
-    getQuarantineDetailsData: () => of({ success: true, data: [] })
+    getQuarantineDetailsData: () => of({ success: true, data: [] }),
+    unQuarantine: () => of({ success: true, data: null })
   };
 
   const errorHandlerMock = {

@@ -220,17 +220,12 @@
                   </td>
                   <td class="text-right">
                     <div class="row-actions justify-content-end">
-                      <button *ngIf="pallet.status !== 'Released' && pallet.status !== 'Destroyed' && canUpdate()" 
+                      <button *ngIf="pallet.status !== 'Released' && canUpdate()" 
                               class="action-pill-btn btn-release-action" 
                               (click)="releasePallet(pallet)">
                         Release
                       </button>
-                      <button *ngIf="pallet.status !== 'Released' && pallet.status !== 'Destroyed' && canDelete()" 
-                              class="action-pill-btn btn-destroy-action" 
-                              (click)="destroyPallet(pallet)">
-                        Destroy
-                      </button>
-                      <span *ngIf="pallet.status === 'Released' || pallet.status === 'Destroyed'" 
+                      <span *ngIf="pallet.status === 'Released'" 
                             class="text-completed">
                         Completed
                       </span>

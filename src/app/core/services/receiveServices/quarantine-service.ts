@@ -42,4 +42,8 @@ export class QuarantineService {
       .set('quarantineNo', quarantineNo);
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/GetQuarantineDetailsData`, { params });
   }
+
+  unQuarantine(payload: { quarantineNo: string; palletNo: string }): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/UnQuarantine`, payload);
+  }
 }

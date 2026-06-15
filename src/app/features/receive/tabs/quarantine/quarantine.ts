@@ -62,6 +62,8 @@ export class Quarantine implements OnInit {
 
   palletsState = signal<PalletDetail[]>([]);
 
+  selectedQuarantineNo = signal('');
+
   // Filters State
   filterSku = '';
   filterBlock = '';
@@ -86,6 +88,14 @@ export class Quarantine implements OnInit {
 
   // ── Lifecycle ────────────────────────────────────────────────────────
   ngOnInit(): void {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    this.fromDate = todayStr;
+    this.toDate = todayStr;
+
     this.loadPermissionsFromStorage();
     this.loadSkus();
   }
@@ -220,7 +230,7 @@ export class Quarantine implements OnInit {
   }
 
   // ── Search Handler ───────────────────────────────────────────────────
-  search(): void {
+  search(showToast = true): void {
     this.activeFilterSku.set(this.filterSku);
     this.activeFilterBlock.set(this.filterBlock);
     this.activeFilterArch.set(this.filterArch);
@@ -240,7 +250,9 @@ export class Quarantine implements OnInit {
               createDate: item.createDate
             }));
             this.recordsState.set(mappedRecords);
-            this.toastr.success('Search filters applied', 'Filters');
+            if (showToast) {
+              this.toastr.success('Search filters applied', 'Filters');
+            }
           } else {
             this.toastr.error(res.message || 'No records found', 'Error');
           }
@@ -250,11 +262,14 @@ export class Quarantine implements OnInit {
         }
       });
     } else {
-      this.toastr.success('Search filters applied', 'Filters');
+      if (showToast) {
+        this.toastr.success('Search filters applied', 'Filters');
+      }
     }
   }
 
   onRecordClick(rec: QuarantineRecord): void {
+    this.selectedQuarantineNo.set(rec.quarantineNo);
     this.quarantineService.getQuarantineDetailsData(rec.quarantineNo).subscribe({
       next: (res) => {
         if (res.success && res.data) {
@@ -279,18 +294,7 @@ export class Quarantine implements OnInit {
   }
 
   // ── Filtered Computations ────────────────────────────────────────────
-  filteredBoxes = computed(() => {
-    const block = this.activeFilterBlock();
-    const arch = this.activeFilterArch();
-    const line = this.activeFilterLine();
-
-    return this.boxesState().filter(box => {
-      if (block && box.block !== block) return false;
-      if (arch && box.arch !== arch) return false;
-      if (line && box.line !== line) return false;
-      return true;
-    });
-  });
+  filteredBoxes = computed(() => this.boxesState());
 
   filteredRecords = computed(() => {
     const sku = this.activeFilterSku();
@@ -311,22 +315,7 @@ export class Quarantine implements OnInit {
     });
   });
 
-  filteredPallets = computed(() => {
-    const block = this.activeFilterBlock();
-    const arch = this.activeFilterArch();
-    const line = this.activeFilterLine();
-    const sku = this.activeFilterSku();
-
-    return this.palletsState().filter(p => {
-      // Find matches in our box state to check locations
-      const box = this.boxesState().find(b => b.location === p.boxLocation);
-      if (block && box?.block !== block) return false;
-      if (arch && box?.arch !== arch) return false;
-      if (line && box?.line !== line) return false;
-      if (sku && p.skuCode !== sku) return false;
-      return true;
-    });
-  });
+  filteredPallets = computed(() => this.palletsState());
 
   // ── All Select Logic ─────────────────────────────────────────────────
   toggleAllSelect(): void {
@@ -412,6 +401,9 @@ export class Quarantine implements OnInit {
           this.allSelect = false;
 
           this.toastr.success(res.message || `Quarantine record ${qrnNo} created successfully!`, 'Success');
+
+          // Auto-trigger search to update Quarantine Records list
+          this.search(false);
         } else {
           this.toastr.error(res.message || 'Failed to create quarantine record', 'Error');
         }
@@ -429,6 +421,12 @@ export class Quarantine implements OnInit {
       return;
     }
 
+    const qNo = this.selectedQuarantineNo();
+    if (!qNo) {
+      this.toastr.error('No quarantine record selected.', 'Error');
+      return;
+    }
+
     Swal.fire({
       title: 'Release Pallet?',
       text: `Are you sure you want to release Pallet "${pallet.palletNo}" from quarantine?`,
@@ -439,35 +437,25 @@ export class Quarantine implements OnInit {
       confirmButtonText: 'Yes, Release it!',
     }).then((result: SweetAlertResult) => {
       if (result.isConfirmed) {
-        this.palletsState.update(list =>
-          list.map(p => (p.palletNo === pallet.palletNo ? { ...p, status: 'Released' } : p))
-        );
-        this.toastr.success(`Pallet ${pallet.palletNo} released.`, 'Released');
-      }
-    });
-  }
-
-  // ── Destroy Pallet ───────────────────────────────────────────────────
-  destroyPallet(pallet: PalletDetail): void {
-    if (!this.canDelete()) {
-      this.toastr.error('You do not have permission to destroy quarantine items.', 'Access Denied');
-      return;
-    }
-
-    Swal.fire({
-      title: 'Destroy Pallet?',
-      text: `WARNING: Are you sure you want to permanently destroy Pallet "${pallet.palletNo}"? This action cannot be undone.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, Destroy it!',
-    }).then((result: SweetAlertResult) => {
-      if (result.isConfirmed) {
-        this.palletsState.update(list =>
-          list.map(p => (p.palletNo === pallet.palletNo ? { ...p, status: 'Destroyed' } : p))
-        );
-        this.toastr.error(`Pallet ${pallet.palletNo} destroyed.`, 'Destroyed');
+        const payload = {
+          quarantineNo: qNo,
+          palletNo: pallet.palletNo
+        };
+        this.quarantineService.unQuarantine(payload).subscribe({
+          next: (res) => {
+            if (res.success) {
+              this.palletsState.update(list =>
+                list.map(p => (p.palletNo === pallet.palletNo ? { ...p, status: 'Released' } : p))
+              );
+              this.toastr.success(res.message || `Pallet ${pallet.palletNo} released.`, 'Released');
+            } else {
+              this.toastr.error(res.message || 'Failed to release pallet', 'Error');
+            }
+          },
+          error: (err) => {
+            this.errorHandler.handleErrorWithToster(err);
+          }
+        });
       }
     });
   }

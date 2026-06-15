@@ -222,19 +222,34 @@
 // Tables configurations
 .table-outer {
   max-height: 450px;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 .records-table-outer {
   max-height: 200px;
   min-height: 140px;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 .pallets-table-outer {
   max-height: 250px;
   min-height: 180px;
-  overflow-y: auto;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    &:hover {
+      background: #94a3b8;
+    }
+  }
 }
 
 // Status design badges
