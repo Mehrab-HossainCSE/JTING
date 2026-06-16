@@ -16,7 +16,7 @@ JTING is a modern warehouse/inventory management application built with **Angula
 ### Architectural Patterns
 
 #### 1. Angular Standalone & Zoneless
-- All components must be `standalone: true`.
+- All components must be designed for standalone usage. (Note: in Angular 19+, `standalone: true` is default, but can be explicitly declared or omitted).
 - Change detection is **Zoneless** (`provideZonelessChangeDetection()`).
 - Avoid `NgModules`. Use `appConfig` for global providers.
 
@@ -33,7 +33,7 @@ JTING is a modern warehouse/inventory management application built with **Angula
 - Use `computed()` for derived state.
 
 #### 4. Service Layer & API Communication
-- Services should reside in `src/app/core/services/` (global) or `src/app/features/[feature]/services/` (scoped).
+- Services reside in `src/app/core/services/` (global) or `src/app/features/[feature]/services/` (scoped).
 - All API calls must use `HttpClient`.
 - API responses must follow the `ApiResponse<T>` interface:
   ```typescript
@@ -58,6 +58,7 @@ JTING is a modern warehouse/inventory management application built with **Angula
 
 #### Naming Conventions
 - **Files:** `kebab-case.type.ts` (e.g., `user-profile.component.ts`, `auth.service.ts`).
+  - *Exception / Variant pattern:* Tab sub-components located in `tabs` subdirectories and some shared components may just use `kebab-case.ts` (e.g., `quarantine.ts`, `sku-search.ts`, `confirm-dialog.ts`) or `kebab-case-component.ts` (e.g., `arch-component.ts`).
 - **Classes/Interfaces:** `PascalCase`.
 - **Variables/Methods:** `camelCase`.
 - **Constants:** `UPPER_SNAKE_CASE`.
@@ -65,13 +66,14 @@ JTING is a modern warehouse/inventory management application built with **Angula
 #### Styling
 - Use SCSS.
 - Prefer modern Sass module rules (`@use "/styles/componets/master-setup.scss" as *;`) instead of the deprecated `@import` directive.
+- **Typo in Directory Path:** The directory containing component-specific global overrides is named `src/styles/componets` (spelled with `componets`). Use this exact spelling when referencing or updating files in this folder.
 - Avoid inline CSS styles (`style="..."` attributes). Move layout/styling rules to scoped SCSS files or use Bootstrap utility classes.
 
 #### Accessibility & Templates
-- Every form field/input must have a corresponding `<label>` associated using the `for="..."` and matching `id="..."` attributes. Avoid dynamic binding (`[for]`) for this purpose as static analyzers might trigger warnings.
+- Every form field/input must have a corresponding `<label>` associated using the static `for="..."` and matching static `id="..."` attributes. Avoid dynamic binding (`[for]`) for this purpose as static analyzers might trigger warnings.
 - Checkboxes or table action controls without visible text labels must include an `aria-label="..."` attribute.
 
-#### Testing
+#### Testing & Mocking Guidelines
 - Use **Vitest** for all unit tests.
 - Mock external dependencies (services, HttpClient) using standard testing patterns.
 - Follow the existing `.spec.ts` pattern:
@@ -85,10 +87,14 @@ JTING is a modern warehouse/inventory management application built with **Angula
     // ... tests
   });
   ```
+- **Resolving Common Test Execution Pitfalls:**
+  - **Missing Toastr Config (`InjectionToken ToastConfig`):** For components utilizing `ToastrService` in their specs, provide the service either by mocking it (`{ provide: ToastrService, useValue: toastrMock }`) or including `provideToastr()` in the test bed configuration.
+  - **Missing Route Providers (`ActivatedRoute`):** Components that employ routing elements/directives (like `RouterLink` or query params) must have route configurations provided (e.g., `provideRouter([])` or a mock for `ActivatedRoute`).
+  - **Invalid `HttpClient` mocking:** Ensure services using `HttpClient` are tested either with `HttpTestingController` or using a fully mock provider for the service itself, to avoid `TypeError: this.http.get is not a function` during test executions.
 
 ## Development Workflow
 - **Serve:** `ng serve` (Port 4200)
-- **Test:** `ng test` (Vitest)
+- **Test:** `ng test` (runs Angular Vitest builder)
 - **Build:** `ng build`
 
 ## Project Specifics
