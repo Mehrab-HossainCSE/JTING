@@ -72,7 +72,6 @@ export class Quarantine implements OnInit {
   allSelect = false;
   fromDate = '';
   toDate = '';
-  quarantineNoQuery = '';
 
   // Active filters applied
   activeFilterSku = signal('');
@@ -81,7 +80,6 @@ export class Quarantine implements OnInit {
   activeFilterLine = signal('');
   activeFromDate = signal('');
   activeToDate = signal('');
-  activeQuarantineNo = signal('');
 
   // Remarks state
   remarks = '';
@@ -205,7 +203,7 @@ export class Quarantine implements OnInit {
 
   onLineChange(): void {
     if (this.filterLine && this.filterSku) {
-      const qNo = this.quarantineNoQuery.trim();
+      const qNo = this.selectedQuarantineNo();
       this.quarantineService.getSkuAndLineWiseLocation(this.filterLine, this.filterSku, qNo).subscribe({
         next: (res) => {
           if (res.success && res.data) {
@@ -237,7 +235,6 @@ export class Quarantine implements OnInit {
     this.activeFilterLine.set(this.filterLine);
     this.activeFromDate.set(this.fromDate);
     this.activeToDate.set(this.toDate);
-    this.activeQuarantineNo.set(this.quarantineNoQuery.trim());
 
     if (this.fromDate && this.toDate) {
       this.quarantineService.getQuarantineByDate(this.fromDate, this.toDate).subscribe({
@@ -269,8 +266,10 @@ export class Quarantine implements OnInit {
   }
 
   onRecordClick(rec: QuarantineRecord): void {
-    this.selectedQuarantineNo.set(rec.quarantineNo);
-    this.quarantineService.getQuarantineDetailsData(rec.quarantineNo).subscribe({
+    const qNo = rec.quarantineNo;
+    debugger;
+    this.selectedQuarantineNo.set(qNo);
+    this.quarantineService.getQuarantineDetailsData(qNo).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           const mappedPallets: PalletDetail[] = res.data.map((item: any) => ({
@@ -298,13 +297,11 @@ export class Quarantine implements OnInit {
 
   filteredRecords = computed(() => {
     const sku = this.activeFilterSku();
-    const qNo = this.activeQuarantineNo();
     const fDate = this.activeFromDate();
     const tDate = this.activeToDate();
 
     return this.recordsState().filter(rec => {
       if (sku && !rec.skuDescription.includes(sku)) return false;
-      if (qNo && !rec.quarantineNo.toLowerCase().includes(qNo.toLowerCase())) return false;
 
       if (fDate || tDate) {
         const dateObj = new Date(rec.createDate);

@@ -117,6 +117,21 @@
   }
 }
 
+.qrn-value-label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
 // Grid structure
 .quarantine-grid {
   display: grid;

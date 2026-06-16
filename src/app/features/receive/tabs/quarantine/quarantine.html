@@ -95,8 +95,8 @@
 
           <!-- Quarantine No -->
           <div class="filter-item qrn-item">
-            <label for="quarantineNoQueryInput">QUARANTINE NO</label>
-            <input id="quarantineNoQueryInput" type="text" placeholder="QRN-XXXXX" [(ngModel)]="quarantineNoQuery" (keyup.enter)="search()" class="form-input-text" />
+            <label>QUARANTINE NO</label>
+            <span class="qrn-value-label">{{ selectedQuarantineNo() || 'None Selected' }}</span>
           </div>
 
         </div>
