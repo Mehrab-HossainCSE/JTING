@@ -48,7 +48,7 @@ export const routes: Routes = [
       },
       { 
         path: 'picking', 
-        loadComponent: () => import('./features/picking/picking-module.component').then(m => m.PickingModuleComponent),
+        loadChildren: () => import('./features/picking/picking-route').then(m => m.PICKING_ROUTES),
         data: { title: 'Picking Module' }
       },
       { 

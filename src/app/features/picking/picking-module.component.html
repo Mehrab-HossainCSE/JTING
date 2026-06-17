@@ -1,3 +1,25 @@
-<div class="page-container">
-  <h2>Picking Module Page</h2>
+<div class="master-setup-container">
+  <!-- Tabs -->
+  <div class="card tabs-card">
+    <div class="tabs-header">
+      <div class="tabs-title"></div>
+    </div>
+    <div class="tabs-grid">
+      @for (tab of tabs(); track tab.id) {
+        <button
+          class="tab-btn"
+          [class.active]="activeTabId() === tab.id"
+          (click)="navigateToTab(tab)"
+        >
+          <span class="tab-icon" *ngIf="tab.icon">{{ tab.icon }}</span>
+          <span class="tab-label">{{ tab.label }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content-body">
+    <router-outlet></router-outlet>
+  </div>
 </div>

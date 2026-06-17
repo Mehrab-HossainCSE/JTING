@@ -1,0 +1,5 @@
+@use '../../../../../styles/abstracts/variables' as *;
+
+.bg-success-subtle {
+  background-color: rgba($success, 0.1) !important;
+}
