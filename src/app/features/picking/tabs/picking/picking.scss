@@ -18,7 +18,7 @@
 .picking-filters-row {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.75rem;
+  gap: 1.5rem; // Increased gap to fill space
   align-items: flex-end;
   width: 100%;
 
@@ -53,10 +53,10 @@
     }
   }
 
-  .sku-group { width: 210px; flex-shrink: 0; }
-  .ku-group { width: 75px; flex-shrink: 0; }
-  .qty-group { width: 85px; flex-shrink: 0; }
-  .picker-group { width: 140px; flex-shrink: 0; }
+  .sku-group { width: 340px; flex-shrink: 0; }
+  .ku-group { width: 110px; flex-shrink: 0; }
+  .qty-group { width: 120px; flex-shrink: 0; }
+  .picker-group { width: 250px; flex-shrink: 0; }
 
   // Actions on the Right
   .filter-actions-right {
@@ -81,10 +81,10 @@
 
 // ── Buttons ────────────────────────────────────────────────────────
 .btn-add-action {
-  background: $primary-green;
+  background: #2c3e50; // Professional Dark/Navy color
   color: white;
   height: 40px;
-  padding: 0 16px;
+  padding: 0 20px;
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.75rem;
@@ -96,9 +96,9 @@
   transition: all 0.2s;
 
   &:hover {
-    background: $primary-dark;
+    background: #1a252f;
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba($primary-green, 0.15);
+    box-shadow: 0 4px 10px rgba(44, 62, 80, 0.2);
     color: white;
   }
 }
@@ -119,9 +119,9 @@
 }
 
 .btn-save-main-compact {
-  background: #1e293b;
+  background: $primary-green; // Set to primary color
   color: white;
-  padding: 0 24px;
+  padding: 0 28px;
   height: 40px;
   border-radius: 10px;
   font-weight: 800;
@@ -129,12 +129,12 @@
   display: flex;
   align-items: center;
   border: none;
-  box-shadow: 0 4px 10px rgba(30, 41, 59, 0.1);
+  box-shadow: 0 4px 12px rgba($primary-green, 0.2);
   transition: all 0.2s;
   &:hover {
-    background: #0f172a;
+    background: $primary-dark;
     transform: translateY(-1.5px);
-    box-shadow: 0 8px 15px rgba(30, 41, 59, 0.2);
+    box-shadow: 0 8px 20px rgba($primary-green, 0.3);
     color: white;
   }
 }
