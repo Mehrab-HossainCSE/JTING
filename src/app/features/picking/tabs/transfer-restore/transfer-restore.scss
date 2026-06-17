@@ -1,5 +1,162 @@
-@use '../../../../../styles/abstracts/variables' as *;
+@use "/styles/abstracts/variables" as *;
+@use "/styles/componets/master-setup.scss" as *;
 
-.bg-primary-subtle {
-  background-color: rgba($primary-green, 0.1) !important;
+// ── Layout Override ────────────────────────────────────────────────
+:host {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 100%;
+}
+
+// Data grid wrapper
+.row.h-100 {
+  flex: 1;
+  margin: 0; // Remove row negative margin
+}
+
+.col-md-5, .col-md-7 {
+  padding: 0 0.5rem; // Subtle gap
+  height: 100%;
+}
+
+// ── Data List (Left Panel) ──────────────────────────────────────────
+.small-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.form-control-sm {
+  height: 36px;
+  font-size: 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid #eef2f5;
+  background: #f8fafc;
+  &:focus {
+    border-color: $primary-green;
+    box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
+  }
+}
+
+.data-list-filters-inline {
+  padding-bottom: 12px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.active-row {
+  background: rgba($primary-green, 0.08) !important;
+  td {
+    border-left: 3px solid $primary-green;
+  }
+}
+
+.pointer { cursor: pointer; }
+
+// ── Shared Table Elements (Consistent with Picking) ─────────────────
+.results-table-outer {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+}
+
+.premium-table {
+  width: 100%;
+  thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    padding: 12px 8px;
+    border-bottom: 2px solid #edf2f7;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .table-row:hover:not(.active-row) {
+    background: #f1f5f9 !important;
+  }
+
+  .id-pill-light {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.68rem;
+  }
+
+  .batch-badge-pill {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .loc-pill {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+}
+
+.title-underline-main {
+  width: 4px;
+  height: 18px;
+  background: $primary-green;
+  border-radius: 2px;
+}
+
+.btn-save-main-compact {
+  background: $primary-green;
+  color: white;
+  border: none;
+  height: 36px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover { background: $primary-dark; }
+}
+
+.btn-add-action {
+  background: #1e293b;
+  color: white;
+  border: none;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  &:hover { background: #0f172a; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.count-pill-green {
+  background: #e6f7ec;
+  color: $primary-green;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
 }
