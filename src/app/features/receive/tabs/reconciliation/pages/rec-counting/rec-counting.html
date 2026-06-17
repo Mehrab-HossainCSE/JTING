@@ -1,5 +1,15 @@
-<!-- CARD 2: Parameters Form -->
-<div class="card params-card shadow-sm border-0 rounded-3 mb-3">
+<div *ngIf="!canView()" class="no-permission-card">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <h3>Access Denied</h3>
+      <p>You do not have permission to view Reconciliation.</p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="canView()">
+  <!-- CARD 2: Parameters Form -->
+  <div class="card params-card shadow-sm border-0 rounded-3 mb-3">
   <div class="card-body p-4">
     <div class="upload-params-panel">
       
@@ -182,4 +192,5 @@
       </button>
     </div>
   </div>
+</div>
 </div>

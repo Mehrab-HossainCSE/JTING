@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { SkuService } from '../../../../../../core/services/skuServices/sku-service';
 import { ReconciliationService } from '../../../../../../core/services/receiveServices/reconciliation-service';
 import { AuthService } from '../../../../../../core/services/auth.service';
+import { StorageService } from '../../../../../../core/services/storage.service';
 import { SkuSetting } from '../../../../../../core/models/setups/sku/sku-setting';
 import { DeliveryReconciliationRequest, LocalReconciliationRequest } from '../../../../../../core/models/receives/reconciliation/reconciliation';
 
@@ -34,9 +35,14 @@ export class RecDelivery implements OnInit {
   private skuService = inject(SkuService);
   private reconciliationService = inject(ReconciliationService);
   private authService = inject(AuthService);
+  private storageService = inject(StorageService);
 
   permissions = signal({ canView: true, canCreate: true, canUpdate: true, canDelete: true });
+  
+  canView = computed(() => this.permissions().canView);
   canCreate = computed(() => this.permissions().canCreate);
+  canUpdate = computed(() => this.permissions().canUpdate);
+  canDelete = computed(() => this.permissions().canDelete);
   
   fileName = signal('');
   selectedUnit = signal('CS');
@@ -50,8 +56,30 @@ export class RecDelivery implements OnInit {
   units = signal<SkuSetting[]>([]);
 
   ngOnInit(): void {
+    this.loadPermissionsFromStorage();
     this.initDates();
     this.loadSkuSettings();
+  }
+
+  private loadPermissionsFromStorage(): void {
+    const menus = this.storageService.getAngularItem<any[]>('menus');
+    const parentMenu = menus?.find(
+      (m: any) => m.name?.toUpperCase() === 'RECEIVE_MODULE' || m.url?.toLowerCase() === '/receive'
+    );
+    const rMenu = parentMenu?.children?.find(
+      (c: any) =>
+        c.url?.toLowerCase() === '/reconciliation' ||
+        c.name?.toUpperCase() === 'RECONCILIATION'
+    );
+
+    if (rMenu) {
+      this.permissions.set({
+        canView: !!rMenu.canView,
+        canCreate: !!rMenu.canCreate,
+        canUpdate: !!rMenu.canUpdate,
+        canDelete: !!rMenu.canDelete,
+      });
+    }
   }
 
   private initDates(): void {
