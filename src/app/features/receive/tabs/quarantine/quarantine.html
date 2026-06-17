@@ -11,105 +11,71 @@
 
   <div *ngIf="canView()">
 
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- ── Filter Card ─────────────────────────────────────────────────── -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <div class="card filter-card">
-      <div class="card-body">
-        <div class="filters-grid">
-
-          <!-- SKU Dropdown -->
-          <div class="filter-item">
-            <label for="skuFilterSelect">SKU</label>
-            <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku" (change)="onSkuChange()">
-              <option value="">Select SKU...</option>
-              <option *ngFor="let sku of skus()" [value]="sku.skucode">
-                {{ sku.skuname }} ({{ sku.skucode }})
-              </option>
-            </select>
-          </div>
-
-          <!-- BLOCK Dropdown -->
-          <div class="filter-item">
-            <label for="blockFilterSelect">BLOCK</label>
-            <select id="blockFilterSelect" class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
-              <option value="">Select Block...</option>
-              <option *ngFor="let b of blocks()" [value]="b.blockId">
-                {{ b.blockName || b.blockId }}
-              </option>
-            </select>
-          </div>
-
-          <!-- ARCH Dropdown -->
-          <div class="filter-item">
-            <label for="archFilterSelect">ARCH</label>
-            <select id="archFilterSelect" class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
-              <option value="">Select Arch...</option>
-              <option *ngFor="let a of arches()" [value]="a.archId">
-                {{ a.archName || a.archId }}
-              </option>
-            </select>
-          </div>
-
-          <!-- LINE Dropdown -->
-          <div class="filter-item">
-            <label for="lineFilterSelect">LINE</label>
-            <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine" (change)="onLineChange()">
-              <option value="">Select Line...</option>
-              <option *ngFor="let l of lines()" [value]="l.lineId">
-                {{ l.lineName || l.lineId }}
-              </option>
-            </select>
-          </div>
-
-          <!-- All Select Checkbox -->
-          <div class="filter-item checkbox-item">
-            <label for="allSelectCheckbox" class="all-select-label">
-              <input id="allSelectCheckbox" type="checkbox" [(ngModel)]="allSelect" (change)="toggleAllSelect()" />
-              <span>All Select</span>
-            </label>
-          </div>
-
-          <!-- From Date -->
-          <div class="filter-item">
-            <label for="fromDateInput">FROM DATE</label>
-            <input id="fromDateInput" type="date" [(ngModel)]="fromDate" class="form-input-date" />
-          </div>
-
-          <!-- To Date -->
-          <div class="filter-item">
-            <label for="toDateInput">TO DATE</label>
-            <input id="toDateInput" type="date" [(ngModel)]="toDate" class="form-input-date" />
-          </div>
-
-          <!-- Search Button -->
-          <div class="filter-item search-btn-item">
-            <button class="btn btn-save search-btn" (click)="search()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              Search
-            </button>
-          </div>
-
-          <!-- Quarantine No -->
-          <div class="filter-item qrn-item">
-            <label>QUARANTINE NO</label>
-            <span class="qrn-value-label">{{ selectedQuarantineNo() || 'None Selected' }}</span>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- ── Main Grid ───────────────────────────────────────────────────── -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <div class="quarantine-grid mt-3">
+    <div class="quarantine-grid">
 
       <!-- ── Left Column: Box / Location Checklist ──────────────────────── -->
       <div class="left-col">
+
+        <!-- Location Filters (Separated) -->
+        <div class="card filter-card mb-3">
+          <div class="card-body">
+            <div class="filters-grid-mini">
+              <!-- Line 1: SKU & BLOCK -->
+              <div class="filter-item">
+                <label for="skuFilterSelect">SKU</label>
+                <select id="skuFilterSelect" class="custom-select" [(ngModel)]="filterSku" (change)="onSkuChange()">
+                  <option value="">Select SKU...</option>
+                  <option *ngFor="let sku of skus()" [value]="sku.skucode">
+                    {{ sku.skuname }} ({{ sku.skucode }})
+                  </option>
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <label for="blockFilterSelect">BLOCK</label>
+                <select id="blockFilterSelect" class="custom-select" [(ngModel)]="filterBlock" (change)="onBlockChange()">
+                  <option value="">Select Block...</option>
+                  <option *ngFor="let b of blocks()" [value]="b.blockId">
+                    {{ b.blockName || b.blockId }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Line 2: ARCH & LINE -->
+              <div class="filter-item">
+                <label for="archFilterSelect">ARCH</label>
+                <select id="archFilterSelect" class="custom-select" [(ngModel)]="filterArch" (change)="onArchChange()">
+                  <option value="">Select Arch...</option>
+                  <option *ngFor="let a of arches()" [value]="a.archId">
+                    {{ a.archName || a.archId }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <label for="lineFilterSelect">LINE</label>
+                <select id="lineFilterSelect" class="custom-select" [(ngModel)]="filterLine" (change)="onLineChange()">
+                  <option value="">Select Line...</option>
+                  <option *ngFor="let l of lines()" [value]="l.lineId">
+                    {{ l.lineName || l.lineId }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Line 3: All Select -->
+              <div class="filter-item checkbox-item">
+                <label for="allSelectCheckbox" class="all-select-label">
+                  <input id="allSelectCheckbox" type="checkbox" [(ngModel)]="allSelect" (change)="toggleAllSelect()" />
+                  <span>All Select</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="card box-location-card">
           <div class="card-header">
             <h3>Box / Location</h3>
@@ -146,6 +112,33 @@
 
       <!-- ── Right Column: Quarantine Records & Pallet Details ───────────── -->
       <div class="right-col">
+
+        <!-- Date & Search Filters (Separated) -->
+        <div class="card filter-card mb-3">
+          <div class="card-body">
+            <div class="filters-grid-inline">
+              <div class="filter-item">
+                <label for="fromDateInput">FROM DATE</label>
+                <input id="fromDateInput" type="date" [(ngModel)]="fromDate" class="form-input-date" />
+              </div>
+
+              <div class="filter-item">
+                <label for="toDateInput">TO DATE</label>
+                <input id="toDateInput" type="date" [(ngModel)]="toDate" class="form-input-date" />
+              </div>
+
+              <div class="filter-item search-btn-item">
+                <button class="btn btn-save search-btn" (click)="search()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Quarantine Records Card -->
         <div class="card records-card">
@@ -189,8 +182,12 @@
 
         <!-- Pallet Details Card -->
         <div class="card pallets-card mt-3">
-          <div class="card-header">
+          <div class="card-header d-flex justify-content-between align-items-center">
             <h3>Pallet Details</h3>
+            <div class="qrn-header-display">
+              <span class="qrn-label">QUARANTINE NO:</span>
+              <span class="qrn-value">{{ selectedQuarantineNo() || 'None Selected' }}</span>
+            </div>
           </div>
           <div class="table-outer pallets-table-outer">
             <table class="premium-table">
