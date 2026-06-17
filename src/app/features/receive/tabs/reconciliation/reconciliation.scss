@@ -102,7 +102,7 @@
     }
   }
 
-  .file-upload-item { width: 340px; }
+  .file-upload-item { width: 480px; }
   
   .custom-file-wrapper {
     display: flex;
@@ -265,3 +265,24 @@
 
 .batch-badge { background: #f8fafc; color: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #e1e8f0; }
 .diff-value { font-weight: 800; &.positive { color: #00BB31; } &.negative { color: #ff7675; } }
+
+.table-input {
+  max-width: 90px;
+  height: 32px;
+  padding: 2px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f8fafc;
+  transition: all 0.2s ease-in-out;
+  
+  &:focus {
+    background-color: #ffffff;
+    border-color: #00BB31;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 187, 49, 0.12);
+  }
+}

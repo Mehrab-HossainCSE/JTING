@@ -23,11 +23,11 @@ export class ReconciliationService {
    */
   receiveExcelFileReader(file: File, unit: string, isShiftWise: boolean, fromDate: string, toDate: string): Observable<ApiResponse<any>> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('unit', unit);
-    formData.append('isShiftWise', String(isShiftWise));
-    formData.append('fromDate', fromDate);
-    formData.append('toDate', toDate);
+    formData.append('File', file);
+    formData.append('SettingQty', unit);
+    formData.append('Shift', isShiftWise ? 'true' : 'false');
+    formData.append('FromDate', fromDate);
+    formData.append('ToDate', toDate);
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/ReceiveExcellFileReader`, formData);
   }
 
@@ -36,10 +36,11 @@ export class ReconciliationService {
    */
   deliveryExcelFileReader(file: File, unit: string, fromDate: string, toDate: string): Observable<ApiResponse<any>> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('unit', unit);
-    formData.append('fromDate', fromDate);
-    formData.append('toDate', toDate);
+    formData.append('File', file);
+    formData.append('SettingQty', unit);
+    formData.append('Shift', 'All');
+    formData.append('FromDate', fromDate);
+    formData.append('ToDate', toDate);
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/DeliveryExcellFileReader`, formData);
   }
 
@@ -48,10 +49,11 @@ export class ReconciliationService {
    */
   pickingExcelFileReader(file: File, unit: string, fromDate: string, toDate: string): Observable<ApiResponse<any>> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('unit', unit);
-    formData.append('fromDate', fromDate);
-    formData.append('toDate', toDate);
+    formData.append('File', file);
+    formData.append('SettingQty', unit);
+    formData.append('Shift', 'All');
+    formData.append('FromDate', fromDate);
+    formData.append('ToDate', toDate);
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/PickingExcellFileReader`, formData);
   }
 
@@ -60,10 +62,11 @@ export class ReconciliationService {
    */
   hundredPercentExcelFileReader(file: File, unit: string, fromDate: string, toDate: string): Observable<ApiResponse<any>> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('unit', unit);
-    formData.append('fromDate', fromDate);
-    formData.append('toDate', toDate);
+    formData.append('File', file);
+    formData.append('SettingQty', unit);
+    formData.append('Shift', 'All');
+    formData.append('FromDate', fromDate);
+    formData.append('ToDate', toDate);
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/100PercentExcellFileReader`, formData);
   }
 

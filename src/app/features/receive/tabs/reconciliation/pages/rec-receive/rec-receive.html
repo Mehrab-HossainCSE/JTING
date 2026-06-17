@@ -29,9 +29,9 @@
         <label for="unitSelect">UNIT</label>
         <select id="unitSelect" class="custom-select" [ngModel]="selectedUnit()"
           (ngModelChange)="selectedUnit.set($event)">
-          <option value="CS">CS</option>
-          <option value="Carton">Carton</option>
-          <option value="Pallet">Pallet</option>
+          @for (unit of units(); track unit.id) {
+            <option [value]="unit.name">{{ unit.name }}</option>
+          }
         </select>
       </div>
 
@@ -59,7 +59,7 @@
 
       <!-- Actions (Stacked Right as per 2nd image) -->
       <div class="param-item form-buttons-item">
-        <button class="btn upload-btn" (click)="uploadFile()" [disabled]="isLoading()">
+        <button class="btn upload-btn" (click)="loadLocalData()" [disabled]="isLoading()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             class="me-2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -114,9 +114,27 @@
           <td>{{ item.skuDesc }}</td>
           <td><span class="batch-badge">{{ item.batchNo }}</span></td>
           <td>{{ item.date }}</td>
-          <td>{{ item.sapQty }}</td>
-          <td>{{ item.wmsStock }}</td>
-          <td>{{ item.physicalQty }}</td>
+          <td>
+            <input type="number" 
+                   class="table-input" 
+                   [ngModel]="item.sapQty" 
+                   (ngModelChange)="onSapQtyChange(item, $event)"
+                   aria-label="SAP Quantity" />
+          </td>
+          <td>
+            <input type="number" 
+                   class="table-input" 
+                   [ngModel]="item.wmsStock" 
+                   (ngModelChange)="onWmsStockChange(item, $event)"
+                   aria-label="WMS Stock" />
+          </td>
+          <td>
+            <input type="number" 
+                   class="table-input" 
+                   [ngModel]="item.physicalQty" 
+                   (ngModelChange)="onPhysicalQtyChange(item, $event)"
+                   aria-label="Physical Quantity" />
+          </td>
           <td>
             <span class="diff-value" [class.negative]="item.diffBA < 0" [class.positive]="item.diffBA > 0">
               {{ item.diffBA > 0 ? '+' : '' }}{{ item.diffBA }}
