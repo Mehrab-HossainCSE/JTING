@@ -1,42 +1,54 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { StorageService } from '../../../../core/services/storage.service';
+import { MenuResponse } from '../../../../core/models/MenuResponse';
 
 @Component({
   selector: 'app-picking-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './picking.html',
   styleUrl: './picking.scss'
 })
 export class Picking implements OnInit {
-  // Filters
-  selectedSku = signal('');
-  pickerName = signal('ms');
-  kuValue = signal('KU'); // Based on image dropdown KU
-  qty = signal<number | null>(null);
-  
-  // Stats (Labels in image)
-  pickingStock = signal(0);
-  stock = signal(0);
-  
-  // State
-  isLoading = signal(false);
-  results = signal<any[]>([]);
+  private storageService = inject(StorageService);
+
+  permissions = signal({
+    canView: true,
+    canCreate: true,
+    canUpdate: true,
+    canDelete: true,
+  });
+
+  canView = computed(() => this.permissions().canView);
+
+  subTabs = [
+    { name: 'Start Picking', path: 'start-picking' },
+    { name: 'In Progress',   path: 'inprogress' },
+    { name: 'Complete',      path: 'complete' },
+  ];
 
   ngOnInit(): void {
-    this.results.set([]);
+    this.loadPermissionsFromStorage();
   }
 
-  onAdd() {
-    console.log('Add clicked');
-  }
+  private loadPermissionsFromStorage(): void {
+    const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
+    const parentMenu = menus?.find(
+      (m) => m.name?.toUpperCase() === 'PICKING_MODULE' || m.url?.toLowerCase() === '/picking'
+    );
+    const pMenu = parentMenu?.children?.find(
+      (c) => c.url?.toLowerCase() === '/picking' || c.name?.toUpperCase() === 'PICKING'
+    );
 
-  onManualAdd() {
-    console.log('Manual Add clicked');
-  }
-
-  onSave() {
-    console.log('Save clicked');
+    if (pMenu) {
+      this.permissions.set({
+        canView:   !!pMenu.canView,
+        canCreate: !!pMenu.canCreate,
+        canUpdate: !!pMenu.canUpdate,
+        canDelete: !!pMenu.canDelete,
+      });
+    }
   }
 }

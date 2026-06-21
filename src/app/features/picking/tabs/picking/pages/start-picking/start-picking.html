@@ -1,0 +1,130 @@
+<!-- CARD 1: Picking Parameters -->
+<div class="card params-card shadow-sm border-0 rounded-3 mb-3">
+  <div class="card-body p-4">
+
+    <div class="picking-filters-row">
+
+      <!-- SKU Selection with Integrated Stats -->
+      <div class="filter-group sku-group">
+        <div class="label-with-stats d-flex justify-content-between align-items-center">
+          <label class="m-0">SOURCE SKU</label>
+          <div class="mini-stats d-flex gap-3">
+            <span class="m-stat picking">Pick: <strong>{{ pickingStock() }}</strong></span>
+            <span class="m-stat total">Stock: <strong>{{ stock() }}</strong></span>
+          </div>
+        </div>
+        <select id="skuSelect" title="Source SKU" class="custom-select w-100" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event)">
+          <option value="">Select SKU...</option>
+        </select>
+      </div>
+
+      <!-- KU Select -->
+      <div class="filter-group ku-group">
+        <label for="kuSelect">KU</label>
+        <select id="kuSelect" class="custom-select" [ngModel]="kuValue()" (ngModelChange)="kuValue.set($event)">
+          <option value="KU">KU</option>
+        </select>
+      </div>
+
+      <!-- QTY Input -->
+      <div class="filter-group qty-group">
+        <label for="qtyInput">QTY</label>
+        <input id="qtyInput" type="number" class="form-control" placeholder="0"
+          [ngModel]="qty()" (ngModelChange)="qty.set($event)" />
+      </div>
+
+      <!-- Picker Name -->
+      <div class="filter-group picker-group">
+        <label for="pickerSelect">PICKER NAME</label>
+        <select id="pickerSelect" class="custom-select w-100" [ngModel]="pickerName()" (ngModelChange)="pickerName.set($event)">
+          <option value="ms">ms</option>
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="filter-actions-right d-flex gap-2 ms-auto">
+        <button type="button" class="btn btn-add-action" (click)="onAdd()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add
+        </button>
+        <button type="button" class="btn btn-manual-action" (click)="onManualAdd()">
+          Manual Add
+        </button>
+        <button type="button" class="btn btn-save-main-compact" (click)="onSave()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Save
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD 2: Picking Results Table -->
+<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
+  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Picking Items List
+    </h3>
+    <div class="table-actions">
+      <span class="count-pill-green">{{ results().length }} Items</span>
+    </div>
+  </div>
+
+  <div class="results-table-outer standard-padding flex-grow-1">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Sku Id</th>
+          <th>Description</th>
+          <th>Batch No</th>
+          <th>Pallet Date</th>
+          <th>Line</th>
+          <th>Location</th>
+          <th class="text-center">Qty/Pallet</th>
+          <th class="text-center">Pick Qty</th>
+          <th class="text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of results(); track $index) {
+          <tr class="table-row">
+            <td><span class="id-pill-light">{{ item.skuId }}</span></td>
+            <td><div class="text-truncate sku-name-cell">{{ item.skuName }}</div></td>
+            <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
+            <td>{{ item.palletInDate }}</td>
+            <td>{{ item.lineName }}</td>
+            <td><span class="loc-pill">{{ item.location }}</span></td>
+            <td class="text-center"><span class="qty-label">{{ item.qtyPerPallet }}</span></td>
+            <td class="text-center fw-bold text-success">{{ item.pickingQty }}</td>
+            <td class="text-right">
+              <div class="row-actions justify-content-end">
+                <button type="button" class="action-btn-del" aria-label="Delete item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+        @if (results().length === 0) {
+          <tr>
+            <td colspan="9" class="empty-row text-center py-5">
+              <p class="text-muted mb-0">No items in the list. Select SKU and add items.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
