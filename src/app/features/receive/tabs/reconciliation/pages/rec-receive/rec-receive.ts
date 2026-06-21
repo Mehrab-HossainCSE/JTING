@@ -60,6 +60,8 @@ export class RecReceive implements OnInit {
   fileName = signal('');
   selectedUnit = signal('CS');
   isShiftWise = signal(false);
+  selectedShift = signal('All');
+  shifts = ['A', 'B', 'C'];
   fromDate = signal('');
   toDate = signal('');
 
@@ -133,6 +135,11 @@ export class RecReceive implements OnInit {
     });
   }
 
+  onShiftWiseChange(checked: boolean): void {
+    this.isShiftWise.set(checked);
+    this.selectedShift.set(checked ? 'A' : 'All');
+  }
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -158,7 +165,7 @@ export class RecReceive implements OnInit {
     this.reconciliationService.receiveExcelFileReader(
       this.selectedFile,
       unitQtyStr,
-      this.isShiftWise(),
+      this.selectedShift(),
       fromDateISO,
       toDateISO
     ).subscribe({
@@ -179,6 +186,7 @@ export class RecReceive implements OnInit {
   }
 
   loadLocalData(): void {
+    debugger;
     this.isLoading.set(true);
 
     const selectedSetting = this.units().find(u => u.name === this.selectedUnit());
@@ -191,7 +199,7 @@ export class RecReceive implements OnInit {
     const payload: LocalReconciliationRequest = {
       fromDate: formattedFromDate,
       toDate: formattedToDate,
-      shift: this.isShiftWise() ? 'true' : 'false',
+      shift: this.selectedShift(),
       settingQty: qtyVal
     };
 
@@ -199,6 +207,11 @@ export class RecReceive implements OnInit {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success && res.data) {
+          if(res.data.length === 0) {
+            this.toastr.info('No local data found for the given criteria.', 'Info');
+            this.results.set([]);
+            return;
+          }
           this.toastr.success('Local data retrieved successfully.', 'Success');
           this.mapResults(res.data);
         } else {
@@ -240,6 +253,7 @@ export class RecReceive implements OnInit {
     this.selectedFile = null;
     this.selectedUnit.set('CS');
     this.isShiftWise.set(false);
+    this.selectedShift.set('All');
     this.initDates();
     this.results.set([]);
     this.receiveNo.set('Auto-generated...');
@@ -278,7 +292,7 @@ export class RecReceive implements OnInit {
     const payload: ReceiveReconciliationRequest = {
       listReceive: listReceive,
       settingQty: qtyValStr,
-      shift: this.isShiftWise() ? 'true' : 'false',
+      shift: this.selectedShift(),
       dateFrom: formattedFromDate,
       dateTo: formattedToDate,
       reconcilationNo: this.receiveNo() === 'Auto-generated...' ? '' : this.receiveNo(),

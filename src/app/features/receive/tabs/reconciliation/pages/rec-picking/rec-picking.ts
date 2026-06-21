@@ -176,6 +176,11 @@ export class RecPicking implements OnInit {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success && res.data) {
+          if(res.data.length === 0) {
+            this.toastr.info('No local data found for the given criteria.', 'Info');
+            this.results.set([]);
+            return;
+          }
           this.toastr.success('Local data retrieved successfully.', 'Success');
           this.mapResults(res.data);
         } else {

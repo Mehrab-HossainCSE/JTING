@@ -21,11 +21,11 @@ export class ReconciliationService {
   /**
    * Uploads file for Receive Reconciliation
    */
-  receiveExcelFileReader(file: File, unit: string, isShiftWise: boolean, fromDate: string, toDate: string): Observable<ApiResponse<any>> {
+  receiveExcelFileReader(file: File, unit: string, shift: string, fromDate: string, toDate: string): Observable<ApiResponse<any>> {
     const formData = new FormData();
     formData.append('File', file);
     formData.append('SettingQty', unit);
-    formData.append('Shift', isShiftWise ? 'true' : 'false');
+    formData.append('Shift', shift);
     formData.append('FromDate', fromDate);
     formData.append('ToDate', toDate);
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/ReceiveExcellFileReader`, formData);
