@@ -1,0 +1,98 @@
+<!-- CARD 1: Filters -->
+<div class="card params-card shadow-sm border-0 rounded-3 mb-3">
+  <div class="card-body p-4">
+    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Search Cancellation History
+    </h3>
+
+    <div class="delivery-filters-row">
+      <!-- From Date -->
+      <div class="filter-group">
+        <label for="fromDateInput">From Date</label>
+        <input id="fromDateInput" type="date" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+
+      <!-- To Date -->
+      <div class="filter-group">
+        <label for="toDateInput">To Date</label>
+        <input id="toDateInput" type="date" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+
+      <!-- Type -->
+      <div class="filter-group">
+        <label for="typeSelect">Transaction Type</label>
+        <select id="typeSelect" class="custom-select w-100" [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+          @for (t of types(); track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="filter-actions-right d-flex gap-2 ms-auto">
+        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
+        <button type="button" class="btn btn-save-main-compact" (click)="onSearch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search History
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 2: Cancel Logs List -->
+<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
+  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Cancellation Logs
+    </h3>
+    <div class="table-actions">
+      <span class="count-pill-green">{{ storyList().length }} Records</span>
+    </div>
+  </div>
+
+  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cancel ID</th>
+          <th>Cancel Date</th>
+          <th>Ref Tx No</th>
+          <th>Type</th>
+          <th>Reason</th>
+          <th class="text-center">Qty</th>
+          <th>Cancelled By</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of storyList(); track item.cancelId) {
+          <tr class="table-row">
+            <td><span class="id-pill-light">{{ item.cancelId }}</span></td>
+            <td>{{ item.cancelDate }}</td>
+            <td><span class="id-pill-light">{{ item.txNo }}</span></td>
+            <td>
+              <span class="type-badge" [class.type-receive]="item.type === 'Receive'" [class.type-delivery]="item.type === 'Delivery'">
+                {{ item.type }}
+              </span>
+            </td>
+            <td><div class="text-truncate sku-name-cell" [title]="item.reason">{{ item.reason }}</div></td>
+            <td class="text-center fw-bold text-danger">{{ item.qty }}</td>
+            <td>{{ item.cancelledBy }}</td>
+          </tr>
+        }
+        @if (storyList().length === 0) {
+          <tr>
+            <td colspan="7" class="empty-row text-center py-5">
+              <p class="text-muted mb-0">No cancellation history found. Run search.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+@use "/styles/abstracts/variables" as *;
+
+:host {
+  display: block;
+}
+
+.params-card {
+  background: white;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #8395a7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0;
+  }
+
+  .custom-select, .form-control {
+    height: 40px;
+    border: 1.5px solid #eef2f5;
+    border-radius: 10px;
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+
+    &:focus {
+      background: white;
+      border-color: $primary-green;
+      box-shadow: 0 0 0 4px rgba($primary-green, 0.1);
+    }
+  }
+}
+
+.btn-manual-action {
+  background: #f8fafc;
+  color: #475569;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  transition: all 0.2s;
+  &:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+}
+
+.btn-save-main-compact {
+  background: $primary-green;
+  color: white;
+  padding: 0 28px;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  border: none;
+  box-shadow: 0 4px 12px rgba($primary-green, 0.2);
+  transition: all 0.2s;
+  &:hover {
+    background: $primary-dark;
+    transform: translateY(-1.5px);
+    box-shadow: 0 8px 20px rgba($primary-green, 0.3);
+    color: white;
+  }
+}
+
+.title-underline-main {
+  width: 4px;
+  height: 18px;
+  background: $primary-green;
+  border-radius: 2px;
+}

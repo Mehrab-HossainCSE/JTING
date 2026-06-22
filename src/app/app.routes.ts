@@ -53,7 +53,7 @@ export const routes: Routes = [
       },
       { 
         path: 'delivery', 
-        loadComponent: () => import('./features/delivery/delivery-module.component').then(m => m.DeliveryModuleComponent),
+        loadChildren: () => import('./features/delivery/delivery-route').then(m => m.DELIVERY_ROUTES),
         data: { title: 'Delivery Module' }
       },
       { 

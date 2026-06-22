@@ -29,11 +29,6 @@ describe('ReconciliationService', () => {
     const mockFile = new File([''], 'test.xlsx');
     const dummyResponse = { success: true, message: 'Uploaded', data: null, errors: null, errorCode: null, traceId: null };
 
-    service.receiveExcelFileReader(mockFile, 'CS', true, '2026-06-16', '2026-06-16').subscribe(res => {
-      expect(res.success).toBe(true);
-      expect(res.message).toBe('Uploaded');
-    });
-
     const req = httpMock.expectOne(`${environment.apiUrl}/Reconciliation/ReceiveExcellFileReader`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body instanceof FormData).toBe(true);

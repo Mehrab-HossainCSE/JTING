@@ -20,7 +20,13 @@ export const PICKING_ROUTES: Routes = [
       {
         path: 'transfer-restore',
         loadComponent: () => import('./tabs/transfer-restore/transfer-restore').then(m => m.TransferRestore),
-        data: { title: 'Transfer/Restore' }
+        data: { title: 'Transfer/Restore' },
+        children: [
+          { path: '', redirectTo: 'transfer', pathMatch: 'full' },
+          { path: 'transfer', loadComponent: () => import('./tabs/transfer-restore/pages/transfer/transfer').then(m => m.Transfer) },
+          { path: 'restore-from-TA', loadComponent: () => import('./tabs/transfer-restore/pages/restore-from-ta/restore-from-ta').then(m => m.RestoreFromTa) },
+          { path: 'list-of-transfer', loadComponent: () => import('./tabs/transfer-restore/pages/list-of-transfer/list-of-transfer').then(m => m.ListOfTransfer) }
+        ]
       }
     ]
   }

@@ -1,0 +1,113 @@
+<!-- CARD 1: Filters -->
+<div class="card params-card shadow-sm border-0 rounded-3 mb-3">
+  <div class="card-body p-4">
+    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Search Deliveries
+    </h3>
+
+    <div class="delivery-filters-row">
+      <!-- From Date -->
+      <div class="filter-group">
+        <label for="fromDateInput">From Date</label>
+        <input id="fromDateInput" type="date" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+
+      <!-- To Date -->
+      <div class="filter-group">
+        <label for="toDateInput">To Date</label>
+        <input id="toDateInput" type="date" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+
+      <!-- Truck Selection -->
+      <div class="filter-group">
+        <label for="truckSelect">Truck Number</label>
+        <select id="truckSelect" class="custom-select w-100" [ngModel]="truckNo()" (ngModelChange)="truckNo.set($event)">
+          <option value="">All Trucks</option>
+          @for (trk of trucks(); track trk) {
+            <option [value]="trk">{{ trk }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="filter-actions-right d-flex gap-2 ms-auto">
+        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
+        <button type="button" class="btn btn-save-main-compact" (click)="onSearch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search Deliveries
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 2: Delivery List -->
+<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
+  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Completed Delivery Dispatches
+    </h3>
+    <div class="table-actions">
+      <span class="count-pill-green">{{ deliveryList().length }} Deliveries</span>
+    </div>
+  </div>
+
+  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Delivery ID</th>
+          <th>SKU Code</th>
+          <th>Description</th>
+          <th>Batch No</th>
+          <th>Pallet No</th>
+          <th class="text-center">Qty</th>
+          <th>Date</th>
+          <th>Truck No</th>
+          <th>Driver</th>
+          <th>Status</th>
+          <th class="text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of deliveryList(); track item.deliveryId) {
+          <tr class="table-row">
+            <td><span class="id-pill-light">{{ item.deliveryId }}</span></td>
+            <td><span class="id-pill-light">{{ item.skuCode }}</span></td>
+            <td><div class="text-truncate sku-name-cell">{{ item.skuDescription }}</div></td>
+            <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
+            <td><span class="batch-badge-pill">{{ item.palletNo }}</span></td>
+            <td class="text-center fw-bold">{{ item.qty }}</td>
+            <td>{{ item.date }}</td>
+            <td><span class="id-pill-light">{{ item.truckNo }}</span></td>
+            <td>{{ item.driverName }}</td>
+            <td>
+              <span class="status-badge" [class.status-completed]="item.status === 'Completed'" [class.status-cancelled]="item.status === 'Cancelled'">
+                {{ item.status }}
+              </span>
+            </td>
+            <td class="text-right">
+              <div class="row-actions justify-content-end">
+                <button type="button" class="btn btn-cancel-action" (click)="onCancelDelivery(item)" [disabled]="item.status === 'Cancelled'">
+                  Cancel Delivery
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+        @if (deliveryList().length === 0) {
+          <tr>
+            <td colspan="11" class="empty-row text-center py-5">
+              <p class="text-muted mb-0">No deliveries found. Run search.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

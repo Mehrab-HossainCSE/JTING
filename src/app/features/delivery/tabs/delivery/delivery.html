@@ -1,0 +1,125 @@
+<!-- CARD 1: Delivery Parameters -->
+<div class="card params-card shadow-sm border-0 rounded-3 mb-3">
+  <div class="card-body p-4">
+    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Delivery Operations
+    </h3>
+
+    <div class="delivery-filters-row">
+      <!-- Date -->
+      <div class="filter-group">
+        <label for="deliveryDateInput">Delivery Date</label>
+        <input id="deliveryDateInput" type="date" class="form-control" [ngModel]="deliveryDate()" (ngModelChange)="deliveryDate.set($event)" />
+      </div>
+
+      <!-- Shift -->
+      <div class="filter-group">
+        <label for="shiftSelect">Shift</label>
+        <select id="shiftSelect" class="custom-select w-100" [ngModel]="selectedShift()" (ngModelChange)="selectedShift.set($event)">
+          <option value="">Select Shift...</option>
+          @for (shift of shifts(); track shift) {
+            <option [value]="shift">{{ shift }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Truck Selection -->
+      <div class="filter-group">
+        <label for="truckSelect">Truck Number</label>
+        <select id="truckSelect" class="custom-select w-100" [ngModel]="selectedTruck()" (ngModelChange)="selectedTruck.set($event)">
+          <option value="">Select Truck...</option>
+          @for (trk of trucks(); track trk) {
+            <option [value]="trk">{{ trk }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Driver Selection -->
+      <div class="filter-group">
+        <label for="driverSelect">Driver Name</label>
+        <select id="driverSelect" class="custom-select w-100" [ngModel]="selectedDriver()" (ngModelChange)="selectedDriver.set($event)">
+          <option value="">Select Driver...</option>
+          @for (drv of drivers(); track drv) {
+            <option [value]="drv">{{ drv }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="filter-actions-right d-flex gap-2 ms-auto">
+        <button type="button" class="btn btn-manual-action" (click)="onReset()">
+          Reset
+        </button>
+        <button type="button" class="btn btn-save-main-compact" (click)="onSearch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 2: Delivery Items List -->
+<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
+  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Pending Delivery Items
+    </h3>
+    <div class="table-actions d-flex align-items-center gap-3">
+      <span class="count-pill-green">{{ deliveryList().length }} Items</span>
+      <button type="button" class="btn btn-dispatch-action" (click)="onDispatchSelected()" [disabled]="deliveryList().length === 0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Dispatch Selected
+      </button>
+    </div>
+  </div>
+
+  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th style="width: 40px;" class="text-center">
+            <input type="checkbox" aria-label="Select all items" (change)="toggleAll($event)" [checked]="deliveryList().length > 0 && deliveryList().every(item => item.isSelected)" />
+          </th>
+          <th>Delivery ID</th>
+          <th>SKU Code</th>
+          <th>Description</th>
+          <th>Batch No</th>
+          <th>Pallet No</th>
+          <th>Location</th>
+          <th class="text-center">Qty</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of deliveryList(); track item.deliveryId) {
+          <tr class="table-row">
+            <td class="text-center">
+              <input type="checkbox" aria-label="Select item" [(ngModel)]="item.isSelected" />
+            </td>
+            <td><span class="id-pill-light">{{ item.deliveryId }}</span></td>
+            <td><span class="id-pill-light">{{ item.skuCode }}</span></td>
+            <td><div class="text-truncate sku-name-cell">{{ item.skuDescription }}</div></td>
+            <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
+            <td><span class="batch-badge-pill">{{ item.palletNo }}</span></td>
+            <td><span class="loc-pill">{{ item.location }}</span></td>
+            <td class="text-center fw-bold">{{ item.qty }}</td>
+          </tr>
+        }
+        @if (deliveryList().length === 0) {
+          <tr>
+            <td colspan="8" class="empty-row text-center py-5">
+              <p class="text-muted mb-0">No pending delivery items. Run search to fetch items.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

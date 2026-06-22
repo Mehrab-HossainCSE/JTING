@@ -5,13 +5,13 @@ import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
 
 @Component({
-  selector: 'app-transfer-restore',
+  selector: 'app-cancel-receive-delivery-tab',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './transfer-restore.html',
-  styleUrl: './transfer-restore.scss'
+  templateUrl: './cancel-receive-delivery.html',
+  styleUrl: './cancel-receive-delivery.scss'
 })
-export class TransferRestore implements OnInit {
+export class CancelReceiveDelivery implements OnInit {
   private storageService = inject(StorageService);
 
   permissions = signal({
@@ -24,9 +24,9 @@ export class TransferRestore implements OnInit {
   canView = computed(() => this.permissions().canView);
 
   subTabs = [
-    { name: 'Transfer', path: 'transfer' },
-    { name: 'Restore From TA', path: 'restore-from-TA' },
-    { name: 'List Of Transfer', path: 'list-of-transfer' },
+    { name: 'Receive Cancelation', path: 'receive-cancelation' },
+    { name: 'Delivery Cancelation', path: 'delivery-cancelation' },
+    { name: 'Cancelation Story', path: 'cancelation-story' },
   ];
 
   ngOnInit(): void {
@@ -36,21 +36,21 @@ export class TransferRestore implements OnInit {
   private loadPermissionsFromStorage(): void {
     const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
     const parentMenu = menus?.find(
-      (m) => m.name?.toUpperCase() === 'PICKING_MODULE' || m.url?.toLowerCase() === '/picking'
+      (m) => m.name?.toUpperCase() === 'DELIVERY_MODULE' || m.url?.toLowerCase() === '/delivery'
     );
-    const pMenu = parentMenu?.children?.find(
+    const dMenu = parentMenu?.children?.find(
       (c) =>
-        c.url?.toLowerCase() === '/picking/transfer-restore' ||
-        c.url?.toLowerCase() === 'transfer-restore' ||
-        c.name?.toUpperCase() === 'TRANSFER_RESTORE'
+        c.url?.toLowerCase() === '/cancel-receive-delivery' ||
+        c.url?.toLowerCase() === 'cancel-receive-delivery' ||
+        c.name?.toUpperCase() === 'CANCEL_RECEIVE_DELIVERY'
     );
 
-    if (pMenu) {
+    if (dMenu) {
       this.permissions.set({
-        canView: !!pMenu.canView,
-        canCreate: !!pMenu.canCreate,
-        canUpdate: !!pMenu.canUpdate,
-        canDelete: !!pMenu.canDelete,
+        canView: !!dMenu.canView,
+        canCreate: !!dMenu.canCreate,
+        canUpdate: !!dMenu.canUpdate,
+        canDelete: !!dMenu.canDelete,
       });
     }
   }

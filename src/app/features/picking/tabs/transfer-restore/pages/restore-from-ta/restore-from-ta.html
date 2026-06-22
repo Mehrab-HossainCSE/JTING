@@ -1,0 +1,61 @@
+<div class="card params-card shadow-sm border-0 rounded-3">
+  <div class="card-body p-4">
+    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Restore from Transition Area (TA)
+    </h3>
+    <form (ngSubmit)="onConfirmRestore()">
+      <div class="row g-3">
+        <!-- SKU Selection -->
+        <div class="col-md-6 filter-group">
+          <label for="skuSelectInput">Source SKU</label>
+          <select id="skuSelectInput" class="custom-select w-100" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event)" name="sku">
+            <option value="">Select SKU...</option>
+            @for (sku of skuList(); track sku.skuCode) {
+              <option [value]="sku.skuCode">{{ sku.skuCode }} - {{ sku.skuName }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- TA Selection -->
+        <div class="col-md-6 filter-group">
+          <label for="taSelectInput">Transition Area (TA)</label>
+          <select id="taSelectInput" class="custom-select w-100" [ngModel]="sourceTa()" (ngModelChange)="sourceTa.set($event)" name="ta">
+            <option value="">Select Transition Area...</option>
+            @for (ta of taList(); track ta.id) {
+              <option [value]="ta.id">{{ ta.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Pallet Number -->
+        <div class="col-md-6 filter-group">
+          <label for="palletNoInput">Pallet Number</label>
+          <input id="palletNoInput" type="text" class="form-control" placeholder="PLT-XXXX" [ngModel]="palletNo()" (ngModelChange)="palletNo.set($event)" name="pallet" />
+        </div>
+
+        <!-- Destination Location -->
+        <div class="col-md-6 filter-group">
+          <label for="destLocationInput">Destination Location</label>
+          <input id="destLocationInput" type="text" class="form-control" placeholder="A-01-A" [ngModel]="destLocation()" (ngModelChange)="destLocation.set($event)" name="dest" />
+        </div>
+
+        <!-- Restore Qty -->
+        <div class="col-md-6 filter-group">
+          <label for="qtyInput">Restore Quantity</label>
+          <input id="qtyInput" type="number" class="form-control" placeholder="0" [ngModel]="restoreQty()" (ngModelChange)="restoreQty.set($event)" name="qty" />
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
+        <button type="submit" class="btn btn-save-main-compact">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Restore Stock
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
