@@ -1,8 +1,17 @@
 <div class="row g-3 flex-grow-1 min-h-0">
 
   <!-- LEFT PANEL: Data List -->
-  <div class="col-md-4 d-flex flex-column h-100">
+  <div class="col-md-4 d-flex flex-column h-100 position-relative">
     <div class="card shadow-sm border-0 rounded-3 h-100 overflow-hidden d-flex flex-column">
+
+      <!-- LOADING OVERLAY -->
+      @if (isLoadingMaster()) {
+        <div class="loading-overlay d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      }
 
       <div class="card-header border-0 bg-white pt-4 px-3 pb-3">
         <h4 class="mb-3 results-title d-flex align-items-center gap-2">
@@ -13,12 +22,12 @@
         <div class="data-list-filters-inline">
           <div class="d-flex align-items-end gap-2">
             <div class="flex-grow-1">
-              <label class="small-label">FROM DATE</label>
-              <input type="date" title="From Date" class="form-control form-control-sm" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+              <label for="fromDateInput" class="small-label">FROM DATE</label>
+              <input id="fromDateInput" type="date" title="From Date" class="form-control form-control-sm" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
             </div>
             <div class="flex-grow-1">
-              <label class="small-label">TO DATE</label>
-              <input type="date" title="To Date" class="form-control form-control-sm" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+              <label for="toDateInput" class="small-label">TO DATE</label>
+              <input id="toDateInput" type="date" title="To Date" class="form-control form-control-sm" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
             </div>
             <button type="button" aria-label="Search" class="btn btn-save-main-compact px-3" (click)="onSearch()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -40,11 +49,17 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of masterList(); track item.pickingId) {
+            @for (item of masterList(); track item.uniqueKey) {
               <tr class="table-row pointer"
-                  [class.active-row]="selectedPickingId() === item.pickingId"
-                  (click)="onSelectPicking(item.pickingId)">
-                <td><span class="id-pill-light">{{ item.pickingId }}</span></td>
+                  [class.active-row]="selectedRowKey() === item.uniqueKey"
+                  (click)="onSelectPicking(item)">
+                <td>
+                  @if (item.pickingId) {
+                    <span class="id-pill-light">{{ item.pickingId }}</span>
+                  } @else {
+                    <span class="text-muted small">---</span>
+                  }
+                </td>
                 <td>{{ item.pickingDate }}</td>
                 <td class="text-right fw-bold">{{ item.fullPallet }}</td>
               </tr>
@@ -52,7 +67,7 @@
             @if (masterList().length === 0) {
               <tr>
                 <td colspan="3" class="empty-row text-center py-5">
-                  <p class="text-muted small">No records found.</p>
+                  <p class="text-muted small mb-0">No records found.</p>
                 </td>
               </tr>
             }
@@ -63,16 +78,25 @@
   </div>
 
   <!-- RIGHT PANEL: Picking Details -->
-  <div class="col-md-8 d-flex flex-column h-100">
+  <div class="col-md-8 d-flex flex-column h-100 position-relative">
     <div class="card shadow-sm border-0 rounded-3 h-100 overflow-hidden d-flex flex-column">
+
+      <!-- LOADING OVERLAY -->
+      @if (isLoadingDetail()) {
+        <div class="loading-overlay d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      }
 
       <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-3">
           <h4 class="mb-0 fw-bold text-dark">
-            Picking No: <span class="text-primary">{{ selectedPickingId() || '---' }}</span>
+            Picking No: <span class="text-primary">{{ selectedPickingNo() || '---' }}</span>
           </h4>
         </div>
-        <button type="button" class="btn btn-add-action px-4" (click)="onPrint()" [disabled]="!selectedPickingId()">
+        <button type="button" class="btn btn-add-action px-4" (click)="onPrint()" [disabled]="!selectedRowKey()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
             <polyline points="6 9 6 2 18 2 18 9"></polyline>
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
@@ -101,7 +125,7 @@
               <tr class="table-row">
                 <td><span class="batch-badge-pill">{{ detail.batch }}</span></td>
                 <td>{{ detail.receiveDate }}</td>
-                <td><div class="text-truncate detail-desc-cell">{{ detail.skuDescription }}</div></td>
+                <td><div class="text-truncate detail-desc-cell" [title]="detail.skuDescription">{{ detail.skuDescription }}</div></td>
                 <td>{{ detail.palletNo }}</td>
                 <td><span class="loc-pill">{{ detail.location }}</span></td>
                 <td class="text-center fw-bold">{{ detail.qty }}</td>
@@ -118,7 +142,7 @@
             @if (detailsList().length === 0) {
               <tr>
                 <td colspan="8" class="empty-row text-center py-5">
-                  <p class="text-muted">Select an ID from the left.</p>
+                  <p class="text-muted mb-0">Select an ID from the left.</p>
                 </td>
               </tr>
             }

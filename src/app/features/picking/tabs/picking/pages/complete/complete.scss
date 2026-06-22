@@ -11,12 +11,14 @@
 }
 
 // Data grid wrapper
-.row.h-100 {
+.row.flex-grow-1 {
   flex: 1;
+  min-height: 0;
   margin: 0; // Remove row negative margin
+  height: 100%;
 }
 
-.col-md-5, .col-md-7 {
+.col-md-4, .col-md-8 {
   padding: 0 0.5rem; // Subtle gap
   height: 100%;
 }
@@ -80,11 +82,30 @@
     font-weight: 700;
     font-size: 0.65rem;
     text-transform: uppercase;
-    padding: 12px 8px;
+    padding: 12px 12px;
     border-bottom: 2px solid #edf2f7;
     position: sticky;
     top: 0;
     z-index: 10;
+  }
+
+  tbody td {
+    padding: 12px 12px;
+    font-size: 0.75rem;
+    color: #334155;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  // Horizontal spacing adjustments
+  thead th:first-child,
+  tbody td:first-child {
+    padding-left: 20px !important;
+  }
+
+  thead th.text-right,
+  tbody td.text-right {
+    padding-right: 24px !important;
   }
 
   .table-row:hover:not(.active-row) {
@@ -164,3 +185,19 @@
   font-size: 0.68rem;
   font-weight: 700;
 }
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 100;
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
