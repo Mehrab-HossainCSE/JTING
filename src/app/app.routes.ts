@@ -58,7 +58,7 @@ export const routes: Routes = [
       },
       { 
         path: 'report', 
-        loadComponent: () => import('./features/report/report.component').then(m => m.ReportComponent),
+        loadChildren: () => import('./features/report/report-route').then(m => m.REPORT_ROUTES),
         data: { title: 'Report' }
       },
       { 

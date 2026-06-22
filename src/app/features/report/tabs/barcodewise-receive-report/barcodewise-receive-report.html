@@ -1,0 +1,79 @@
+﻿<div class="card params-card shadow-sm border-0 rounded-3 mb-3 bg-white">
+  <div class="card-body p-4">
+    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Barcodewise Receive Report Parameters
+    </h3>
+
+    <div class="report-filters-row">
+      <div class="filter-group">
+        <label for="fromDateInput">From Date</label>
+        <input id="fromDateInput" type="date" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+
+      <div class="filter-group">
+        <label for="toDateInput">To Date</label>
+        <input id="toDateInput" type="date" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+
+      <div class="filter-actions-right d-flex gap-2 ms-auto">
+        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
+        <button type="button" class="btn btn-save-main-compact" (click)="onSearch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column bg-white">
+  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Barcodewise Receive Report List
+    </h3>
+    <div class="table-actions">
+      <span class="count-pill-green">{{ results().length }} Records</span>
+    </div>
+  </div>
+
+  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Barcode</th>
+          <th>SKU Code</th>
+          <th>Description</th>
+          <th>GRN No</th>
+          <th>Pallet No</th>
+          <th>Date</th>
+          <th>Qty</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of results(); track $index) {
+          <tr class="table-row">
+            <td>{{ item.col0 }}</td>
+            <td>{{ item.col1 }}</td>
+            <td>{{ item.col2 }}</td>
+            <td>{{ item.col3 }}</td>
+            <td>{{ item.col4 }}</td>
+            <td>{{ item.col5 }}</td>
+            <td>{{ item.col6 }}</td>
+          </tr>
+        }
+        @if (results().length === 0) {
+          <tr>
+            <td colspan="7" class="empty-row text-center py-5">
+              <p class="text-muted mb-0">No records found. Run search.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
