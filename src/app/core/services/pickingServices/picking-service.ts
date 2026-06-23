@@ -18,8 +18,8 @@ export class PickingService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/Picking`;
 
-  getCurrentStock(skuCode: string, settingQty: number): Observable<ApiResponse<PickingItem[]>> {
-    return this.http.get<ApiResponse<PickingItem[]>>(`${this.apiUrl}/CurrentStock`, {
+  getCurrentStock(skuCode: string, settingQty: number): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/CurrentStock`, {
       params: { skuCode, settingQty },
     });
   }

@@ -133,4 +133,14 @@ export class ReconciliationService {
   search(payload: ReconciliationSearchRequest): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Search`, payload);
   }
+
+  /**
+   * Print Reconciliation PDF
+   */
+  printReconciliation(reconciliationNo: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/Report/Print-Reconciliation`, {
+      params: { reconciliationNo },
+      responseType: 'blob',
+    });
+  }
 }

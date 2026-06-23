@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { StorageService } from '../../../../core/services/storage.service';
 import { MenuResponse } from '../../../../core/models/MenuResponse';
+import { SkuService } from '../../../../core/services/skuServices/sku-service';
 
 @Component({
   selector: 'app-picking-tab',
@@ -13,6 +14,7 @@ import { MenuResponse } from '../../../../core/models/MenuResponse';
 })
 export class Picking implements OnInit {
   private storageService = inject(StorageService);
+  private skuService = inject(SkuService);
 
   permissions = signal({
     canView: true,
@@ -25,8 +27,8 @@ export class Picking implements OnInit {
 
   subTabs = [
     { name: 'Start Picking', path: 'start-picking' },
-    { name: 'In Progress',   path: 'inprogress' },
-    { name: 'Complete',      path: 'complete' },
+    { name: 'In Progress', path: 'inprogress' },
+    { name: 'Complete', path: 'complete' },
   ];
 
   ngOnInit(): void {
@@ -44,7 +46,7 @@ export class Picking implements OnInit {
 
     if (pMenu) {
       this.permissions.set({
-        canView:   !!pMenu.canView,
+        canView: !!pMenu.canView,
         canCreate: !!pMenu.canCreate,
         canUpdate: !!pMenu.canUpdate,
         canDelete: !!pMenu.canDelete,

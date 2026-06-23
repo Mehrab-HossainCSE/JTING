@@ -13,16 +13,21 @@
             <span class="m-stat total">Stock: <strong>{{ stock() }}</strong></span>
           </div>
         </div>
-        <select id="skuSelect" title="Source SKU" class="custom-select w-100" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event)">
+        <select id="skuSelect" title="Source SKU" class="custom-select w-100" [ngModel]="selectedSku()" (ngModelChange)="onSkuChange($event)">
           <option value="">Select SKU...</option>
+          @for (sku of skus(); track sku.skucode) {
+            <option [value]="sku.skucode">{{ sku.skucode }} - {{ sku.skuname }}</option>
+          }
         </select>
       </div>
 
-      <!-- KU Select -->
+      <!-- UNIT Select -->
       <div class="filter-group ku-group">
-        <label for="kuSelect">KU</label>
-        <select id="kuSelect" class="custom-select" [ngModel]="kuValue()" (ngModelChange)="kuValue.set($event)">
-          <option value="KU">KU</option>
+        <label for="unitSelect">UNIT</label>
+        <select id="unitSelect" class="custom-select" [ngModel]="kuValue()" (ngModelChange)="kuValue.set($event)">
+          @for (unit of units(); track unit.id) {
+            <option [value]="unit.name">{{ unit.name }}</option>
+          }
         </select>
       </div>
 
