@@ -60,10 +60,10 @@ export class Complete implements OnInit {
         if (res && res.success && res.data) {
           const list = res.data || [];
           const masters = list.map((item, idx) => ({
-            pickingId: item.pickingNo || '',
+            pickingId: item.challanNo || item.pickingNo || '',
             pickingDate: item.createDate ? new Date(item.createDate).toLocaleDateString() : '---',
             fullPallet: item.fullPaletQty || item.palletQty || 0,
-            uniqueKey: item.pickingNo ? `${item.pickingNo}_${idx}` : `row_${idx}`,
+            uniqueKey: (item.challanNo || item.pickingNo) ? `${item.challanNo || item.pickingNo}_${idx}` : `row_${idx}`,
             originalItem: item
           }));
           this.masterList.set(masters);
@@ -91,14 +91,15 @@ export class Complete implements OnInit {
     this.selectedPickingNo.set(item.pickingId || null);
 
     const original = item.originalItem;
-    if (!original.pickingNo) {
+    const trackingNo = original.challanNo || original.pickingNo;
+    if (!trackingNo) {
       this.toastr.warning('Picking No is null.', 'Warning');
       this.detailsList.set([]);
       return;
     }
 
     this.isLoadingDetail.set(true);
-    this.pickingService.getDetails(original.pickingNo).subscribe({
+    this.pickingService.getDetails(trackingNo).subscribe({
       next: (res) => {
         if (res && res.success && res.data) {
           const mapped = res.data.map(d => ({

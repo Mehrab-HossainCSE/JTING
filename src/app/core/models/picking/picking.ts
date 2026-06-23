@@ -7,6 +7,7 @@ export interface PickingItem {
   skuCode: string;
   skuname: string;
   rcvDate: string;
+  challanNo?: string;
   fullPaletQty: number;
   restQty: number;
   requiredQty: number;
