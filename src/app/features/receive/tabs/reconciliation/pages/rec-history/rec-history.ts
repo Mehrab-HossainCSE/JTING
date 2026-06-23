@@ -79,6 +79,54 @@ export class RecHistory implements OnInit {
     this.results.set([]);
   }
 
-  saveData(): void { }
-  printResults(): void { }
+  private printBlob(pdfBlob: Blob): void {
+    const fileURL = window.URL.createObjectURL(pdfBlob);
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '-9999px';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+
+    iframe.onload = () => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.onafterprint = () => {
+          document.body.removeChild(iframe);
+          window.URL.revokeObjectURL(fileURL);
+        };
+      }
+      setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }
+      }, 500);
+    };
+
+    iframe.src = fileURL;
+    document.body.appendChild(iframe);
+  }
+
+  printRecord(recNo: string): void {
+    if (!recNo) {
+      this.toastr.warning('Invalid Reconciliation Number.', 'Warning');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.toastr.info('Printing reconciliation results...', 'Print');
+
+    this.reconciliationService.printReconciliation(recNo).subscribe({
+      next: (pdfBlob) => {
+        this.isLoading.set(false);
+        this.printBlob(pdfBlob);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.toastr.error(err?.message || 'Error downloading print report.', 'Error');
+      }
+    });
+  }
 }

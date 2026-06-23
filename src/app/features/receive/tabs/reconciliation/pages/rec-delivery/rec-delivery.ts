@@ -123,6 +123,7 @@ export class RecDelivery implements OnInit {
       return;
     }
 
+    this.receiveNo.set('Auto-generated...');
     this.isLoading.set(true);
 
     const selectedSetting = this.units().find(u => u.name === this.selectedUnit());
@@ -154,6 +155,7 @@ export class RecDelivery implements OnInit {
   }
 
   loadLocalData(): void {
+    this.receiveNo.set('Auto-generated...');
     this.isLoading.set(true);
 
     const selectedSetting = this.units().find(u => u.name === this.selectedUnit());
@@ -248,13 +250,15 @@ export class RecDelivery implements OnInit {
   }
 
 
-  clearData(): void {
+  clearData(keepReceiveNo = false): void {
     this.fileName.set('');
     this.selectedFile = null;
     this.selectedUnit.set('CS');
     this.initDates();
     this.results.set([]);
-    this.receiveNo.set('Auto-generated...');
+    if (!keepReceiveNo) {
+      this.receiveNo.set('Auto-generated...');
+    }
   }
 
   saveData(): void {
@@ -297,9 +301,14 @@ export class RecDelivery implements OnInit {
     this.reconciliationService.deliveryReconciliation(payload).subscribe({
       next: (res) => {
         this.isLoading.set(false);
+        debugger;
         if (res.success) {
           this.toastr.success(res.message || 'Reconciliation results saved successfully.', 'Success');
-          this.clearData();
+          const recNo = res.data;
+          if (recNo) {
+            this.receiveNo.set(recNo);
+          }
+          this.clearData(true);
         } else {
           this.toastr.error(res.message || 'Failed to save reconciliation results.', 'Error');
         }
@@ -311,8 +320,58 @@ export class RecDelivery implements OnInit {
     });
   }
 
+  private printBlob(pdfBlob: Blob): void {
+    const fileURL = window.URL.createObjectURL(pdfBlob);
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '-9999px';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+
+    iframe.onload = () => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.onafterprint = () => {
+          document.body.removeChild(iframe);
+          window.URL.revokeObjectURL(fileURL);
+        };
+      }
+      setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }
+      }, 500);
+    };
+
+    iframe.src = fileURL;
+    document.body.appendChild(iframe);
+  }
+
+  private printReconciliationById(recNo: string): void {
+    this.isLoading.set(true);
+    this.reconciliationService.printReconciliation(recNo).subscribe({
+      next: (pdfBlob) => {
+        this.isLoading.set(false);
+        this.printBlob(pdfBlob);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.toastr.error(err?.message || 'Error downloading print report.', 'Error');
+      }
+    });
+  }
+
   printResults(): void {
+    const recNo = this.receiveNo();
+    if (!recNo || recNo === 'Auto-generated...') {
+      this.toastr.warning('Please enter a valid Reconciliation Number to print.', 'Warning');
+      return;
+    }
+
     this.toastr.info('Printing reconciliation results...', 'Print');
-    window.print();
+    this.printReconciliationById(recNo);
   }
 }
