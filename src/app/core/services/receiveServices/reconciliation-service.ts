@@ -8,7 +8,8 @@ import {
   ReceiveReconciliationRequest,
   DeliveryReconciliationRequest,
   HundredPercentReconciliationRequest,
-  PickingReconciliationRequest
+  PickingReconciliationRequest,
+  ReconciliationSearchRequest
 } from '../../models/receives/reconciliation/reconciliation';
 
 @Injectable({
@@ -124,5 +125,12 @@ export class ReconciliationService {
    */
   pickingReconciliation(payload: PickingReconciliationRequest): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/PickingReconciliation`, payload);
+  }
+
+  /**
+   * Search Reconciliation History
+   */
+  search(payload: ReconciliationSearchRequest): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Search`, payload);
   }
 }

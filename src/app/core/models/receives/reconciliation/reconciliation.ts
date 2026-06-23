@@ -108,3 +108,9 @@ export interface PickingReconciliationRequest {
   reconcilationNo: string;
   userName: string;
 }
+
+export interface ReconciliationSearchRequest {
+  fromDate: string;
+  toDate: string;
+  reconciliationType: number;
+}

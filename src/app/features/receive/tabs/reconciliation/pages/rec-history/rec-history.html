@@ -7,13 +7,12 @@
       <div class="param-item">
         <label for="historyTypeSelect">Select Reconciliation Type</label>
         <select id="historyTypeSelect" class="custom-select" style="width: 280px;"
-                [ngModel]="selectedUnit()" 
-                (ngModelChange)="selectedUnit.set($event)">
-          <option value="All">All Types</option>
-          <option value="Receive">Receive Reconciliation</option>
-          <option value="Delivery">Delivery Reconciliation</option>
-          <option value="Counting">100% Counting</option>
-          <option value="Picking">Picking Area</option>
+                [ngModel]="reconciliationType()" 
+                (ngModelChange)="reconciliationType.set($event)">
+          <option value="0">Receive Reconciliation</option>
+          <option value="1">Delivery Reconciliation</option>
+          <option value="2">100% Counting Reconciliation</option>
+          <option value="3">Picking Reconciliation</option>
         </select>
       </div>
 
@@ -36,7 +35,7 @@
 
       <!-- Search Action -->
       <div class="param-item form-buttons-item">
-        <button class="btn upload-btn px-5" (click)="uploadFile()" [disabled]="isLoading()">
+        <button class="btn upload-btn px-5" (click)="searchHistory()" [disabled]="isLoading()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
             <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
@@ -54,43 +53,47 @@
   </div>
 
   <div class="results-table-outer">
-    <div *ngIf="isLoading()" class="loading-state py-5 text-center">
-      <div class="spinner-border text-success" role="status"></div>
-      <p class="mt-2 text-muted">Searching records...</p>
-    </div>
-
-    <table class="premium-table" *ngIf="!isLoading()">
-      <thead>
-        <tr>
-          <th>ReconciliationNo</th>
-          <th>Reconciliation Date</th>
-          <th>User Name</th>
-          <th class="text-center">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of results()" class="table-row">
-          <td><span class="id-pill">{{ item.recNo }}</span></td>
-          <td>{{ item.date }}</td>
-          <td>{{ item.userName }}</td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-outline-success rounded-pill px-3">
-              View Detail
-            </button>
-          </td>
-        </tr>
-        <!-- Empty State -->
-        <tr *ngIf="results().length === 0">
-          <td colspan="4" class="empty-row text-center py-5">
-            <div class="text-muted mb-0">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="1.5" class="mb-3">
-                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <p>No history records found for the selected criteria.</p>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    @if (isLoading()) {
+      <div class="loading-state py-5 text-center">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="mt-2 text-muted">Searching records...</p>
+      </div>
+    } @else {
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>ReconciliationNo</th>
+            <th>Reconciliation Date</th>
+            <th>User Name</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of results(); track $index) {
+            <tr class="table-row">
+              <td><span class="id-pill">{{ item.reconcilationNo }}</span></td>
+              <td>{{ item.reconcilationDate }}</td>
+              <td>{{ item.username }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-success rounded-pill px-3">
+                  View Detail
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-row text-center py-5">
+                <div class="text-muted mb-0">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="1.5" class="mb-3">
+                    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <p>No history records found for the selected criteria.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   </div>
 </div>
