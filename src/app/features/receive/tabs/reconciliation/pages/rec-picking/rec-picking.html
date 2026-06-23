@@ -1,13 +1,15 @@
-<div *ngIf="!canView()" class="no-permission-card">
-  <div class="card shadow-sm border-0 rounded-4">
-    <div class="card-body">
-      <h3>Access Denied</h3>
-      <p>You do not have permission to view Reconciliation.</p>
+@if (!canView()) {
+  <div class="no-permission-card">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body">
+        <h3>Access Denied</h3>
+        <p>You do not have permission to view Reconciliation.</p>
+      </div>
     </div>
   </div>
-</div>
+}
 
-<div *ngIf="canView()">
+@if (canView()) {
   <!-- CARD 2: Parameters Form -->
   <div class="card params-card shadow-sm border-0 rounded-3 mb-3">
     <div class="card-body p-4">
@@ -96,87 +98,86 @@
     </div>
 
     <div class="results-table-outer">
-      <div *ngIf="isLoading()" class="loading-state py-5 text-center">
-        <div class="spinner-border text-success" role="status"></div>
-        <p class="mt-2 text-muted">Processing file...</p>
-      </div>
-
-      <table class="premium-table" *ngIf="!isLoading()">
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>SKU DESC.</th>
-            <th>BATCH NO</th>
-            <th>DATE</th>
-            <th>SAP (A)</th>
-            <th>WMS (B)</th>
-            <th>PHYSICAL (C)</th>
-            <th>B - A</th>
-            <th>B - C</th>
-            <th>A - C</th>
-            <th>REMARKS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of results()" class="table-row">
-            <td><span class="id-pill">{{ item.sku }}</span></td>
-            <td>{{ item.skuDesc }}</td>
-            <td><span class="batch-badge">{{ item.batchNo }}</span></td>
-            <td>{{ item.date }}</td>
-            <td>
-              <input type="number" 
-                     class="table-input" 
-                     [ngModel]="item.sapQty" 
-                     (ngModelChange)="onSapQtyChange(item, $event)"
-                     aria-label="SAP Quantity" />
-            </td>
-            <td>
-              <input type="number" 
-                     class="table-input" 
-                     [ngModel]="item.wmsStock" 
-                     (ngModelChange)="onWmsStockChange(item, $event)"
-                     aria-label="WMS Stock" />
-            </td>
-            <td>
-              <input type="number" 
-                     class="table-input" 
-                     [ngModel]="item.physicalQty" 
-                     (ngModelChange)="onPhysicalQtyChange(item, $event)"
-                     aria-label="Physical Quantity" />
-            </td>
-            <td>
-              <span class="diff-value" [class.negative]="item.diffBA < 0" [class.positive]="item.diffBA > 0">
-                {{ item.diffBA > 0 ? '+' : '' }}{{ item.diffBA }}
-              </span>
-            </td>
-            <td>
-              <span class="diff-value" [class.negative]="item.diffBC < 0" [class.positive]="item.diffBC > 0">
-                {{ item.diffBC > 0 ? '+' : '' }}{{ item.diffBC }}
-              </span>
-            </td>
-            <td>
-              <span class="diff-value" [class.negative]="item.diffAC < 0" [class.positive]="item.diffAC > 0">
-                {{ item.diffAC > 0 ? '+' : '' }}{{ item.diffAC }}
-              </span>
-            </td>
-            <td class="remarks-cell">
-              <span class="remarks-text" [title]="item.remarks">{{ item.remarks }}</span>
-            </td>
-          </tr>
-          <tr *ngIf="results().length === 0">
-            <td colspan="11" class="empty-row text-center py-5">
-              <p class="text-muted mb-0">Upload a reconciliation file to view results.</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      @if (isLoading()) {
+        <div class="loading-state py-5 text-center">
+          <div class="spinner-border text-success" role="status"></div>
+          <p class="mt-2 text-muted">Processing file...</p>
+        </div>
+      } @else {
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>SKU Desc.</th>
+              <th>Batch No</th>
+              <th>Date</th>
+              <th>SAP Qty (A)</th>
+              <th>WMS Qty (B)</th>
+              <th>Physical (C)</th>
+              <th>B-A</th>
+              <th>B-C</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of results(); track $index) {
+              <tr class="table-row">
+                <td><span class="id-pill">{{ item.sku }}</span></td>
+                <td>{{ item.skuDesc }}</td>
+                <td><span class="batch-badge">{{ item.batchNo }}</span></td>
+                <td>{{ item.date }}</td>
+                <td>
+                  <input type="number" 
+                         class="table-input" 
+                         [ngModel]="item.sapQty" 
+                         readonly
+                         aria-label="SAP Quantity" />
+                </td>
+                <td>
+                  <input type="number" 
+                         class="table-input" 
+                         [ngModel]="item.wmsStock" 
+                         readonly
+                         aria-label="WMS Stock" />
+                </td>
+                <td>
+                  <input type="number" 
+                         class="table-input" 
+                         [ngModel]="item.physicalQty" 
+                         (ngModelChange)="onPhysicalQtyChange(item, $event)"
+                         aria-label="Physical Quantity" />
+                </td>
+                <td>
+                  <span class="diff-value" [class.negative]="item.diffBA < 0" [class.positive]="item.diffBA > 0">
+                    {{ item.diffBA > 0 ? '+' : '' }}{{ item.diffBA }}
+                  </span>
+                </td>
+                <td>
+                  <span class="diff-value" [class.negative]="item.diffBC < 0" [class.positive]="item.diffBC > 0">
+                    {{ item.diffBC > 0 ? '+' : '' }}{{ item.diffBC }}
+                  </span>
+                </td>
+                <td class="remarks-cell">
+                  <span class="remarks-text" [title]="item.remarks">{{ item.remarks }}</span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="10" class="empty-row text-center py-5">
+                  <p class="text-muted mb-0">Upload a reconciliation file to view results.</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
 
     <!-- Footer Portion of Card 3 -->
     <div class="card-footer reconciliation-footer py-3 px-4">
       <div class="receive-no-input-wrapper">
-        <label for="receiveNoInput" class="footer-label">Current ReceiveNo</label>
-        <input id="receiveNoInput" type="text" 
+        <label for="pickingNoInput" class="footer-label">Current PickingNo</label>
+        <input id="pickingNoInput" type="text" 
                [ngModel]="receiveNo()" 
                (ngModelChange)="receiveNo.set($event)" 
                class="receive-no-input" 
@@ -199,4 +200,4 @@
       </div>
     </div>
   </div>
-</div>
+}

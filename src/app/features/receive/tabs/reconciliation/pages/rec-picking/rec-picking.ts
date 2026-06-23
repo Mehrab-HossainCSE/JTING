@@ -194,47 +194,66 @@ export class RecPicking implements OnInit {
     });
   }
 
+  private compareDates(d1: any, d2: any): boolean {
+    if (!d1 || !d2) return false;
+    try {
+      const date1 = new Date(d1).toDateString();
+      const date2 = new Date(d2).toDateString();
+      return date1 === date2;
+    } catch {
+      return d1.toString().trim() === d2.toString().trim();
+    }
+  }
+
   private mapResults(data: any[]): void {
     if (!data || !Array.isArray(data)) {
       this.results.set([]);
       return;
     }
 
-    const mapped = data.map((item: any) => ({
-      sku: item.skucode || item.sku || '',
-      skuDesc: item.skuname || item.skuDesc || '',
-      batchNo: item.batchNo || '',
-      date: item.postingDate || item.date || '',
-      sapQty: item.sapQty ?? 0,
-      wmsStock: item.scanQty ?? item.wmsStock ?? item.pickingScanQty ?? item.deliveryScanQty ?? 0,
-      physicalQty: item.physicalQty ?? 0,
-      diffBA: item.variance1 ?? item.diffBA ?? 0,
-      diffBC: item.variance2 ?? item.diffBC ?? 0,
-      diffAC: item.variance3 ?? item.diffAC ?? 0,
-      remarks: item.remarks || ''
-    }));
+    const mapped = data.map((item: any) => {
+      const sapQty = item.sapQty ?? 0;
+      const wmsStock = item.scanQty ?? item.wmsStock ?? item.pickingScanQty ?? item.deliveryScanQty ?? 0;
+      const physicalQty = item.physicalQty ?? 0;
+      const diffBA = item.variance1 ?? (wmsStock - sapQty);
+      const diffBC = item.variance2 ?? (wmsStock - physicalQty);
+      const diffAC = item.variance3 ?? (sapQty - physicalQty);
 
-    this.results.set(mapped);
-  }
+      return {
+        sku: item.skucode || item.sku || '',
+        skuDesc: item.skuname || item.skuDesc || '',
+        batchNo: item.batchNo || '',
+        date: item.postingDate || item.date || '',
+        sapQty,
+        wmsStock,
+        physicalQty,
+        diffBA,
+        diffBC,
+        diffAC,
+        remarks: item.remarks || ''
+      };
+    });
 
-  onSapQtyChange(item: ReconciliationRow, newQty: any): void {
-    const qty = Number(newQty) || 0;
-    item.sapQty = qty;
-    item.diffBA = item.wmsStock - qty;
-    item.diffAC = qty - item.physicalQty;
+    const groupedSkuList = mapped.filter(item => item.wmsStock > 0);
 
-    // Trigger signal update
-    this.results.set([...this.results()]);
-  }
+    const filtered = mapped.filter(x => {
+      // If it's a scanned-only item (wmsStock > 0 and sapQty === 0), keep it.
+      if (x.wmsStock > 0 && x.sapQty === 0) {
+        return true;
+      }
 
-  onWmsStockChange(item: ReconciliationRow, newQty: any): void {
-    const qty = Number(newQty) || 0;
-    item.wmsStock = qty;
-    item.diffBA = qty - item.sapQty;
-    item.diffBC = qty - item.physicalQty;
+      // If it's an SAP item (sapQty > 0):
+      // Check if it matches any scanned item (item in groupedSkuList) on SKU, Date, and Batch
+      const hasMatch = groupedSkuList.some(item => 
+        item.sku.trim().toUpperCase() === x.sku.trim().toUpperCase() &&
+        item.batchNo.trim().toUpperCase() === x.batchNo.trim().toUpperCase() &&
+        this.compareDates(item.date, x.date)
+      );
 
-    // Trigger signal update
-    this.results.set([...this.results()]);
+      return !hasMatch;
+    });
+
+    this.results.set(filtered);
   }
 
   onPhysicalQtyChange(item: ReconciliationRow, newQty: any): void {

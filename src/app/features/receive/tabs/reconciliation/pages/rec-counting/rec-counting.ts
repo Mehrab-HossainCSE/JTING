@@ -17,9 +17,6 @@ interface ReconciliationRow {
   sapQty: number;      // A (Unrestricted Qty)
   wmsStock: number;    // B (Scan Qty)
   physicalQty: number; // C (Physical Qty)
-  diffBA: number;      // B - A
-  diffBC: number;      // B - C
-  diffAC: number;      // A - C
   remarks: string;
 
   blockedQty: number;
@@ -215,9 +212,16 @@ export class RecCounting implements OnInit {
       const wmsStock = item.scanQty ?? item.wmsStock ?? item.deliveryScanQty ?? 0;
       const physicalQty = item.physicalQty ?? 0;
       
-      const diffBA = item.variance1 ?? (wmsStock - sapQty);
-      const diffBC = item.variance2 ?? (wmsStock - physicalQty);
-      const diffAC = item.variance3 ?? (sapQty - physicalQty);
+      const blockedQty = item.blockedQty ?? 0;
+      const scanBlockQty = item.scanBlockQty ?? 0;
+      const physicalBlockQty = item.physicalBlockQty ?? 0;
+
+      const variance1 = item.variance1 ?? (sapQty - wmsStock); // A - C
+      const variance2 = item.variance2 ?? (blockedQty - scanBlockQty); // B - D
+      const variance3 = item.variance3 ?? (sapQty - physicalQty); // A - E
+      const variance4 = item.variance4 ?? (blockedQty - physicalBlockQty); // B - F
+      const variance5 = item.variance5 ?? (wmsStock - physicalQty); // C - E
+      const variance6 = item.variance6 ?? (scanBlockQty - physicalBlockQty); // D - F
 
       return {
         sku: item.skucode || item.sku || '',
@@ -227,59 +231,61 @@ export class RecCounting implements OnInit {
         sapQty: sapQty,
         wmsStock: wmsStock,
         physicalQty: physicalQty,
-        blockedQty: item.blockedQty ?? 0,
-        scanBlockQty: item.scanBlockQty ?? 0,
-        physicalBlockQty: item.physicalBlockQty ?? 0,
-        diffBA: diffBA,
-        diffBC: diffBC,
-        diffAC: diffAC,
+        blockedQty: blockedQty,
+        scanBlockQty: scanBlockQty,
+        physicalBlockQty: physicalBlockQty,
         remarks: item.remarks || '',
-        variance1: item.variance1 ?? diffBA,
-        variance2: item.variance2 ?? diffBC,
-        variance3: item.variance3 ?? diffAC,
-        variance4: item.variance4 ?? 0,
-        variance5: item.variance5 ?? 0,
-        variance6: item.variance6 ?? 0
+        variance1: variance1,
+        variance2: variance2,
+        variance3: variance3,
+        variance4: variance4,
+        variance5: variance5,
+        variance6: variance6
       };
     });
 
-    this.results.set(mapped);
-  }
+    const groupedSkuList = mapped.filter(item => item.wmsStock > 0);
 
-  onSapQtyChange(item: ReconciliationRow, newQty: any): void {
-    const qty = Number(newQty) || 0;
-    item.sapQty = qty;
-    item.diffBA = item.wmsStock - qty;
-    item.diffAC = qty - item.physicalQty;
+    const filtered = mapped.filter(x => {
+      // If it's a scanned-only item (wmsStock > 0 and sapQty === 0), keep it.
+      if (x.wmsStock > 0 && x.sapQty === 0) {
+        return true;
+      }
 
-    item.variance1 = item.diffBA;
-    item.variance3 = item.diffAC;
+      // If it's an SAP item (sapQty > 0):
+      // Check if it matches any scanned item (item in groupedSkuList) on SKU and Batch (no Date check)
+      const hasMatch = groupedSkuList.some(item => 
+        item.sku.trim().toUpperCase() === x.sku.trim().toUpperCase() &&
+        item.batchNo.trim().toUpperCase() === x.batchNo.trim().toUpperCase()
+      );
 
-    // Trigger signal update
-    this.results.set([...this.results()]);
-  }
+      return !hasMatch;
+    });
 
-  onWmsStockChange(item: ReconciliationRow, newQty: any): void {
-    const qty = Number(newQty) || 0;
-    item.wmsStock = qty;
-    item.diffBA = qty - item.sapQty;
-    item.diffBC = qty - item.physicalQty;
-
-    item.variance1 = item.diffBA;
-    item.variance2 = item.diffBC;
-
-    // Trigger signal update
-    this.results.set([...this.results()]);
+    this.results.set(filtered);
   }
 
   onPhysicalQtyChange(item: ReconciliationRow, newQty: any): void {
     const qty = Number(newQty) || 0;
     item.physicalQty = qty;
-    item.diffBC = item.wmsStock - qty;
-    item.diffAC = item.sapQty - qty;
+    
+    // variance3: A - E (sapQty - physicalQty)
+    item.variance3 = item.sapQty - qty;
+    // variance5: C - E (wmsStock - physicalQty)
+    item.variance5 = item.wmsStock - qty;
 
-    item.variance2 = item.diffBC;
-    item.variance3 = item.diffAC;
+    // Trigger signal update
+    this.results.set([...this.results()]);
+  }
+
+  onPhysicalBlockQtyChange(item: ReconciliationRow, newQty: any): void {
+    const qty = Number(newQty) || 0;
+    item.physicalBlockQty = qty;
+
+    // variance4: B - F (blockedQty - physicalBlockQty)
+    item.variance4 = item.blockedQty - qty;
+    // variance6: D - F (scanBlockQty - physicalBlockQty)
+    item.variance6 = item.scanBlockQty - qty;
 
     // Trigger signal update
     this.results.set([...this.results()]);
@@ -319,9 +325,9 @@ export class RecCounting implements OnInit {
       physicalQty: item.physicalQty,
       physicalBlockQty: item.physicalBlockQty,
       remarks: item.remarks || '',
-      variance1: item.diffBA,
-      variance2: item.diffBC,
-      variance3: item.diffAC,
+      variance1: item.variance1,
+      variance2: item.variance2,
+      variance3: item.variance3,
       variance4: item.variance4,
       variance5: item.variance5,
       variance6: item.variance6

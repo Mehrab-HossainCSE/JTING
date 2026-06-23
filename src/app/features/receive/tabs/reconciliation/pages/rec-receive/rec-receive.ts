@@ -225,6 +225,17 @@ export class RecReceive implements OnInit {
     });
   }
 
+  private compareDates(d1: any, d2: any): boolean {
+    if (!d1 || !d2) return false;
+    try {
+      const date1 = new Date(d1).toDateString();
+      const date2 = new Date(d2).toDateString();
+      return date1 === date2;
+    } catch {
+      return d1.toString().trim() === d2.toString().trim();
+    }
+  }
+
   private mapResults(data: any[]): void {
     if (!data || !Array.isArray(data)) {
       this.results.set([]);
@@ -245,7 +256,26 @@ export class RecReceive implements OnInit {
       remarks: item.remarks || ''
     }));
 
-    this.results.set(mapped);
+    const groupedSkuList = mapped.filter(item => item.wmsStock > 0);
+
+    const filtered = mapped.filter(x => {
+      // If it's a scanned-only item (wmsStock > 0 and sapQty === 0), keep it.
+      if (x.wmsStock > 0 && x.sapQty === 0) {
+        return true;
+      }
+
+      // If it's an SAP item (sapQty > 0):
+      // Check if it matches any scanned item (item in groupedSkuList) on SKU, Date, and Batch
+      const hasMatch = groupedSkuList.some(item => 
+        item.sku.trim().toUpperCase() === x.sku.trim().toUpperCase() &&
+        item.batchNo.trim().toUpperCase() === x.batchNo.trim().toUpperCase() &&
+        this.compareDates(item.date, x.date)
+      );
+
+      return !hasMatch;
+    });
+
+    this.results.set(filtered);
   }
 
   clearData(): void {
@@ -317,25 +347,6 @@ export class RecReceive implements OnInit {
     });
   }
 
-  onSapQtyChange(item: ReconciliationRow, newQty: any): void {
-    const qty = Number(newQty) || 0;
-    item.sapQty = qty;
-    item.diffBA = item.wmsStock - qty;
-    item.diffAC = qty - item.physicalQty;
-
-    // Trigger signal update
-    this.results.set([...this.results()]);
-  }
-
-  onWmsStockChange(item: ReconciliationRow, newQty: any): void {
-    const qty = Number(newQty) || 0;
-    item.wmsStock = qty;
-    item.diffBA = qty - item.sapQty;
-    item.diffBC = qty - item.physicalQty;
-
-    // Trigger signal update
-    this.results.set([...this.results()]);
-  }
 
   onPhysicalQtyChange(item: ReconciliationRow, newQty: any): void {
     const qty = Number(newQty) || 0;
