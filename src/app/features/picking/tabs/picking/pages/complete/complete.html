@@ -95,6 +95,9 @@
           <h4 class="mb-0 fw-bold text-dark">
             Picking No: <span class="text-primary">{{ selectedPickingNo() || '---' }}</span>
           </h4>
+          @if (selectedPickingNo() && totalQty() > 0) {
+            <span class="count-pill-green">Total Qty: {{ totalQty() }}</span>
+          }
         </div>
         <button type="button" class="btn btn-add-action px-4" (click)="onPrint()" [disabled]="!selectedRowKey()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">

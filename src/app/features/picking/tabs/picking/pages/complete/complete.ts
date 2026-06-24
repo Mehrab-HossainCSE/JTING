@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PickingService } from '../../../../../../core/services/pickingServices/picking-service';
+import { ReconciliationService } from '../../../../../../core/services/receiveServices/reconciliation-service';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from '../../../../../../core/services/error-handler.service';
 import { PickingItem } from '../../../../../../core/models/picking/picking';
@@ -34,6 +35,7 @@ export interface PickingDetail {
 })
 export class Complete implements OnInit {
   private pickingService = inject(PickingService);
+  private reconciliationService = inject(ReconciliationService);
   private toastr = inject(ToastrService);
   private errorHandler = inject(ErrorHandlerService);
 
@@ -48,6 +50,9 @@ export class Complete implements OnInit {
   // Detail Signals
   isLoadingDetail = signal(false);
   detailsList = signal<PickingDetail[]>([]);
+  totalQty = computed(() => {
+    return this.detailsList().reduce((sum, item) => sum + (item.qty || 0), 0);
+  });
 
   ngOnInit(): void {
     this.onSearch();
@@ -125,9 +130,56 @@ export class Complete implements OnInit {
     });
   }
 
+  private printBlob(pdfBlob: Blob): void {
+    const fileURL = window.URL.createObjectURL(pdfBlob);
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Picking Slip</title>
+            <style>
+              body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+              iframe { width: 100%; height: 100%; border: none; }
+            </style>
+          </head>
+          <body>
+            <iframe id="pdfFrame" src="${fileURL}"></iframe>
+            <script>
+              const iframe = document.getElementById('pdfFrame');
+              iframe.onload = function() {
+                setTimeout(function() {
+                  iframe.contentWindow.focus();
+                  iframe.contentWindow.print();
+                }, 500);
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    } else {
+      this.toastr.error('Could not open print window. Please allow popups.', 'Error');
+    }
+  }
+
   onPrint() {
-    const id = this.selectedPickingNo() || 'N/A';
-    this.toastr.success(`Printing picking log for: ${id}`, 'Print Success');
-    window.print();
+    const id = this.selectedPickingNo();
+    if (!id) {
+      this.toastr.warning('Please select a picking list to print.', 'Warning');
+      return;
+    }
+
+    this.isLoadingDetail.set(true);
+    this.reconciliationService.printPickingSlip(id).subscribe({
+      next: (pdfBlob) => {
+        this.isLoadingDetail.set(false);
+        this.printBlob(pdfBlob);
+      },
+      error: (err) => {
+        this.isLoadingDetail.set(false);
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
   }
 }

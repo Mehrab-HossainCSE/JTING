@@ -50,8 +50,23 @@ export interface CompletePickingRequest {
   pickingNo: string;
 }
 
+export interface SavePickingItem {
+  controlName: string;
+  palletNo: string;
+  skuname: string;
+  skuCode: string;
+  palletQty: number;
+  fullPaletQty: number;
+  restQty: number;
+  requiredQty: number;
+  currentPickingQty: number;
+  pickerName: string;
+  settingQty: number;
+  pickingNo: string;
+}
+
 export interface SavePickingRequest {
-  items: PickingItem[];
+  items: SavePickingItem[];
   pickerName: string;
   pickingNo: string;
 }

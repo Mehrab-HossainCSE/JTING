@@ -1,3 +1,81 @@
-<div class="card shadow-sm border-0 rounded-3 p-4">
-  <p class="text-muted mb-0">In Progress — coming soon.</p>
+<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
+  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
+      <span class="title-underline-main"></span>
+      Data List
+    </h3>
+    <div class="table-actions">
+      <span class="count-pill-green">{{ results().length }} Items</span>
+    </div>
+  </div>
+
+  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
+    @if (isLoading()) {
+      <div class="loading-state py-5 text-center">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="mt-2 text-muted">Loading in-progress items...</p>
+      </div>
+    } @else {
+      @for (group of groupedResults(); track group.pickingNo) {
+        <div class="picking-group mb-4">
+          <!-- Group Header containing meta info & group actions -->
+          <div class="group-header d-flex justify-content-between align-items-center">
+            <div class="group-info d-flex align-items-center gap-4">
+              <span class="picking-no-badge">Picking No: {{ group.pickingNo }}</span>
+              <span class="group-date">Date: <strong>{{ group.date }}</strong></span>
+              <span class="group-total-qty">Total Qty: <strong>{{ group.totalQty }}</strong></span>
+            </div>
+            
+            <div class="group-actions d-flex gap-2">
+              <button type="button" class="btn btn-action-done" (click)="onDoneGroup(group)">
+                Done
+              </button>
+              <button type="button" class="btn btn-action-edit" (click)="onEditGroup(group)">
+                Edit
+              </button>
+              <button type="button" class="btn btn-action-print" (click)="onPrintGroup(group)">
+                Print
+              </button>
+              <button type="button" class="btn btn-action-delete" (click)="onDeleteGroup(group)">
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Table of items inside this group -->
+          <div class="table-responsive">
+            <table class="premium-table inprogress-table mb-0">
+              <thead>
+                <tr>
+                  <th>Batch</th>
+                  <th>RcvDate</th>
+                  <th>SkuName</th>
+                  <th>Palet No</th>
+                  <th>Location</th>
+                  <th class="text-center">Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of group.items; track $index) {
+                <tr class="table-row">
+                  <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
+                  <td>{{ item.rcvDate }}</td>
+                  <td><div class="text-truncate sku-name-cell" [title]="item.skuname">{{ item.skuname }}</div></td>
+                  <td>{{ item.palletNo }}</td>
+                  <td><span class="loc-pill">{{ item.controlName }}</span></td>
+                  <td class="text-center fw-bold text-success">{{ item.qty }}</td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+      @if (groupedResults().length === 0) {
+        <div class="empty-row text-center py-5">
+          <p class="text-muted mb-0">No in-progress items found.</p>
+        </div>
+      }
+    }
+  </div>
 </div>

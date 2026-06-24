@@ -143,4 +143,11 @@ export class ReconciliationService {
       responseType: 'blob',
     });
   }
+
+  printPickingSlip(pickingNo: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/Report/Print-PickingSlip`, {
+      params: { pickingNo },
+      responseType: 'blob',
+    });
+  }
 }

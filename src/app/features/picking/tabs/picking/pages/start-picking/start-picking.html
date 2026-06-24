@@ -7,16 +7,17 @@
       <!-- SKU Selection with Integrated Stats -->
       <div class="filter-group sku-group">
         <div class="label-with-stats d-flex justify-content-between align-items-center">
-          <label class="m-0">SOURCE SKU</label>
+          <label for="skuSelect" class="m-0">SOURCE SKU</label>
           <div class="mini-stats d-flex gap-3">
             <span class="m-stat picking">Pick: <strong>{{ pickingStock() }}</strong></span>
             <span class="m-stat total">Stock: <strong>{{ stock() }}</strong></span>
           </div>
         </div>
-        <select id="skuSelect" title="Source SKU" class="custom-select w-100" [ngModel]="selectedSku()" (ngModelChange)="onSkuChange($event)">
+        <select id="skuSelect" title="Source SKU" class="custom-select w-100" [ngModel]="selectedSku()"
+          (ngModelChange)="onSkuChange($event)">
           <option value="">Select SKU...</option>
           @for (sku of skus(); track sku.skucode) {
-            <option [value]="sku.skucode">{{ sku.skucode }} - {{ sku.skuname }}</option>
+          <option [value]="sku.skucode">{{ sku.skucode }} - {{ sku.skuname }}</option>
           }
         </select>
       </div>
@@ -26,7 +27,7 @@
         <label for="unitSelect">UNIT</label>
         <select id="unitSelect" class="custom-select" [ngModel]="kuValue()" (ngModelChange)="kuValue.set($event)">
           @for (unit of units(); track unit.id) {
-            <option [value]="unit.name">{{ unit.name }}</option>
+          <option [value]="unit.name">{{ unit.name }}</option>
           }
         </select>
       </div>
@@ -34,15 +35,19 @@
       <!-- QTY Input -->
       <div class="filter-group qty-group">
         <label for="qtyInput">QTY</label>
-        <input id="qtyInput" type="number" class="form-control" placeholder="0"
-          [ngModel]="qty()" (ngModelChange)="qty.set($event)" />
+        <input id="qtyInput" type="number" class="form-control" placeholder="0" [ngModel]="qty()"
+          (ngModelChange)="qty.set($event)" />
       </div>
 
       <!-- Picker Name -->
       <div class="filter-group picker-group">
         <label for="pickerSelect">PICKER NAME</label>
-        <select id="pickerSelect" class="custom-select w-100" [ngModel]="pickerName()" (ngModelChange)="pickerName.set($event)">
-          <option value="ms">ms</option>
+        <select id="pickerSelect" class="custom-select w-100" [ngModel]="pickerName()"
+          (ngModelChange)="pickerName.set($event)">
+          <option value="">Select Picker Name...</option>
+          @for (user of users(); track user.userName) {
+          <option [value]="user.userName">{{ user.fullName || user.userName }}</option>
+          }
         </select>
       </div>
 
@@ -59,7 +64,8 @@
           Manual Add
         </button>
         <button type="button" class="btn btn-save-main-compact" (click)="onSave()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            class="me-2">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
             <polyline points="17 21 17 13 7 13 7 21" />
             <polyline points="7 3 7 8 15 8" />
@@ -90,44 +96,47 @@
       <thead>
         <tr>
           <th>Sku Id</th>
-          <th>Description</th>
+          <th>SKU Name</th>
           <th>Batch No</th>
-          <th>Pallet Date</th>
-          <th>Line</th>
-          <th>Location</th>
-          <th class="text-center">Qty/Pallet</th>
-          <th class="text-center">Pick Qty</th>
+          <th>Pallet In Date</th>
+          <th>Line Name</th>
+          <th>Box/Location</th>
+          <th class="text-center">Qty Per Pallet (CS)</th>
+          <th class="text-center">Picking Qty (CS)</th>
           <th class="text-right">Action</th>
         </tr>
       </thead>
       <tbody>
         @for (item of results(); track $index) {
-          <tr class="table-row">
-            <td><span class="id-pill-light">{{ item.skuId }}</span></td>
-            <td><div class="text-truncate sku-name-cell">{{ item.skuName }}</div></td>
-            <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
-            <td>{{ item.palletInDate }}</td>
-            <td>{{ item.lineName }}</td>
-            <td><span class="loc-pill">{{ item.location }}</span></td>
-            <td class="text-center"><span class="qty-label">{{ item.qtyPerPallet }}</span></td>
-            <td class="text-center fw-bold text-success">{{ item.pickingQty }}</td>
-            <td class="text-right">
-              <div class="row-actions justify-content-end">
-                <button type="button" class="action-btn-del" aria-label="Delete item">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
+        <tr class="table-row">
+          <td><span class="id-pill-light">{{ item.skuId }}</span></td>
+          <td>
+            <div class="text-truncate sku-name-cell">{{ item.skuName }}</div>
+          </td>
+          <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
+          <td>{{ item.palletInDate }}</td>
+          <td>{{ item.lineName }}</td>
+          <td><span class="loc-pill">{{ item.location }}</span></td>
+          <td class="text-center"><span class="qty-label">{{ item.qtyPerPallet }}</span></td>
+          <td class="text-center fw-bold text-success">{{ item.pickingQty }}</td>
+          <td class="text-right">
+            <div class="row-actions justify-content-end">
+              <button type="button" class="action-btn-del" aria-label="Delete item" (click)="onDelete($index)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                  </path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
         }
         @if (results().length === 0) {
-          <tr>
-            <td colspan="9" class="empty-row text-center py-5">
-              <p class="text-muted mb-0">No items in the list. Select SKU and add items.</p>
-            </td>
-          </tr>
+        <tr>
+          <td colspan="9" class="empty-row text-center py-5">
+            <p class="text-muted mb-0">No items in the list. Select SKU and add items.</p>
+          </td>
+        </tr>
         }
       </tbody>
     </table>
