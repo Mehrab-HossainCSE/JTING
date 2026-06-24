@@ -43,6 +43,7 @@ export class StartPicking implements OnInit {
   skus = signal<Sku[]>([]);
   units = signal<SkuSetting[]>([]);
   users = signal<UserManage[]>([]);
+  showManualModal = signal(false);
 
   ngOnInit(): void {
     this.results.set([]);
@@ -207,19 +208,7 @@ export class StartPicking implements OnInit {
   }
 
   onManualAdd() {
-    if (!this.selectedSku()) {
-      this.toastr.warning('Please select a Source SKU first.', 'Warning');
-      return;
-    }
-    if (!this.qty() || this.qty()! <= 0) {
-      this.toastr.warning('Please enter a valid quantity.', 'Warning');
-      return;
-    }
-    // if (!this.pickerName()) {
-    //   this.toastr.warning('Please select a Picker Name.', 'Warning');
-    //   return;
-    // }
-    console.log('Manual Add clicked');
+    this.showManualModal.set(true);
   }
 
   onDelete(index: number) {

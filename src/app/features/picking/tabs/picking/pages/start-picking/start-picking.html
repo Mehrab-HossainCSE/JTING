@@ -142,3 +142,97 @@
     </table>
   </div>
 </div>
+
+<!-- Select Manual Location Modal -->
+@if (showManualModal()) {
+<div class="manual-modal-overlay">
+  <div class="manual-modal-card">
+    <div class="modal-header-premium">
+      <h4>Select Manual Location</h4>
+      <button class="btn-close-modal" (click)="showManualModal.set(false)" aria-label="Close modal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body-premium">
+      <div class="modal-form-grid">
+        <!-- SKU -->
+        <div class="form-row-item">
+          <label for="modalSku">SKU</label>
+          <select id="modalSku" class="custom-select-modal">
+            <option value="">Select SKU...</option>
+          </select>
+        </div>
+
+        <!-- Block -->
+        <div class="form-row-item">
+          <label for="modalBlock">Block</label>
+          <select id="modalBlock" class="custom-select-modal">
+            <option value="">Select Block...</option>
+          </select>
+        </div>
+
+        <!-- Arch -->
+        <div class="form-row-item">
+          <label for="modalArch">Arch</label>
+          <select id="modalArch" class="custom-select-modal">
+            <option value="">Select Arch...</option>
+          </select>
+        </div>
+
+        <!-- Line -->
+        <div class="form-row-item">
+          <label for="modalLine">Line</label>
+          <select id="modalLine" class="custom-select-modal">
+            <option value="">Select Line...</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-row-item">
+          <label for="modalLocation">Location</label>
+          <select id="modalLocation" class="custom-select-modal">
+            <option value="">Select Location...</option>
+          </select>
+        </div>
+
+        <!-- Picker Name & Actions (Add, OK) -->
+        <div class="form-row-item picker-actions-row">
+          <div class="picker-select-wrapper">
+            <label for="modalPicker">Picker Name</label>
+            <select id="modalPicker" class="custom-select-modal">
+              <option value="">Select Picker Name...</option>
+            </select>
+          </div>
+          <div class="action-buttons-group">
+            <button type="button" class="btn btn-add-modal">Add</button>
+            <button type="button" class="btn btn-ok-modal" (click)="showManualModal.set(false)">Ok</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SkuLocation Table -->
+      <div class="modal-table-container">
+        <table class="modal-data-table">
+          <thead>
+            <tr>
+              <th style="width: 50px;">*</th>
+              <th>SkuLocation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>*</td>
+              <td class="text-muted">No location added yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+}
