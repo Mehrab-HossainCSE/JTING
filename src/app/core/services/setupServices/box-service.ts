@@ -22,6 +22,10 @@ export class BoxService {
     return this.http.get<ApiResponse<Box>>(`${this.apiUrl}/GetById/${id}`);
   }
 
+  getBySkuCodeAndLineId(skuCode: string, lineId: string): Observable<ApiResponse<Box[]>> {
+    return this.http.get<ApiResponse<Box[]>>(`${this.apiUrl}/GetBySkuLine/${skuCode}/${lineId}`);
+  }
+
   getSplitBoxByLineId(lineId: string): Observable<ApiResponse<Box[]>> {
     return this.http.get<ApiResponse<Box[]>>(`${this.apiUrl}/GetSplitBoxByLineId/${lineId}`);
   }

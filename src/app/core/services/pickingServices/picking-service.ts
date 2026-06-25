@@ -56,7 +56,7 @@ export class PickingService {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Save`, payload);
   }
 
-  validateManualLocation(payload: ValidateManualLocationRequest): Observable<ApiResponse<PickingItem[]>> {
-    return this.http.post<ApiResponse<PickingItem[]>>(`${this.apiUrl}/ValidateManualLocation`, payload);
+  validateManualLocation(payload: ValidateManualLocationRequest): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/ValidateManualLocation`, payload);
   }
 }

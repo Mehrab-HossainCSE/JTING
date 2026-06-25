@@ -78,5 +78,7 @@ export interface ValidateManualLocationRequest {
   skuCode: string;
   qty: number;
   settingQty: number;
-  alreadyAddedLocations: PickingItem[];
+  listSkuDTO: PickingItem[];
+  compareSkuDTOList: PickingItem[];
+  manualLocationList: string[];
 }

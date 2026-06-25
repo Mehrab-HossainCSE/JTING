@@ -1,13 +1,86 @@
 @use "/styles/abstracts/variables" as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .params-card {
   background: white;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
+.transfer-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 220px 1fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 15px;
+  min-height: 0;
+}
+
+.transfer-column {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 520px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+
+  .filters-panel {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #edf2f7;
+  }
+}
+
+.transfer-column-middle {
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+
+  .picker-middle-group {
+    margin-top: 20px;
+  }
+}
+
+.grid-section {
+  min-height: 0;
+}
+
+.grid-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.select-all-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.table-outer {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  min-height: 250px;
+  background: #ffffff;
+}
+
+// Cascading Filter Inputs Style
 .filter-group {
   display: flex;
   flex-direction: column;
@@ -23,55 +96,140 @@
   }
 
   .custom-select, .form-control {
-    height: 40px;
-    border: 1.5px solid #eef2f5;
-    border-radius: 10px;
-    background: #f8fafc;
+    height: 38px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    color: #1e293b;
     transition: all 0.2s;
 
     &:focus {
       background: white;
       border-color: $primary-green;
-      box-shadow: 0 0 0 4px rgba($primary-green, 0.1);
+      box-shadow: 0 0 0 3px rgba($primary-green, 0.15);
     }
   }
 }
 
-.btn-manual-action {
+// Table Style Custom Overrides
+.premium-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    tr {
+      background: $primary-green;
+      th {
+        color: white !important;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+        &:first-child {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+        }
+        &:last-child {
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background 0.15s;
+      td {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        font-weight: 500;
+      }
+      &:hover {
+        background: #f8fafc;
+      }
+      &.selected-row {
+        background: rgba($primary-green, 0.05);
+      }
+    }
+  }
+}
+
+// Pills & Badges
+.loc-pill {
+  background: #f0fdf4;
+  color: $primary-green;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid rgba($primary-green, 0.15);
+}
+
+.loc-pill-dest {
   background: #f8fafc;
   color: #475569;
-  height: 40px;
-  padding: 0 20px;
-  border-radius: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+}
+
+.id-pill-light {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.sku-name-cell-small {
+  max-width: 140px;
+}
+
+// Buttons Styles
+.btn-manual-action {
+  background: #ffffff;
+  color: #64748b;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 0.75rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #cbd5e1;
   transition: all 0.2s;
   &:hover {
     background: #f1f5f9;
-    color: #1e293b;
+    color: #334155;
+    border-color: #94a3b8;
   }
 }
 
 .btn-save-main-compact {
   background: $primary-green;
   color: white;
-  padding: 0 28px;
-  height: 40px;
-  border-radius: 10px;
+  padding: 0 24px;
+  height: 38px;
+  border-radius: 8px;
   font-weight: 800;
   font-size: 0.75rem;
   display: flex;
   align-items: center;
   border: none;
-  box-shadow: 0 4px 12px rgba($primary-green, 0.2);
+  box-shadow: 0 2px 6px rgba($primary-green, 0.15);
   transition: all 0.2s;
   &:hover {
     background: $primary-dark;
-    transform: translateY(-1.5px);
-    box-shadow: 0 8px 20px rgba($primary-green, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($primary-green, 0.25);
     color: white;
   }
 }
@@ -82,3 +240,4 @@
   background: $primary-green;
   border-radius: 2px;
 }
+

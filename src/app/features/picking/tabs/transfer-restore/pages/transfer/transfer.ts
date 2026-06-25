@@ -25,7 +25,7 @@ export class Transfer implements OnInit {
     { skuCode: 'SKU-003', skuName: 'Item Gamma Deluxe' },
   ]);
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onConfirmTransfer() {
     console.log('Transfer confirmed', {

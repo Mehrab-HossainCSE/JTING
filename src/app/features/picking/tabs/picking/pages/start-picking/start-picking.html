@@ -149,53 +149,73 @@
   <div class="manual-modal-card">
     <div class="modal-header-premium">
       <h4>Select Manual Location</h4>
-      <button class="btn-close-modal" (click)="showManualModal.set(false)" aria-label="Close modal">
+      <button class="btn-close-modal" (click)="confirmAndSaveManualLocations()" aria-label="Close modal">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
     </div>
-    
+
     <div class="modal-body-premium">
       <div class="modal-form-grid">
         <!-- SKU -->
         <div class="form-row-item">
           <label for="modalSku">SKU</label>
-          <select id="modalSku" class="custom-select-modal">
+          <select id="modalSku" class="custom-select-modal" [ngModel]="modalSkuCode()"
+            (ngModelChange)="onModalSkuChange($event)">
             <option value="">Select SKU...</option>
+            @for (sku of skus(); track sku.skucode) {
+            <option [value]="sku.skucode">{{ sku.skucode }} - {{ sku.skuname }}</option>
+            }
           </select>
         </div>
 
         <!-- Block -->
         <div class="form-row-item">
           <label for="modalBlock">Block</label>
-          <select id="modalBlock" class="custom-select-modal">
+          <select id="modalBlock" class="custom-select-modal" [ngModel]="modalBlockId()"
+            (ngModelChange)="onModalBlockChange($event)">
             <option value="">Select Block...</option>
+            @for (block of blocks(); track block.blockId) {
+            <option [value]="block.blockId">{{ block.blockName }}</option>
+            }
           </select>
         </div>
 
         <!-- Arch -->
         <div class="form-row-item">
           <label for="modalArch">Arch</label>
-          <select id="modalArch" class="custom-select-modal">
+          <select id="modalArch" class="custom-select-modal" [ngModel]="modalArchId()"
+            (ngModelChange)="onModalArchChange($event)">
             <option value="">Select Arch...</option>
+            @for (arch of archs(); track arch.archId) {
+            <option [value]="arch.archId">{{ arch.archName }}</option>
+            }
           </select>
         </div>
 
         <!-- Line -->
         <div class="form-row-item">
           <label for="modalLine">Line</label>
-          <select id="modalLine" class="custom-select-modal">
+          <select id="modalLine" class="custom-select-modal" [ngModel]="modalLineId()"
+            (ngModelChange)="onModalLineChange($event)">
             <option value="">Select Line...</option>
+            @for (line of lines(); track line.lineId) {
+            <option [value]="line.lineId">{{ line.lineName }}</option>
+            }
           </select>
         </div>
 
         <!-- Location -->
         <div class="form-row-item">
           <label for="modalLocation">Location</label>
-          <select id="modalLocation" class="custom-select-modal">
+          <select id="modalLocation" class="custom-select-modal" [ngModel]="modalLocationCode()"
+            (ngModelChange)="modalLocationCode.set($event)">
             <option value="">Select Location...</option>
+            @for (box of boxes(); track box.boxId) {
+            <option [value]="box.controlName">{{ box.boxName }} ({{ box.controlName }})</option>
+            }
           </select>
         </div>
 
@@ -203,13 +223,17 @@
         <div class="form-row-item picker-actions-row">
           <div class="picker-select-wrapper">
             <label for="modalPicker">Picker Name</label>
-            <select id="modalPicker" class="custom-select-modal">
+            <select id="modalPicker" class="custom-select-modal" [ngModel]="modalPickerName()"
+              (ngModelChange)="modalPickerName.set($event)">
               <option value="">Select Picker Name...</option>
+              @for (user of users(); track user.userName) {
+              <option [value]="user.userName">{{ user.fullName || user.userName }}</option>
+              }
             </select>
           </div>
           <div class="action-buttons-group">
-            <button type="button" class="btn btn-add-modal">Add</button>
-            <button type="button" class="btn btn-ok-modal" (click)="showManualModal.set(false)">Ok</button>
+            <button type="button" class="btn btn-add-modal" (click)="onModalAddClick()">Add</button>
+            <button type="button" class="btn btn-ok-modal" (click)="confirmAndSaveManualLocations()">Save</button>
           </div>
         </div>
       </div>
@@ -221,13 +245,29 @@
             <tr>
               <th style="width: 50px;">*</th>
               <th>SkuLocation</th>
+              <th style="width: 80px;" class="text-right">Action</th>
             </tr>
           </thead>
           <tbody>
+            @for (item of tempManualLocations(); track $index) {
             <tr>
               <td>*</td>
-              <td class="text-muted">No location added yet</td>
+              <td>{{ item.skuCode }} - {{ item.controlName }} (Qty: {{ item.qty }})</td>
+              <td class="text-right">
+                <button type="button" class="action-btn-del" aria-label="Remove manual location" (click)="removeModalLocation($index)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </td>
             </tr>
+            }
+            @if (tempManualLocations().length === 0) {
+            <tr>
+              <td>*</td>
+              <td colspan="2" class="text-muted">No location added yet</td>
+            </tr>
+            }
           </tbody>
         </table>
       </div>
