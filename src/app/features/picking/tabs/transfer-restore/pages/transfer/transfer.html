@@ -1,69 +1,194 @@
-<div class="card params-card shadow-sm border-0 rounded-3">
-  <div class="card-body p-4">
-    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
-      <span class="title-underline-main"></span>
-      Stock Transfer
-    </h3>
-    <form (ngSubmit)="onConfirmTransfer()">
-      <div class="row g-3">
-        <!-- SKU Selection -->
-        <div class="col-md-6 filter-group">
-          <label for="skuSelectInput">Source SKU</label>
-          <select id="skuSelectInput" class="custom-select w-100" [ngModel]="selectedSku()"
-            (ngModelChange)="selectedSku.set($event)" name="sku">
-            <option value="">Select SKU...</option>
-            @for (sku of skuList(); track sku.skuCode) {
-            <option [value]="sku.skuCode">{{ sku.skuCode }} - {{ sku.skuName }}</option>
+<div class="transfer-workspace-container">
+  <div class="transfer-dashed-card">
+    
+    <!-- Top Filter Controls Grid -->
+    <div class="filter-controls-grid">
+      
+      <!-- Left (Source) Filters -->
+      <div class="filters-column-side">
+        <div class="form-group-custom">
+          <label for="sourceBlockSelect">Block</label>
+          <select id="sourceBlockSelect" class="form-select-custom" [ngModel]="sourceSelectedBlock()" (ngModelChange)="onSourceBlockChange($event)">
+            <option value="">Select Block</option>
+            @for (b of blocks(); track b.blockId) {
+              <option [value]="b.blockId">{{ b.blockName }}</option>
             }
           </select>
         </div>
-
-        <!-- Qty -->
-        <div class="col-md-6 filter-group">
-          <label for="qtyInput">Quantity</label>
-          <input id="qtyInput" type="number" class="form-control" placeholder="0" [ngModel]="transferQty()"
-            (ngModelChange)="transferQty.set($event)" name="qty" />
+        
+        <div class="form-group-custom">
+          <label for="sourceArchSelect">Arch</label>
+          <select id="sourceArchSelect" class="form-select-custom" [ngModel]="sourceSelectedArch()" (ngModelChange)="onSourceArchChange($event)" [disabled]="!sourceSelectedBlock()">
+            <option value="">Select Arch</option>
+            @for (a of sourceArchs(); track a.archId) {
+              <option [value]="a.archId">{{ a.archName }}</option>
+            }
+          </select>
         </div>
-
-        <!-- Pallet Number -->
-        <div class="col-md-6 filter-group">
-          <label for="palletNoInput">Pallet Number</label>
-          <input id="palletNoInput" type="text" class="form-control" placeholder="PLT-XXXX" [ngModel]="palletNo()"
-            (ngModelChange)="palletNo.set($event)" name="pallet" />
-        </div>
-
-        <!-- Box ID -->
-        <div class="col-md-6 filter-group">
-          <label for="boxIdInput">Box ID</label>
-          <input id="boxIdInput" type="text" class="form-control" placeholder="BOX-XXXX" [ngModel]="boxId()"
-            (ngModelChange)="boxId.set($event)" name="box" />
-        </div>
-
-        <!-- Source Location -->
-        <div class="col-md-6 filter-group">
-          <label for="sourceLocationInput">Source Location</label>
-          <input id="sourceLocationInput" type="text" class="form-control" placeholder="A-01-A"
-            [ngModel]="sourceLocation()" (ngModelChange)="sourceLocation.set($event)" name="source" />
-        </div>
-
-        <!-- Destination Location -->
-        <div class="col-md-6 filter-group">
-          <label for="destLocationInput">Destination Location</label>
-          <input id="destLocationInput" type="text" class="form-control" placeholder="B-12-D" [ngModel]="destLocation()"
-            (ngModelChange)="destLocation.set($event)" name="dest" />
+        
+        <div class="form-group-custom">
+          <label for="sourceLineSelect">Line</label>
+          <select id="sourceLineSelect" class="form-select-custom" [ngModel]="sourceSelectedLine()" (ngModelChange)="onSourceLineChange($event)" [disabled]="!sourceSelectedArch()">
+            <option value="">Select Line</option>
+            @for (l of sourceLines(); track l.lineId) {
+              <option [value]="l.lineId">{{ l.lineName }}</option>
+            }
+          </select>
         </div>
       </div>
 
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
-        <button type="submit" class="btn btn-save-main-compact">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            class="me-2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Transfer Stock
+      <!-- Center (Picker) Filter -->
+      <div class="filters-column-center">
+        <div class="form-group-custom">
+          <label for="pickerNameSelect">Picker Name</label>
+          <select id="pickerNameSelect" class="form-select-custom" [ngModel]="selectedPicker()" (ngModelChange)="selectedPicker.set($event)">
+            <option value="">Select Picker</option>
+            @for (u of users(); track u.id) {
+              <option [value]="u.userName">{{ u.fullName || u.userName }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Right (Dest) Filters -->
+      <div class="filters-column-side">
+        <div class="form-group-custom">
+          <label for="destBlockSelect">Block</label>
+          <select id="destBlockSelect" class="form-select-custom" [ngModel]="destSelectedBlock()" (ngModelChange)="onDestBlockChange($event)">
+            <option value="">Select Block</option>
+            @for (b of blocks(); track b.blockId) {
+              <option [value]="b.blockId">{{ b.blockName }}</option>
+            }
+          </select>
+        </div>
+        
+        <div class="form-group-custom">
+          <label for="destArchSelect">Arch</label>
+          <select id="destArchSelect" class="form-select-custom" [ngModel]="destSelectedArch()" (ngModelChange)="onDestArchChange($event)" [disabled]="!destSelectedBlock()">
+            <option value="">Select Arch</option>
+            @for (a of destArchs(); track a.archId) {
+              <option [value]="a.archId">{{ a.archName }}</option>
+            }
+          </select>
+        </div>
+        
+        <div class="form-group-custom">
+          <label for="destLineSelect">Line</label>
+          <select id="destLineSelect" class="form-select-custom" [ngModel]="destSelectedLine()" (ngModelChange)="onDestLineChange($event)" [disabled]="!destSelectedArch()">
+            <option value="">Select Line</option>
+            @for (l of destLines(); track l.lineId) {
+              <option [value]="l.lineId">{{ l.lineName }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables & Columns Row -->
+    <div class="tables-columns-container">
+      
+      <!-- Left Table: Source Pallet -->
+      <div class="table-pane-column">
+        <div class="pane-header-row">
+          <span class="pane-title text-primary-green">Source Pallet</span>
+          <div class="select-all-wrapper">
+            <input type="checkbox" id="selectAllSource" class="form-check-input-custom" [checked]="isSourceAllSelected()" (change)="toggleSourceAll($any($event.target).checked)" />
+            <label for="selectAllSource">All Select</label>
+          </div>
+        </div>
+        <div class="pane-table-scroll">
+          <table class="pane-table">
+            <thead>
+              <tr>
+                <th>Box/Location</th>
+                <th>Pallet No</th>
+                <th>Sku Id</th>
+                <th>SKU Description</th>
+                <th>Qty (CS)</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pallet of sourcePallets(); track pallet.palletNo; let idx = $index) {
+                <tr [class.selected-row]="pallet.checked">
+                  <td>{{ pallet.controlName || pallet.boxId }}</td>
+                  <td>{{ pallet.palletNo }}</td>
+                  <td>{{ pallet.skuCode || pallet.skucode }}</td>
+                  <td>{{ pallet.skuName || pallet.skuname }}</td>
+                  <td>{{ pallet.qty || pallet.palletQty }}</td>
+                  <td class="text-center">
+                    <input type="checkbox" 
+                           [id]="'sourcePalletCheck_' + idx"
+                           [checked]="pallet.checked" 
+                           (change)="onPalletCheckChange(idx, $any($event.target).checked)"
+                           aria-label="Select Source Pallet" />
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="empty-state">No pallets found. Select Block, Arch, and Line above.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Table: Destination Location -->
+      <div class="table-pane-column">
+        <div class="pane-header-row justify-content-end">
+          <div class="select-all-wrapper">
+            <input type="checkbox" id="selectAllDest" class="form-check-input-custom" [checked]="isDestAllSelected()" (change)="toggleDestAll($any($event.target).checked)" />
+            <label for="selectAllDest">All Select</label>
+          </div>
+        </div>
+        <div class="pane-table-scroll">
+          <table class="pane-table">
+            <thead>
+              <tr>
+                <th>Box/Location</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (loc of destLocations(); track loc.boxId; let idx = $index) {
+                <tr [class.selected-row]="loc.checked">
+                  <td>{{ loc.controlName || loc.boxName }}</td>
+                  <td class="text-center">
+                    <input type="checkbox" 
+                           [id]="'destLocCheck_' + idx"
+                           [checked]="loc.checked" 
+                           (change)="onLocationCheckChange(idx, $any($event.target).checked)"
+                           aria-label="Select Destination Location" />
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="2" class="empty-state">No locations found. Select Block, Arch, and Line above.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions Section -->
+    <div class="bottom-actions-container">
+      <div class="vertical-actions-stack">
+        <button type="button" class="btn-action-main btn-transfer-action" (click)="onConfirmTransfer()" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Transferring...
+          } @else {
+            Transfer
+          }
+        </button>
+        <button type="button" class="btn-action-secondary btn-cancel-action" (click)="onReset()">
+          Cancel Transfer
         </button>
       </div>
-    </form>
+    </div>
+
   </div>
 </div>

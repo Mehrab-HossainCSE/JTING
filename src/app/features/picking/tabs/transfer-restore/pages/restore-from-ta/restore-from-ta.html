@@ -1,61 +1,181 @@
-<div class="card params-card shadow-sm border-0 rounded-3">
-  <div class="card-body p-4">
-    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
-      <span class="title-underline-main"></span>
-      Restore from Transition Area (TA)
-    </h3>
-    <form (ngSubmit)="onConfirmRestore()">
-      <div class="row g-3">
-        <!-- SKU Selection -->
-        <div class="col-md-6 filter-group">
-          <label for="skuSelectInput">Source SKU</label>
-          <select id="skuSelectInput" class="custom-select w-100" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event)" name="sku">
+<div class="restore-workspace-container">
+  <div class="restore-dashed-card">
+    
+    <!-- Top Filter Controls Grid -->
+    <div class="filter-controls-grid">
+      
+      <!-- Left (Source) Filters: SKU, Batch, Picker -->
+      <div class="filters-column-side">
+        <div class="form-group-custom">
+          <label for="skuSelect">SKU</label>
+          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event)">
             <option value="">Select SKU...</option>
             @for (sku of skuList(); track sku.skuCode) {
               <option [value]="sku.skuCode">{{ sku.skuCode }} - {{ sku.skuName }}</option>
             }
           </select>
         </div>
-
-        <!-- TA Selection -->
-        <div class="col-md-6 filter-group">
-          <label for="taSelectInput">Transition Area (TA)</label>
-          <select id="taSelectInput" class="custom-select w-100" [ngModel]="sourceTa()" (ngModelChange)="sourceTa.set($event)" name="ta">
-            <option value="">Select Transition Area...</option>
-            @for (ta of taList(); track ta.id) {
-              <option [value]="ta.id">{{ ta.name }}</option>
+        
+        <div class="form-group-custom">
+          <label for="batchSelect">Batch</label>
+          <select id="batchSelect" class="form-select-custom" [ngModel]="selectedBatch()" (ngModelChange)="selectedBatch.set($event)">
+            <option value="">Select Batch...</option>
+            @for (b of batchList(); track b) {
+              <option [value]="b">{{ b }}</option>
             }
           </select>
         </div>
-
-        <!-- Pallet Number -->
-        <div class="col-md-6 filter-group">
-          <label for="palletNoInput">Pallet Number</label>
-          <input id="palletNoInput" type="text" class="form-control" placeholder="PLT-XXXX" [ngModel]="palletNo()" (ngModelChange)="palletNo.set($event)" name="pallet" />
-        </div>
-
-        <!-- Destination Location -->
-        <div class="col-md-6 filter-group">
-          <label for="destLocationInput">Destination Location</label>
-          <input id="destLocationInput" type="text" class="form-control" placeholder="A-01-A" [ngModel]="destLocation()" (ngModelChange)="destLocation.set($event)" name="dest" />
-        </div>
-
-        <!-- Restore Qty -->
-        <div class="col-md-6 filter-group">
-          <label for="qtyInput">Restore Quantity</label>
-          <input id="qtyInput" type="number" class="form-control" placeholder="0" [ngModel]="restoreQty()" (ngModelChange)="restoreQty.set($event)" name="qty" />
+        
+        <div class="form-group-custom">
+          <label for="pickerSelect">Picker</label>
+          <select id="pickerSelect" class="form-select-custom" [ngModel]="selectedPicker()" (ngModelChange)="selectedPicker.set($event)">
+            <option value="">Select Picker...</option>
+            @for (p of pickerList(); track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
         </div>
       </div>
 
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
-        <button type="submit" class="btn btn-save-main-compact">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Restore Stock
+      <!-- Right (Dest) Filters: Block, Arch, Line -->
+      <div class="filters-column-side ms-auto">
+        <div class="form-group-custom">
+          <label for="blockSelect">Block</label>
+          <select id="blockSelect" class="form-select-custom" [ngModel]="selectedBlock()" (ngModelChange)="selectedBlock.set($event)">
+            <option value="">Select Block...</option>
+            @for (b of blockList(); track b.blockId) {
+              <option [value]="b.blockId">{{ b.blockName }}</option>
+            }
+          </select>
+        </div>
+        
+        <div class="form-group-custom">
+          <label for="archSelect">Arch</label>
+          <select id="archSelect" class="form-select-custom" [ngModel]="selectedArch()" (ngModelChange)="selectedArch.set($event)">
+            <option value="">Select Arch...</option>
+            @for (a of archList(); track a.archId) {
+              <option [value]="a.archId">{{ a.archName }}</option>
+            }
+          </select>
+        </div>
+        
+        <div class="form-group-custom">
+          <label for="lineSelect">Line</label>
+          <select id="lineSelect" class="form-select-custom" [ngModel]="selectedLine()" (ngModelChange)="selectedLine.set($event)">
+            <option value="">Select Line...</option>
+            @for (l of lineList(); track l.lineId) {
+              <option [value]="l.lineId">{{ l.lineName }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables & Columns Row -->
+    <div class="tables-columns-container">
+      
+      <!-- Left Table: Source Pallet -->
+      <div class="table-pane-column">
+        <div class="pane-header-row">
+          <span class="pane-title text-primary-green">Source Pallet</span>
+          <div class="select-all-wrapper">
+            <input type="checkbox" id="selectAllSource" class="form-check-input-custom" [checked]="isSourceAllSelected()" (change)="toggleSourceAll($any($event.target).checked)" />
+            <label for="selectAllSource">All Select</label>
+          </div>
+        </div>
+        <div class="pane-table-scroll">
+          <table class="pane-table">
+            <thead>
+              <tr>
+                <th>Box/Location</th>
+                <th>Pallet No</th>
+                <th>Sku Id</th>
+                <th>SKU Description</th>
+                <th>Qty (CS)</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pallet of sourcePallets(); track pallet.palletNo; let idx = $index) {
+                <tr [class.selected-row]="pallet.checked">
+                  <td>{{ pallet.controlName }}</td>
+                  <td>{{ pallet.palletNo }}</td>
+                  <td>{{ pallet.skuCode }}</td>
+                  <td>{{ pallet.skuName }}</td>
+                  <td>{{ pallet.qty }}</td>
+                  <td class="text-center">
+                    <input type="checkbox" 
+                           [id]="'sourcePalletCheck_' + idx"
+                           [checked]="pallet.checked" 
+                           (change)="onPalletCheckChange(idx, $any($event.target).checked)"
+                           aria-label="Select Source Pallet" />
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="empty-state">No pallets found. Select SKU, Batch, and Picker above.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Table: Destination Location -->
+      <div class="table-pane-column">
+        <div class="pane-header-row justify-content-end">
+          <div class="select-all-wrapper">
+            <input type="checkbox" id="selectAllDest" class="form-check-input-custom" [checked]="isDestAllSelected()" (change)="toggleDestAll($any($event.target).checked)" />
+            <label for="selectAllDest">All Select</label>
+          </div>
+        </div>
+        <div class="pane-table-scroll">
+          <table class="pane-table">
+            <thead>
+              <tr>
+                <th>Box/Location</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (loc of destLocations(); track loc.boxId; let idx = $index) {
+                <tr [class.selected-row]="loc.checked">
+                  <td>{{ loc.controlName }}</td>
+                  <td class="text-center">
+                    <input type="checkbox" 
+                           [id]="'destLocCheck_' + idx"
+                           [checked]="loc.checked" 
+                           (change)="onLocationCheckChange(idx, $any($event.target).checked)"
+                           aria-label="Select Destination Location" />
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="2" class="empty-state">No locations found. Select Block, Arch, and Line above.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions Section -->
+    <div class="bottom-actions-container">
+      <div class="vertical-actions-stack">
+        <button type="button" class="btn-action-main btn-restore-action" (click)="onConfirmRestore()" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Restoring...
+          } @else {
+            Restore
+          }
+        </button>
+        <button type="button" class="btn-action-secondary btn-cancel-action" (click)="onReset()">
+          Cancel Restore
         </button>
       </div>
-    </form>
+    </div>
+
   </div>
 </div>

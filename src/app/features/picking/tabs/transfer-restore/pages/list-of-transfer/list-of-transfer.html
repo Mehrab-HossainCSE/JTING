@@ -1,67 +1,132 @@
-<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
-  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex flex-wrap justify-content-between align-items-center gap-3">
-    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
-      <span class="title-underline-main"></span>
-      Transfer Logs List
-    </h3>
+<div class="list-workspace-container">
+  <div class="list-dashed-card">
+    
+    <!-- Top Filter Controls Grid -->
+    <div class="filter-controls-grid">
+      
+      <!-- Left Filters: From Date, To Date, Type, Search Button -->
+      <div class="filters-left-panel">
+        <div class="form-group-custom">
+          <label for="fromDateInput">From Date</label>
+          <input id="fromDateInput" type="date" class="form-control-custom" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+        </div>
+        
+        <div class="form-group-custom">
+          <label for="toDateInput">To Date :</label>
+          <input id="toDateInput" type="date" class="form-control-custom" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+        </div>
+        
+        <div class="form-group-custom">
+          <label for="typeSelect">Type</label>
+          <select id="typeSelect" class="form-select-custom" [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+            <option value="All">All</option>
+            <option value="Transfer">Transfer</option>
+            <option value="Restore">Restore</option>
+          </select>
+        </div>
+        
+        <div class="form-group-custom align-self-end">
+          <button type="button" class="btn-action-main btn-search" (click)="onSearch()" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            } @else {
+              Search
+            }
+          </button>
+        </div>
+      </div>
 
-    <div class="data-list-filters-inline ms-auto">
-      <div class="d-flex align-items-end gap-2">
-        <div>
-          <label for="fromDateInput" class="small-label">FROM DATE</label>
-          <input id="fromDateInput" type="date" title="From Date" class="form-control form-control-sm" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      <!-- Right Panel Controls: Selected Transfer ID label & Print Button -->
+      <div class="filters-right-panel">
+        <div class="selected-id-label">
+          Selected Transfer ID: <span class="active-id-highlight">{{ selectedTransferId() }}</span>
         </div>
-        <div>
-          <label for="toDateInput" class="small-label">TO DATE</label>
-          <input id="toDateInput" type="date" title="To Date" class="form-control form-control-sm" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
-        </div>
-        <button id="searchButton" type="button" aria-label="Search" class="btn btn-save-main-compact px-3" (click)="onSearch()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
+        
+        <button type="button" class="btn-action-main btn-print" (click)="onPrint()" [disabled]="!selectedTransferId()">
+          Print
         </button>
       </div>
     </div>
-  </div>
 
-  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
-    <table class="premium-table">
-      <thead>
-        <tr>
-          <th>Transfer ID</th>
-          <th>Date</th>
-          <th>SKU Code</th>
-          <th>Description</th>
-          <th>Pallet No</th>
-          <th>From Location</th>
-          <th>To Location</th>
-          <th class="text-center">Qty</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of transferList(); track item.transferId) {
-          <tr class="table-row">
-            <td><span class="id-pill-light">{{ item.transferId }}</span></td>
-            <td>{{ item.transferDate }}</td>
-            <td><span class="id-pill-light">{{ item.skuCode }}</span></td>
-            <td><div class="text-truncate sku-name-cell">{{ item.skuDescription }}</div></td>
-            <td><span class="batch-badge-pill">{{ item.palletNo }}</span></td>
-            <td><span class="loc-pill">{{ item.fromLocation }}</span></td>
-            <td><span class="loc-pill text-success">{{ item.toLocation }}</span></td>
-            <td class="text-center fw-bold">{{ item.qty }}</td>
-            <td><span class="status-badge">{{ item.status }}</span></td>
-          </tr>
-        }
-        @if (transferList().length === 0) {
-          <tr>
-            <td colspan="9" class="empty-row text-center py-5">
-              <p class="text-muted mb-0">No transfers found in this date range.</p>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <!-- Tables & Columns Row -->
+    <div class="tables-columns-container">
+      
+      <!-- Left Table: Relocations List -->
+      <div class="table-pane-column">
+        <div class="pane-table-scroll">
+          <table class="pane-table">
+            <thead>
+              <tr>
+                <th>Relocation ID</th>
+                <th>Assigned Keeper</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of relocations(); track item.relocationId) {
+                <tr [class.selected-row]="selectedTransferId() === item.relocationId" (click)="selectRelocation(item.relocationId)">
+                  <td><span class="id-pill-light">{{ item.relocationId }}</span></td>
+                  <td>{{ item.keeper }}</td>
+                  <td>{{ item.date }}</td>
+                  <td>
+                    <span class="status-badge" [class.pending]="item.status === 'Pending'">
+                      {{ item.status }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" 
+                            class="btn-row-select" 
+                            [class.active]="selectedTransferId() === item.relocationId"
+                            (click)="selectRelocation(item.relocationId); $event.stopPropagation();"
+                            aria-label="Select Transfer">
+                      Select
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="empty-state">No transfers found.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Table: Transfer Details -->
+      <div class="table-pane-column">
+        <div class="pane-table-scroll">
+          <table class="pane-table">
+            <thead>
+              <tr>
+                <th>Source Box</th>
+                <th>Destination Box</th>
+                <th>SKU ID</th>
+                <th>SKU Description</th>
+                <th>Batch</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (detail of activeDetails(); track detail.sourceBox + detail.destBox + detail.skuId) {
+                <tr>
+                  <td>{{ detail.sourceBox }}</td>
+                  <td>{{ detail.destBox }}</td>
+                  <td><span class="sku-id-badge">{{ detail.skuId }}</span></td>
+                  <td><div class="text-truncate sku-desc-cell">{{ detail.skuDescription }}</div></td>
+                  <td>{{ detail.batch }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="empty-state">No details available. Select a transfer relocation.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
