@@ -1,0 +1,91 @@
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 15, 30, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.loader-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #0b132b;
+  padding: 18px 28px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 260px;
+}
+
+.loader-spinner-container {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.loader-spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-top-color: #3b82f6;
+  border-left-color: #3b82f6;
+  animation: spin-clockwise 1.2s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+}
+
+.loader-icon-inner {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: #0d1b2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.loader-svg-icon {
+  width: 22px;
+  height: 22px;
+  stroke: #3b82f6;
+}
+
+.loader-message {
+  color: #ffffff;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 3px 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.loader-subtext {
+  color: #8d99ae;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+@keyframes spin-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

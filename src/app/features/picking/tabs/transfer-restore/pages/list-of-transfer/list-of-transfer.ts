@@ -1,12 +1,22 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
+import { TransferRestoreService } from '../../../../../../core/services/pickingServices/transfer-restore.service';
+import { LoaderService } from '../../../../../../core/services/loader.service';
+import { ErrorHandlerService } from '../../../../../../core/services/error-handler.service';
 
 export interface RelocationLog {
+  id: number;
   relocationId: string;
   keeper: string;
   date: string;
   status: string;
+  button1?: string;
+  button2?: string;
+  button3?: string;
+  button4?: string;
 }
 
 export interface RelocationDetail {
@@ -25,55 +35,169 @@ export interface RelocationDetail {
   styleUrl: './list-of-transfer.scss'
 })
 export class ListOfTransfer implements OnInit {
+  private transferRestoreService = inject(TransferRestoreService);
+  private loaderService = inject(LoaderService);
+  private errorHandler = inject(ErrorHandlerService);
+  private toastr = inject(ToastrService);
+
   fromDate = signal(new Date().toISOString().split('T')[0]);
   toDate = signal(new Date().toISOString().split('T')[0]);
   selectedType = signal('All');
-  selectedTransferId = signal('RT-260601');
+  selectedTransferId = signal('');
   
   isLoading = signal(false);
 
-  // Mock list of relocation summaries
-  relocations = signal<RelocationLog[]>([
-    { relocationId: 'RT-260601', keeper: 'foysal', date: '06/22/2026', status: 'Completed' },
-    { relocationId: 'RT-260602', keeper: 'mehrab', date: '06/22/2026', status: 'Completed' },
-    { relocationId: 'RT-260603', keeper: 'sohel', date: '06/22/2026', status: 'Pending' }
-  ]);
+  // List of relocation summaries
+  relocations = signal<RelocationLog[]>([]);
 
-  // Mock detail mappings keyed by relocationId
-  detailsMap = signal<{ [key: string]: RelocationDetail[] }>({
-    'RT-260601': [
-      { sourceBox: 'N1A14L05B01', destBox: 'N1A14L05B03', skuId: '15109084', skuDescription: 'Sheikh Full Flavour 20s', batch: '41744513' },
-      { sourceBox: 'N1A14L05B02', destBox: 'N1A14L05B04', skuId: '15109085', skuDescription: 'Gold Leaf Premium 20s', batch: '41744514' }
-    ],
-    'RT-260602': [
-      { sourceBox: 'TA-01-B01', destBox: 'N1A15L02B01', skuId: '15109086', skuDescription: 'Benson & Hedges Light 20s', batch: '41744515' }
-    ],
-    'RT-260603': [
-      { sourceBox: 'TA-02-B02', destBox: 'N1A15L02B02', skuId: '15109084', skuDescription: 'Sheikh Full Flavour 20s', batch: '41744513' }
-    ]
-  });
+  // Selected relocation details
+  activeDetails = signal<RelocationDetail[]>([]);
 
-  // Computed details for the right-side grid
-  activeDetails = computed(() => {
-    const activeId = this.selectedTransferId();
-    return this.detailsMap()[activeId] || [];
-  });
-
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Initial search on load
+    this.onSearch();
+  }
 
   onSearch(): void {
+    const from = this.fromDate();
+    const to = this.toDate();
+    const typeValue = this.selectedType() === 'All' ? 'All' : this.selectedType();
+
     this.isLoading.set(true);
-    setTimeout(() => {
-      this.isLoading.set(false);
-    }, 600);
+    this.loaderService.show('Searching transfers...');
+
+    this.transferRestoreService.getProgressList(from, to, typeValue).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        this.loaderService.hide();
+        if (res.success && res.data) {
+          const mapped = res.data.map((item: any) => ({
+            id: item.id,
+            relocationId: item.transferNo || item.restoreNo || item.relocationId || '--',
+            keeper: item.pickerName || item.keeper || '--',
+            date: item.date || item.createDate || '--',
+            status: item.statusResult || item.status || '--',
+            button1: item.button1,
+            button2: item.button2,
+            button3: item.button3,
+            button4: item.button4
+          }));
+          this.relocations.set(mapped);
+          this.selectedTransferId.set('');
+          this.activeDetails.set([]);
+        } else {
+          this.relocations.set([]);
+          this.selectedTransferId.set('');
+          this.activeDetails.set([]);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.loaderService.hide();
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
   }
 
   selectRelocation(relocationId: string): void {
+    if (!relocationId) return;
     this.selectedTransferId.set(relocationId);
+    
+    this.loaderService.show('Loading transfer details...');
+    this.transferRestoreService.getDetails(relocationId).subscribe({
+      next: (res) => {
+        this.loaderService.hide();
+        if (res.success && res.data) {
+          const mapped = res.data.map((d: any) => ({
+            sourceBox: d.sourceBox || d.sourceBoxLocation || d.controlName || '--',
+            destBox: d.destBox || d.destinationBox || d.boxName || d.toBoxId || '--',
+            skuId: d.skuId || d.skuCode || d.skucode || '--',
+            skuDescription: d.skuDescription || d.skuName || d.skuname || '--',
+            batch: d.batch || d.batchNo || '--'
+          }));
+          this.activeDetails.set(mapped);
+        } else {
+          this.activeDetails.set([]);
+        }
+      },
+      error: (err) => {
+        this.loaderService.hide();
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
+  }
+
+  onActionButtonClick(buttonName: string, item: RelocationLog): void {
+    if (buttonName === 'Done') {
+      this.confirmComplete(item.id);
+    } else if (buttonName === 'Print') {
+      this.onPrintItem(item.relocationId);
+    } else {
+      this.toastr.info(`Action "${buttonName}" clicked for Relocation: ${item.relocationId}`, 'Info');
+    }
+  }
+
+  confirmComplete(id: number): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to mark this transfer/restore as completed?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#52b788',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, complete it',
+      cancelButtonText: 'No, cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loaderService.show('Completing transfer...');
+        this.transferRestoreService.complete(id).subscribe({
+          next: (res) => {
+            this.loaderService.hide();
+            if (res.success) {
+              this.toastr.success(res.message || 'Completed successfully.', 'Success');
+              this.onSearch(); // Refresh list
+            } else {
+              this.toastr.error(res.message || 'Failed to complete.', 'Error');
+            }
+          },
+          error: (err) => {
+            this.loaderService.hide();
+            this.errorHandler.handleErrorWithToster(err);
+          }
+        });
+      }
+    });
+  }
+
+  onPrintItem(relocationId: string): void {
+    this.selectedTransferId.set(relocationId);
+    // Give a micro-delay for data binding before triggering print
+    setTimeout(() => {
+      window.print();
+    }, 150);
   }
 
   onPrint(): void {
-    console.log('Printing Transfer Receipt for ID:', this.selectedTransferId());
-    window.print();
+    if (this.selectedTransferId()) {
+      window.print();
+    }
+  }
+
+  getButtonIcon(buttonName: string): string {
+    if (!buttonName) return '';
+    const name = buttonName.toLowerCase();
+    if (name.includes('done') || name.includes('complete')) {
+      return 'bi-check-lg';
+    }
+    if (name.includes('edit') || name.includes('update')) {
+      return 'bi-pencil-square';
+    }
+    if (name.includes('delete') || name.includes('remove') || name.includes('trash')) {
+      return 'bi-trash';
+    }
+    if (name.includes('print')) {
+      return 'bi-printer';
+    }
+    return 'bi-question-circle';
   }
 }

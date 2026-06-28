@@ -101,6 +101,9 @@ JTING is a modern warehouse/inventory management application built with **Angula
 - **Auth:** Token-based authentication (JWT) stored in `localStorage` via `StorageService`.
 - **Navigation:** Dynamic sidebar based on user roles and permissions fetched from the backend.
 - **Notifications:** Use `ToastrService` for success/error feedback.
+- **Global Loading Spinner:** Use `LoaderService` and `LoaderComponent` to show a screen-blocking loading overlay during long-running tasks.
+  *   **Setup**: Declared globally once in `AppComponent` (`app.component.ts` and `app.html`).
+  *   **Usage**: Sub-components do NOT need to import `LoaderComponent` or place `<app-loader />` in their templates. Simply inject `LoaderService` and call `show(message?)` to show the loader, and `hide()` to dismiss it.
 
 ## VS Code Integration & Troubleshooting
 

@@ -76,13 +76,36 @@
                     </span>
                   </td>
                   <td class="text-center">
-                    <button type="button" 
-                            class="btn-row-select" 
-                            [class.active]="selectedTransferId() === item.relocationId"
-                            (click)="selectRelocation(item.relocationId); $event.stopPropagation();"
-                            aria-label="Select Transfer">
-                      Select
-                    </button>
+                    <div class="actions-buttons-wrapper">
+                      @if (item.button1) {
+                        <button type="button" class="btn-action-done" 
+                                (click)="onActionButtonClick(item.button1, item); $event.stopPropagation();"
+                                [title]="item.button1">
+                          <i [class]="'bi ' + getButtonIcon(item.button1)"></i>
+                        </button>
+                      }
+                      @if (item.button2) {
+                        <button type="button" class="btn-action-edit" 
+                                (click)="onActionButtonClick(item.button2, item); $event.stopPropagation();"
+                                [title]="item.button2">
+                          <i [class]="'bi ' + getButtonIcon(item.button2)"></i>
+                        </button>
+                      }
+                      @if (item.button3) {
+                        <button type="button" class="btn-action-delete" 
+                                (click)="onActionButtonClick(item.button3, item); $event.stopPropagation();"
+                                [title]="item.button3">
+                          <i [class]="'bi ' + getButtonIcon(item.button3)"></i>
+                        </button>
+                      }
+                      @if (item.button4) {
+                        <button type="button" class="btn-action-print-row" 
+                                (click)="onActionButtonClick(item.button4, item); $event.stopPropagation();"
+                                [title]="item.button4">
+                          <i [class]="'bi ' + getButtonIcon(item.button4)"></i>
+                        </button>
+                      }
+                    </div>
                   </td>
                 </tr>
               } @empty {

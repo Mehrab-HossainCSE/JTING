@@ -1,7 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { ApiResponse } from '../../../../../../core/models/ApiResponse.model';
@@ -12,36 +11,34 @@ import { ArchService } from '../../../../../../core/services/setupServices/arch-
 import { LineService } from '../../../../../../core/services/setupServices/line-service';
 import { BoxService } from '../../../../../../core/services/setupServices/box-service';
 import { UserService } from '../../../../../../core/services/userManageServices/user-service';
+import { SkuService } from '../../../../../../core/services/skuServices/sku-service';
+import { TransferRestoreService } from '../../../../../../core/services/pickingServices/transfer-restore.service';
 import { ErrorHandlerService } from '../../../../../../core/services/error-handler.service';
+import { AuthService } from '../../../../../../core/services/auth.service';
 
 // Model Imports
 import { Block } from '../../../../../../core/models/setups/block/block';
 import { Arch } from '../../../../../../core/models/setups/arch/arch';
 import { Line } from '../../../../../../core/models/setups/line/line';
-import { Box } from '../../../../../../core/models/setups/box/box';
 import { UserManage } from '../../../../../../core/models/userManage/user.model';
-import { environment } from '../../../../../../../environments/environment';
-import { TransferRestoreService } from '../../../../../../core/services/pickingServices/transfer-restore.service';
-import { SaveTransferRequest, TransferRestoreItem } from '../../../../../../core/models/picking/transfer-restore';
-import { AuthService } from '../../../../../../core/services/auth.service';
+import { TransferRestoreItem, SaveRestoreRequest } from '../../../../../../core/models/picking/transfer-restore';
 import { LoaderService } from '../../../../../../core/services/loader.service';
 
-
 @Component({
-  selector: 'app-transfer',
+  selector: 'app-restore-from-pa',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './transfer.html',
-  styleUrl: './transfer.scss'
+  templateUrl: './restore-from-pa.html',
+  styleUrl: './restore-from-pa.scss'
 })
-export class Transfer implements OnInit {
-  private http = inject(HttpClient);
+export class RestoreFromPa implements OnInit {
   private toastr = inject(ToastrService);
   private blockService = inject(BlockService);
   private archService = inject(ArchService);
   private lineService = inject(LineService);
   private boxService = inject(BoxService);
   private userService = inject(UserService);
+  private skuService = inject(SkuService);
   private transferRestoreService = inject(TransferRestoreService);
   private errorHandler = inject(ErrorHandlerService);
   private authService = inject(AuthService);
@@ -49,28 +46,28 @@ export class Transfer implements OnInit {
 
   isLoading = signal(false);
 
-  // Common setups
-  blocks = signal<Block[]>([]);
-  users = signal<UserManage[]>([]);
+  // Selected filter values
+  selectedSku = signal('');
+  selectedBatch = signal('');
   selectedPicker = signal('');
+  selectedBlock = signal('');
+  selectedArch = signal('');
+  selectedLine = signal('');
 
-  // Source (Left) Panel Signals
-  sourceSelectedBlock = signal('');
-  sourceSelectedArch = signal('');
-  sourceSelectedLine = signal('');
-  sourceArchs = signal<Arch[]>([]);
-  sourceLines = signal<Line[]>([]);
+  // Dropdown Lists
+  skuList = signal<{ skuCode: string; skuName: string }[]>([]);
+  batchList = signal<string[]>([]);
+  users = signal<UserManage[]>([]);
+  blocks = signal<Block[]>([]);
+  archList = signal<Arch[]>([]);
+  lineList = signal<Line[]>([]);
+
+  // Raw and filtered pallets
+  rawPallets = signal<TransferRestoreItem[]>([]);
   sourcePallets = signal<any[]>([]);
-
-  // Destination (Right) Panel Signals
-  destSelectedBlock = signal('');
-  destSelectedArch = signal('');
-  destSelectedLine = signal('');
-  destArchs = signal<Arch[]>([]);
-  destLines = signal<Line[]>([]);
   destLocations = signal<any[]>([]);
 
-  // Computed checks for select-all toggles
+  // Computed checkboxes states
   isSourceAllSelected = computed(() => {
     const list = this.sourcePallets();
     if (list.length === 0) return false;
@@ -86,20 +83,18 @@ export class Transfer implements OnInit {
   ngOnInit(): void {
     this.loadBlocks();
     this.loadUsers();
+    this.loadSkus();
 
     const loggedInUser = this.authService.getLocalStorageUserName();
     if (loggedInUser) {
       this.selectedPicker.set(loggedInUser);
     }
-
   }
 
   // Load Initial Shared Data
   loadBlocks(): void {
-    this.loaderService.show('Loading blocks...');
     this.blockService.getAll().subscribe({
       next: (res) => {
-        this.loaderService.hide();
         if (res.success && res.data) {
           this.blocks.set(res.data);
         } else {
@@ -111,10 +106,8 @@ export class Transfer implements OnInit {
   }
 
   loadUsers(): void {
-    this.loaderService.show('Loading users...');
     this.userService.getAll().subscribe({
       next: (res) => {
-        this.loaderService.hide();
         if (res.success && res.data) {
           this.users.set(res.data.filter(u => u.active));
         } else {
@@ -125,66 +118,44 @@ export class Transfer implements OnInit {
     });
   }
 
-  // Cascading Logic - Left (Source) Panel
-  onSourceBlockChange(blockId: string): void {
-    this.sourceSelectedBlock.set(blockId);
-    this.sourceSelectedArch.set('');
-    this.sourceSelectedLine.set('');
-    this.sourceArchs.set([]);
-    this.sourceLines.set([]);
-    this.sourcePallets.set([]);
-
-    if (blockId) {
-      this.loaderService.show('Loading archs...');
-      this.archService.getByBlockId(blockId).subscribe({
-        next: (res) => {
-          this.loaderService.hide();
-          if (res.success && res.data) {
-            this.sourceArchs.set(res.data);
-          }
+  loadSkus(): void {
+    this.skuService.getAll().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.skuList.set(res.data.map(sku => ({ skuCode: sku.skucode, skuName: sku.skuname })));
+        } else {
+          this.toastr.error(res.message || 'Failed to load SKUs.', 'Error');
         }
-      });
-    }
+      },
+      error: (err) => this.errorHandler.handleErrorWithToster(err)
+    });
   }
 
-  onSourceArchChange(archId: string): void {
-    this.sourceSelectedArch.set(archId);
-    this.sourceSelectedLine.set('');
-    this.sourceLines.set([]);
+  // Cascading Logic - Left (Source) Filters
+  onSkuChange(skuCode: string): void {
+    this.selectedSku.set(skuCode);
+    this.selectedBatch.set('');
+    this.batchList.set([]);
+    this.rawPallets.set([]);
     this.sourcePallets.set([]);
 
-    if (archId) {
-      this.loaderService.show('Loading lines...');
-      this.lineService.getByArchId(archId).subscribe({
+    if (skuCode) {
+      this.isLoading.set(true);
+      this.loaderService.show('Loading batches...');
+      this.transferRestoreService.getPickingSkuBatches(skuCode).subscribe({
         next: (res) => {
+          this.isLoading.set(false);
           this.loaderService.hide();
           if (res.success && res.data) {
-            this.sourceLines.set(res.data);
-          }
-        }
-      });
-    }
-  }
-
-  onSourceLineChange(lineId: string): void {
-    this.sourceSelectedLine.set(lineId);
-    this.sourcePallets.set([]);
-
-    if (lineId) {
-      this.loaderService.show('Loading source locations...');
-      const numericLineId = Number(lineId) || 0;
-      const numericArchId = Number(this.sourceSelectedArch()) || 0;
-
-      this.transferRestoreService.getSourceLocations(numericLineId, numericArchId, '').subscribe({
-        next: (res) => {
-          this.loaderService.hide();
-          if (res.success && res.data) {
-            this.sourcePallets.set(res.data.map(p => ({ ...p, checked: false })));
+            this.rawPallets.set(res.data);
+            const uniqueBatches = [...new Set(res.data.map((item: any) => item.batchNo).filter(b => !!b))];
+            this.batchList.set(uniqueBatches as string[]);
           } else {
-            this.toastr.error(res.message || 'Failed to load pallets in this line.', 'Error');
+            this.toastr.error(res.message || 'Failed to load batches for the selected SKU.', 'Error');
           }
         },
         error: (err) => {
+          this.isLoading.set(false);
           this.loaderService.hide();
           this.errorHandler.handleErrorWithToster(err);
         }
@@ -192,66 +163,104 @@ export class Transfer implements OnInit {
     }
   }
 
-  // Cascading Logic - Right (Destination) Panel
-  onDestBlockChange(blockId: string): void {
-    this.destSelectedBlock.set(blockId);
-    this.destSelectedArch.set('');
-    this.destSelectedLine.set('');
-    this.destArchs.set([]);
-    this.destLines.set([]);
+  onBatchChange(batchNo: string): void {
+    this.selectedBatch.set(batchNo);
+    this.sourcePallets.set([]);
+
+    if (batchNo) {
+      this.isLoading.set(true);
+      this.loaderService.show('Loading pallets...');
+      const skuCode = this.selectedSku();
+
+      this.transferRestoreService.getPickingSkuPallets(skuCode, '', batchNo).subscribe({
+        next: (res) => {
+          this.isLoading.set(false);
+          this.loaderService.hide();
+          if (res.success && res.data) {
+            // Find selected SKU's name from skuList
+            const selectedSkuObj = this.skuList().find(s => s.skuCode === skuCode);
+            const skuName = selectedSkuObj ? selectedSkuObj.skuName : '';
+
+            this.sourcePallets.set(res.data.map((p: any) => ({
+              ...p,
+              controlName: p.controlName || p.sourceBoxLocation || '--',
+              skuCode: p.skuCode || p.skucode || skuCode,
+              skuName: p.skuName || p.skuname || skuName,
+              checked: false
+            })));
+          } else {
+            this.toastr.error(res.message || 'Failed to load Pallets.', 'Error');
+          }
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.loaderService.hide();
+          this.errorHandler.handleErrorWithToster(err);
+        }
+      });
+    }
+  }
+
+  // Cascading Logic - Right (Destination) Filters
+  onBlockChange(blockId: string): void {
+    this.selectedBlock.set(blockId);
+    this.selectedArch.set('');
+    this.selectedLine.set('');
+    this.archList.set([]);
+    this.lineList.set([]);
     this.destLocations.set([]);
 
     if (blockId) {
-      this.loaderService.show('Loading archs...');
       this.archService.getByBlockId(blockId).subscribe({
         next: (res) => {
-          this.loaderService.hide();
           if (res.success && res.data) {
-            this.destArchs.set(res.data);
+            this.archList.set(res.data);
           }
         }
       });
     }
   }
 
-  onDestArchChange(archId: string): void {
-    this.destSelectedArch.set(archId);
-    this.destSelectedLine.set('');
-    this.destLines.set([]);
+  onArchChange(archId: string): void {
+    this.selectedArch.set(archId);
+    this.selectedLine.set('');
+    this.lineList.set([]);
     this.destLocations.set([]);
 
     if (archId) {
-      this.loaderService.show('Loading lines...');
       this.lineService.getByArchId(archId).subscribe({
         next: (res) => {
-          this.loaderService.hide();
           if (res.success && res.data) {
-            this.destLines.set(res.data);
+            this.lineList.set(res.data);
           }
         }
       });
     }
   }
 
-  onDestLineChange(lineId: string): void {
-    this.destSelectedLine.set(lineId);
+  onLineChange(lineId: string): void {
+    this.selectedLine.set(lineId);
     this.destLocations.set([]);
 
     if (lineId) {
+      this.isLoading.set(true);
       this.loaderService.show('Loading destination locations...');
       const numericLineId = Number(lineId) || 0;
-      const numericArchId = Number(this.destSelectedArch()) || 0;
+      const numericArchId = Number(this.selectedArch()) || 0;
+      const batchNo = this.selectedBatch() || '';
 
-      this.transferRestoreService.getDestinationLocations(numericLineId, numericArchId, '').subscribe({
+      this.transferRestoreService.getRestoreDestinationLocations(numericLineId, numericArchId, batchNo).subscribe({
         next: (res) => {
+          this.isLoading.set(false);
           this.loaderService.hide();
           if (res.success && res.data) {
-            this.destLocations.set(res.data.map(b => ({ ...b, checked: false })));
+            this.destLocations.set(res.data.map((l: any) => ({ ...l, checked: false })));
           } else {
-            this.toastr.error(res.message || 'Failed to load locations in this line.', 'Error');
+            this.toastr.error(res.message || 'Failed to load destination locations.', 'Error');
           }
         },
         error: (err) => {
+          this.isLoading.set(false);
           this.loaderService.hide();
           this.errorHandler.handleErrorWithToster(err);
         }
@@ -259,7 +268,7 @@ export class Transfer implements OnInit {
     }
   }
 
-  // Checkbox Event Toggles
+  // Checkbox interactions
   toggleSourceAll(checked: boolean): void {
     this.sourcePallets.update(current => current.map(item => ({ ...item, checked })));
   }
@@ -288,8 +297,7 @@ export class Transfer implements OnInit {
     });
   }
 
-  // Submissions & Form Operations
-  onConfirmTransfer() {
+  onConfirmRestore() {
     const selectedPallets = this.sourcePallets().filter(p => p.checked);
     const selectedDests = this.destLocations().filter(l => l.checked);
 
@@ -298,7 +306,7 @@ export class Transfer implements OnInit {
       return;
     }
     if (!this.selectedPicker()) {
-      this.toastr.warning('Please select a Picker Name.', 'Warning');
+      this.toastr.warning('Please select a Picker.', 'Warning');
       return;
     }
     if (selectedDests.length === 0) {
@@ -307,26 +315,28 @@ export class Transfer implements OnInit {
     }
 
     Swal.fire({
-      title: 'You want to transfer?',
-      text: `Do you want to transfer ${selectedPallets.length} pallet(s) to ${selectedDests.length} location(s)?`,
+      title: 'You want to restore?',
+      text: `Do you want to restore ${selectedPallets.length} pallet(s) to ${selectedDests.length} location(s)?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#00bb31',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, transfer',
+      confirmButtonText: 'Yes, restore',
       cancelButtonText: 'No, cancel'
     }).then((result: SweetAlertResult) => {
       if (result.isConfirmed) {
-        this.executeTransfer(selectedPallets, selectedDests);
+        this.executeRestore(selectedPallets, selectedDests);
       }
     });
   }
 
-  private executeTransfer(pallets: any[], locations: any[]): void {
+  private executeRestore(pallets: any[], locations: any[]): void {
     this.isLoading.set(true);
-    this.loaderService.show('Executing transfer...');
+    this.loaderService.show('Restoring pallets...');
 
-    const payload: SaveTransferRequest = {
+    const activeSku = this.skuList().find(s => s.skuCode === this.selectedSku());
+
+    const payload: SaveRestoreRequest = {
       sourceList: pallets.map(p => {
         const { checked, ...rest } = p;
         return rest as TransferRestoreItem;
@@ -336,19 +346,22 @@ export class Transfer implements OnInit {
         return rest as TransferRestoreItem;
       }),
       pickerName: this.selectedPicker(),
-      transferNo: '',
+      restoreNo: '',
+      batchNo: this.selectedBatch(),
+      skuCode: this.selectedSku(),
+      skuName: activeSku?.skuName || '',
       isUpdate: false
     };
 
-    this.transferRestoreService.saveTransfer(payload).subscribe({
+    this.transferRestoreService.saveRestore(payload).subscribe({
       next: (res) => {
         this.isLoading.set(false);
         this.loaderService.hide();
         if (res.success) {
-          this.toastr.success(res.message || 'Stock transfer completed successfully.', 'Success');
+          this.toastr.success(res.message || 'Pallets restored successfully.', 'Success');
           this.onReset();
         } else {
-          this.toastr.error(res.message || 'Failed to complete stock transfer.', 'Error');
+          this.toastr.error(res.message || 'Failed to restore pallets.', 'Error');
         }
       },
       error: (err) => {
@@ -360,20 +373,25 @@ export class Transfer implements OnInit {
   }
 
   onReset() {
-    this.sourceSelectedBlock.set('');
-    this.sourceSelectedArch.set('');
-    this.sourceSelectedLine.set('');
-    this.sourceArchs.set([]);
-    this.sourceLines.set([]);
-    this.sourcePallets.set([]);
+    this.selectedSku.set('');
+    this.selectedBatch.set('');
+    this.selectedBlock.set('');
+    this.selectedArch.set('');
+    this.selectedLine.set('');
 
-    this.destSelectedBlock.set('');
-    this.destSelectedArch.set('');
-    this.destSelectedLine.set('');
-    this.destArchs.set([]);
-    this.destLines.set([]);
+    this.batchList.set([]);
+    this.rawPallets.set([]);
+    this.sourcePallets.set([]);
     this.destLocations.set([]);
 
-    this.selectedPicker.set('');
+    this.archList.set([]);
+    this.lineList.set([]);
+
+    const loggedInUser = this.authService.getLocalStorageUserName();
+    if (loggedInUser) {
+      this.selectedPicker.set(loggedInUser);
+    } else {
+      this.selectedPicker.set('');
+    }
   }
 }

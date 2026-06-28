@@ -25,7 +25,7 @@ export class TransferRestore implements OnInit {
 
   subTabs = [
     { name: 'Transfer', path: 'transfer' },
-    { name: 'Restore From TA', path: 'restore-from-TA' },
+    { name: 'Restore From PA', path: 'restore-from-pa' },
     { name: 'List Of Transfer', path: 'list-of-transfer' },
   ];
 

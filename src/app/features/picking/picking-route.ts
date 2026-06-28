@@ -24,7 +24,7 @@ export const PICKING_ROUTES: Routes = [
         children: [
           { path: '', redirectTo: 'transfer', pathMatch: 'full' },
           { path: 'transfer', loadComponent: () => import('./tabs/transfer-restore/pages/transfer/transfer').then(m => m.Transfer) },
-          { path: 'restore-from-TA', loadComponent: () => import('./tabs/transfer-restore/pages/restore-from-ta/restore-from-ta').then(m => m.RestoreFromTa) },
+          { path: 'restore-from-pa', loadComponent: () => import('./tabs/transfer-restore/pages/restore-from-pa/restore-from-pa').then(m => m.RestoreFromPa) },
           { path: 'list-of-transfer', loadComponent: () => import('./tabs/transfer-restore/pages/list-of-transfer/list-of-transfer').then(m => m.ListOfTransfer) }
         ]
       }

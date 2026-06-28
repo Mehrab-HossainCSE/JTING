@@ -1,37 +1,40 @@
 <div class="restore-workspace-container">
   <div class="restore-dashed-card">
-    
+
     <!-- Top Filter Controls Grid -->
     <div class="filter-controls-grid">
-      
+
       <!-- Left (Source) Filters: SKU, Batch, Picker -->
       <div class="filters-column-side">
         <div class="form-group-custom">
           <label for="skuSelect">SKU</label>
-          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event)">
+          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()"
+            (ngModelChange)="onSkuChange($event)">
             <option value="">Select SKU...</option>
             @for (sku of skuList(); track sku.skuCode) {
-              <option [value]="sku.skuCode">{{ sku.skuCode }} - {{ sku.skuName }}</option>
+            <option [value]="sku.skuCode">{{ sku.skuCode }} - {{ sku.skuName }}</option>
             }
           </select>
         </div>
-        
+
         <div class="form-group-custom">
           <label for="batchSelect">Batch</label>
-          <select id="batchSelect" class="form-select-custom" [ngModel]="selectedBatch()" (ngModelChange)="selectedBatch.set($event)">
+          <select id="batchSelect" class="form-select-custom" [ngModel]="selectedBatch()"
+            (ngModelChange)="onBatchChange($event)" [disabled]="!selectedSku()">
             <option value="">Select Batch...</option>
             @for (b of batchList(); track b) {
-              <option [value]="b">{{ b }}</option>
+            <option [value]="b">{{ b }}</option>
             }
           </select>
         </div>
-        
+
         <div class="form-group-custom">
           <label for="pickerSelect">Picker</label>
-          <select id="pickerSelect" class="form-select-custom" [ngModel]="selectedPicker()" (ngModelChange)="selectedPicker.set($event)">
+          <select id="pickerSelect" class="form-select-custom" [ngModel]="selectedPicker()"
+            (ngModelChange)="selectedPicker.set($event)">
             <option value="">Select Picker...</option>
-            @for (p of pickerList(); track p) {
-              <option [value]="p">{{ p }}</option>
+            @for (u of users(); track u.id) {
+            <option [value]="u.userName">{{ u.fullName || u.userName }}</option>
             }
           </select>
         </div>
@@ -41,30 +44,33 @@
       <div class="filters-column-side ms-auto">
         <div class="form-group-custom">
           <label for="blockSelect">Block</label>
-          <select id="blockSelect" class="form-select-custom" [ngModel]="selectedBlock()" (ngModelChange)="selectedBlock.set($event)">
+          <select id="blockSelect" class="form-select-custom" [ngModel]="selectedBlock()"
+            (ngModelChange)="onBlockChange($event)">
             <option value="">Select Block...</option>
-            @for (b of blockList(); track b.blockId) {
-              <option [value]="b.blockId">{{ b.blockName }}</option>
+            @for (b of blocks(); track b.blockId) {
+            <option [value]="b.blockId">{{ b.blockName }}</option>
             }
           </select>
         </div>
-        
+
         <div class="form-group-custom">
           <label for="archSelect">Arch</label>
-          <select id="archSelect" class="form-select-custom" [ngModel]="selectedArch()" (ngModelChange)="selectedArch.set($event)">
+          <select id="archSelect" class="form-select-custom" [ngModel]="selectedArch()"
+            (ngModelChange)="onArchChange($event)" [disabled]="!selectedBlock()">
             <option value="">Select Arch...</option>
             @for (a of archList(); track a.archId) {
-              <option [value]="a.archId">{{ a.archName }}</option>
+            <option [value]="a.archId">{{ a.archName }}</option>
             }
           </select>
         </div>
-        
+
         <div class="form-group-custom">
           <label for="lineSelect">Line</label>
-          <select id="lineSelect" class="form-select-custom" [ngModel]="selectedLine()" (ngModelChange)="selectedLine.set($event)">
+          <select id="lineSelect" class="form-select-custom" [ngModel]="selectedLine()"
+            (ngModelChange)="onLineChange($event)" [disabled]="!selectedArch()">
             <option value="">Select Line...</option>
             @for (l of lineList(); track l.lineId) {
-              <option [value]="l.lineId">{{ l.lineName }}</option>
+            <option [value]="l.lineId">{{ l.lineName }}</option>
             }
           </select>
         </div>
@@ -73,13 +79,14 @@
 
     <!-- Tables & Columns Row -->
     <div class="tables-columns-container">
-      
+
       <!-- Left Table: Source Pallet -->
       <div class="table-pane-column">
         <div class="pane-header-row">
           <span class="pane-title text-primary-green">Source Pallet</span>
           <div class="select-all-wrapper">
-            <input type="checkbox" id="selectAllSource" class="form-check-input-custom" [checked]="isSourceAllSelected()" (change)="toggleSourceAll($any($event.target).checked)" />
+            <input type="checkbox" id="selectAllSource" class="form-check-input-custom"
+              [checked]="isSourceAllSelected()" (change)="toggleSourceAll($any($event.target).checked)" />
             <label for="selectAllSource">All Select</label>
           </div>
         </div>
@@ -96,25 +103,23 @@
               </tr>
             </thead>
             <tbody>
-              @for (pallet of sourcePallets(); track pallet.palletNo; let idx = $index) {
-                <tr [class.selected-row]="pallet.checked">
-                  <td>{{ pallet.controlName }}</td>
-                  <td>{{ pallet.palletNo }}</td>
-                  <td>{{ pallet.skuCode }}</td>
-                  <td>{{ pallet.skuName }}</td>
-                  <td>{{ pallet.qty }}</td>
-                  <td class="text-center">
-                    <input type="checkbox" 
-                           [id]="'sourcePalletCheck_' + idx"
-                           [checked]="pallet.checked" 
-                           (change)="onPalletCheckChange(idx, $any($event.target).checked)"
-                           aria-label="Select Source Pallet" />
-                  </td>
-                </tr>
+              @for (pallet of sourcePallets(); track idx; let idx = $index) {
+              <tr [class.selected-row]="pallet.checked">
+                <td>{{ pallet.controlName || '--' }}</td>
+                <td>{{ pallet.palletNo || '--' }}</td>
+                <td>{{ pallet.skuCode || '--' }}</td>
+                <td>{{ pallet. skuName || '--' }}</td>
+                <td>{{ pallet.qty || '--' }}</td>
+                <td class="text-center">
+                  <input type="checkbox" [id]="'sourcePalletCheck_' + idx" [checked]="pallet.checked"
+                    (change)="onPalletCheckChange(idx, $any($event.target).checked)"
+                    aria-label="Select Source Pallet" />
+                </td>
+              </tr>
               } @empty {
-                <tr>
-                  <td colspan="6" class="empty-state">No pallets found. Select SKU, Batch, and Picker above.</td>
-                </tr>
+              <tr>
+                <td colspan="6" class="empty-state">No pallets found. Select SKU, Batch, and Picker above.</td>
+              </tr>
               }
             </tbody>
           </table>
@@ -125,7 +130,8 @@
       <div class="table-pane-column">
         <div class="pane-header-row justify-content-end">
           <div class="select-all-wrapper">
-            <input type="checkbox" id="selectAllDest" class="form-check-input-custom" [checked]="isDestAllSelected()" (change)="toggleDestAll($any($event.target).checked)" />
+            <input type="checkbox" id="selectAllDest" class="form-check-input-custom" [checked]="isDestAllSelected()"
+              (change)="toggleDestAll($any($event.target).checked)" />
             <label for="selectAllDest">All Select</label>
           </div>
         </div>
@@ -139,20 +145,18 @@
             </thead>
             <tbody>
               @for (loc of destLocations(); track loc.boxId; let idx = $index) {
-                <tr [class.selected-row]="loc.checked">
-                  <td>{{ loc.controlName }}</td>
-                  <td class="text-center">
-                    <input type="checkbox" 
-                           [id]="'destLocCheck_' + idx"
-                           [checked]="loc.checked" 
-                           (change)="onLocationCheckChange(idx, $any($event.target).checked)"
-                           aria-label="Select Destination Location" />
-                  </td>
-                </tr>
+              <tr [class.selected-row]="loc.checked">
+                <td>{{ loc.controlName }}</td>
+                <td class="text-center">
+                  <input type="checkbox" [id]="'destLocCheck_' + idx" [checked]="loc.checked"
+                    (change)="onLocationCheckChange(idx, $any($event.target).checked)"
+                    aria-label="Select Destination Location" />
+                </td>
+              </tr>
               } @empty {
-                <tr>
-                  <td colspan="2" class="empty-state">No locations found. Select Block, Arch, and Line above.</td>
-                </tr>
+              <tr>
+                <td colspan="2" class="empty-state">No locations found. Select Block, Arch, and Line above.</td>
+              </tr>
               }
             </tbody>
           </table>
@@ -163,12 +167,13 @@
     <!-- Bottom Actions Section -->
     <div class="bottom-actions-container">
       <div class="vertical-actions-stack">
-        <button type="button" class="btn-action-main btn-restore-action" (click)="onConfirmRestore()" [disabled]="isLoading()">
+        <button type="button" class="btn-action-main btn-restore-action" (click)="onConfirmRestore()"
+          [disabled]="isLoading()">
           @if (isLoading()) {
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Restoring...
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Restoring...
           } @else {
-            Restore
+          Restore
           }
         </button>
         <button type="button" class="btn-action-secondary btn-cancel-action" (click)="onReset()">
