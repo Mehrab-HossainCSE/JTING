@@ -322,3 +322,28 @@
     }
   }
 }
+
+@media (max-width: 1450px) {
+  .filter-controls-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .tables-columns-container {
+    grid-template-columns: 1.3fr 1fr;
+    gap: 16px;
+  }
+
+  .pane-table {
+    font-size: 0.76rem;
+
+    thead tr th {
+      padding: 8px 6px;
+      font-size: 0.72rem;
+    }
+
+    tbody tr td {
+      padding: 8px 6px;
+    }
+  }
+}

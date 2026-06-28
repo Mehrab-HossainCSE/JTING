@@ -351,3 +351,50 @@
     background-color: #4b5563;
   }
 }
+
+@media (max-width: 1450px) {
+  .filter-controls-grid {
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .tables-columns-container {
+    grid-template-columns: 1.15fr 1.25fr;
+    gap: 12px;
+  }
+
+  .pane-table {
+    font-size: 0.76rem;
+
+    thead tr th {
+      padding: 8px 6px;
+      font-size: 0.72rem;
+    }
+
+    tbody tr td {
+      padding: 8px 6px;
+    }
+  }
+
+  .id-pill-light {
+    max-width: 110px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .actions-buttons-wrapper {
+    gap: 4px;
+  }
+
+  .btn-action-done,
+  .btn-action-edit,
+  .btn-action-delete,
+  .btn-action-print-row {
+    height: 22px;
+    width: 22px;
+    font-size: 0.75rem;
+  }
+}

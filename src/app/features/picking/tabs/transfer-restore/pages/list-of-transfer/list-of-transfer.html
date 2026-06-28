@@ -67,7 +67,7 @@
             <tbody>
               @for (item of relocations(); track item.relocationId) {
                 <tr [class.selected-row]="selectedTransferId() === item.relocationId" (click)="selectRelocation(item.relocationId)">
-                  <td><span class="id-pill-light">{{ item.relocationId }}</span></td>
+                  <td><span class="id-pill-light" [title]="item.relocationId">{{ item.relocationId }}</span></td>
                   <td>{{ item.keeper }}</td>
                   <td>{{ item.date }}</td>
                   <td>

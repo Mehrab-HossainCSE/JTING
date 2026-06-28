@@ -247,9 +247,11 @@ export class RestoreFromPa implements OnInit {
       this.loaderService.show('Loading destination locations...');
       const numericLineId = Number(lineId) || 0;
       const numericArchId = Number(this.selectedArch()) || 0;
+      const skuCode = this.selectedSku() || '';
       const batchNo = this.selectedBatch() || '';
+      const restoreNo = '';
 
-      this.transferRestoreService.getRestoreDestinationLocations(numericLineId, numericArchId, batchNo).subscribe({
+      this.transferRestoreService.getRestoreDestinationLocations(numericLineId, numericArchId, skuCode, restoreNo).subscribe({
         next: (res) => {
           this.isLoading.set(false);
           this.loaderService.hide();

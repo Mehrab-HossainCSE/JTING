@@ -73,10 +73,10 @@ export class ListOfTransfer implements OnInit {
         if (res.success && res.data) {
           const mapped = res.data.map((item: any) => ({
             id: item.id,
-            relocationId: item.transferNo || item.restoreNo || item.relocationId || '--',
-            keeper: item.pickerName || item.keeper || '--',
-            date: item.date || item.createDate || '--',
-            status: item.statusResult || item.status || '--',
+            relocationId: item.transferNo,
+            keeper: item.pickerName,
+            date: item.date,
+            status: item.statusResult,
             button1: item.button1,
             button2: item.button2,
             button3: item.button3,
@@ -109,11 +109,11 @@ export class ListOfTransfer implements OnInit {
         this.loaderService.hide();
         if (res.success && res.data) {
           const mapped = res.data.map((d: any) => ({
-            sourceBox: d.sourceBox || d.sourceBoxLocation || d.controlName || '--',
-            destBox: d.destBox || d.destinationBox || d.boxName || d.toBoxId || '--',
-            skuId: d.skuId || d.skuCode || d.skucode || '--',
-            skuDescription: d.skuDescription || d.skuName || d.skuname || '--',
-            batch: d.batch || d.batchNo || '--'
+            sourceBox: d.sourceBoxLocation,
+            destBox: d.destinationBoxLocation,
+            skuId: d.skucode,
+            skuDescription: d.skuname,
+            batch: d.batchNo
           }));
           this.activeDetails.set(mapped);
         } else {

@@ -28,9 +28,9 @@ export class TransferRestoreService {
     });
   }
 
-  getRestoreDestinationLocations(lineId: number, archId: number, restoreNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
+  getRestoreDestinationLocations(lineId: number, archId: number, skuCode: string, rstoreNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
     return this.http.get<ApiResponse<TransferRestoreItem[]>>(`${this.apiUrl}/RestoreDestinationLocations`, {
-      params: { lineId: lineId.toString(), archId: archId.toString(), restoreNo },
+      params: { lineId: lineId.toString(), archId: archId.toString(), skuCode: skuCode.toString(), rstoreNo: rstoreNo.toString() },
     });
   }
 
