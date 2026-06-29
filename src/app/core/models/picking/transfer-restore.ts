@@ -63,3 +63,23 @@ export interface PickingSkuBatch {
   skuCode?: string;
   [key: string]: any;
 }
+
+export interface RelocationLog {
+  id: number;
+  relocationId: string;
+  keeper: string;
+  date: string;
+  status: string;
+  button1?: string;
+  button2?: string;
+  button3?: string;
+  button4?: string;
+}
+
+export interface RelocationDetail {
+  sourceBox: string;
+  destBox: string;
+  skuId: string;
+  skuDescription: string;
+  batch: string;
+}

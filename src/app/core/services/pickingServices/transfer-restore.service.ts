@@ -72,6 +72,10 @@ export class TransferRestoreService {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Complete/${id}`, {});
   }
 
+  deleteTransferRestore(id: string | number): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/DeleteTransfer/${id}`, {});
+  }
+
   getProgress(id: string | number): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/Progress/${id}`);
   }

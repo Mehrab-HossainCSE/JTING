@@ -39,62 +39,43 @@ export class AssignRoleComponent implements OnInit {
   canView = computed(() => this.permissions().canView);
   canUpdate = computed(() => this.permissions().canUpdate);
 
-  flatMenuItems = computed(() => {
+  // Split sections into two columns
+  leftColumnSections = computed(() => {
     const sections = this.menuSections();
+    const half = Math.ceil(sections.length / 2);
+    return sections.slice(0, half);
+  });
+
+  rightColumnSections = computed(() => {
+    const sections = this.menuSections();
+    const half = Math.ceil(sections.length / 2);
+    return sections.slice(half);
+  });
+
+  // Flat items per column (for header checkbox states)
+  leftColumnItems = computed(() => {
     const flat: any[] = [];
-    sections.forEach(section => {
-      section.items.forEach((item: any) => {
-        // Use original item reference instead of spreading it to ensure two-way binding works
-        flat.push(item);
-      });
-    });
+    this.leftColumnSections().forEach(s => s.items.forEach((i: any) => flat.push(i)));
     return flat;
   });
 
-  totalItemsCount = computed(() => this.flatMenuItems().length);
-  totalActiveCount = computed(() => this.flatMenuItems().filter(i => i.isSelected).length);
-
-  leftColumnItems = computed(() => {
-    const items = this.flatMenuItems();
-    const half = Math.ceil(items.length / 2);
-    return items.slice(0, half);
-  });
-
   rightColumnItems = computed(() => {
-    const items = this.flatMenuItems();
-    const half = Math.ceil(items.length / 2);
-    return items.slice(half);
+    const flat: any[] = [];
+    this.rightColumnSections().forEach(s => s.items.forEach((i: any) => flat.push(i)));
+    return flat;
   });
 
-  allLeftView = computed(() => {
-    const items = this.leftColumnItems();
-    return items.length > 0 && items.every(item => item.view);
-  });
+  totalItemsCount = computed(() => this.leftColumnItems().length + this.rightColumnItems().length);
+  totalActiveCount = computed(() =>
+    [...this.leftColumnItems(), ...this.rightColumnItems()].filter(i => i.isSelected).length
+  );
 
-  allLeftAdd = computed(() => {
-    const items = this.leftColumnItems();
-    return items.length > 0 && items.every(item => item.add);
-  });
-
-  allLeftEdit = computed(() => {
-    const items = this.leftColumnItems();
-    return items.length > 0 && items.every(item => item.edit);
-  });
-
-  allRightView = computed(() => {
-    const items = this.rightColumnItems();
-    return items.length > 0 && items.every(item => item.view);
-  });
-
-  allRightAdd = computed(() => {
-    const items = this.rightColumnItems();
-    return items.length > 0 && items.every(item => item.add);
-  });
-
-  allRightEdit = computed(() => {
-    const items = this.rightColumnItems();
-    return items.length > 0 && items.every(item => item.edit);
-  });
+  allLeftView  = computed(() => this.leftColumnItems().length > 0 && this.leftColumnItems().every(i => i.view));
+  allLeftAdd   = computed(() => this.leftColumnItems().length > 0 && this.leftColumnItems().every(i => i.add));
+  allLeftEdit  = computed(() => this.leftColumnItems().length > 0 && this.leftColumnItems().every(i => i.edit));
+  allRightView = computed(() => this.rightColumnItems().length > 0 && this.rightColumnItems().every(i => i.view));
+  allRightAdd  = computed(() => this.rightColumnItems().length > 0 && this.rightColumnItems().every(i => i.add));
+  allRightEdit = computed(() => this.rightColumnItems().length > 0 && this.rightColumnItems().every(i => i.edit));
 
   ngOnInit(): void {
     this.loadPermissionsFromStorage();
@@ -116,7 +97,6 @@ export class AssignRoleComponent implements OnInit {
   }
 
   private loadPermissionsFromStorage(): void {
-    debugger;
     const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
     const userManagementMenu = menus?.find(
       (menu) => menu.name?.toUpperCase().includes('USER_MANAGEMENT') ||
@@ -191,7 +171,7 @@ export class AssignRoleComponent implements OnInit {
   onRoleChange(roleId: string): void {
     this.selectedRole.set(roleId);
     if (!roleId) return;
-    
+
     this.navMenuService.getNavMenusByRoleId(roleId).subscribe({
       next: (response) => {
         if (response && response.data) {
@@ -219,7 +199,7 @@ export class AssignRoleComponent implements OnInit {
     this.menuSections.update(sections => {
       sections.forEach(section => {
         let anyItemSelected = false;
-        
+
         section.items.forEach((item: any) => {
           const roleMenu = roleMenuMap.get(item.id);
           if (roleMenu) {
@@ -237,9 +217,9 @@ export class AssignRoleComponent implements OnInit {
           }
           if (item.isSelected) anyItemSelected = true;
         });
-        
+
         section.isSelected = anyItemSelected;
-        
+
         if (section.items.length > 0) {
           section.allView = section.items.every((i: any) => i.view);
           section.allAdd = section.items.every((i: any) => i.add);
@@ -251,71 +231,56 @@ export class AssignRoleComponent implements OnInit {
     });
   }
 
-  onSectionToggle(section: any) {
-    const isSelected = section.isSelected;
-    section.allView = isSelected;
-    section.allAdd = isSelected;
-    section.allEdit = isSelected;
-    section.allDelete = isSelected;
-    
-    section.items.forEach((item: any) => {
-      item.isSelected = isSelected;
-      item.view = isSelected;
-      item.add = isSelected;
-      item.edit = isSelected;
-      item.delete = isSelected;
-    });
-    
+  toggleSection(section: any): void {
+    section.isOpen = !section.isOpen;
     this.menuSections.update(sections => [...sections]);
   }
 
-  onPermissionToggle(section: any, permission: string) {
+  onPermissionToggle(section: any, permission: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
     const propName = 'all' + permission.charAt(0).toUpperCase() + permission.slice(1);
-    const isSelected = section[propName];
+    section[propName] = checked;
     section.items.forEach((item: any) => {
-      item[permission] = isSelected;
+      item[permission] = checked;
+      item.isSelected = item.view || item.add || item.edit || item.delete;
     });
-    
+    section.isSelected = section.items.some((i: any) => i.isSelected);
     this.menuSections.update(sections => [...sections]);
   }
 
-  onItemToggle(section: any, item: any) {
-    item.view = item.isSelected;
-    item.add = item.isSelected;
-    item.edit = item.isSelected;
-    item.delete = item.isSelected;
-    
-    this.menuSections.update(sections => [...sections]);
-    this.menuSections.update(sections => [...sections]);
-  }
-
-  togglePermission(item: any, permission: string) {
+  togglePermission(item: any, permission: string, section: any): void {
     if (!this.canUpdate()) return;
-    
-    // Toggle the specific permission
     item[permission] = !item[permission];
-    
-    // Auto-sync isSelected: if any permission is true, isSelected MUST be true
-    // if ALL permissions are false, isSelected MUST be false
     item.isSelected = item.view || item.add || item.edit || item.delete;
-    
+
+    section.isSelected = section.items.some((i: any) => i.isSelected);
+    section.allView = section.items.every((i: any) => i.view);
+    section.allAdd = section.items.every((i: any) => i.add);
+    section.allEdit = section.items.every((i: any) => i.edit);
+
     this.menuSections.update(sections => [...sections]);
   }
 
   toggleColumnPermission(column: 'left' | 'right', permission: 'view' | 'add' | 'edit', event: Event): void {
     if (!this.canUpdate()) return;
     const checked = (event.target as HTMLInputElement).checked;
-    const items = column === 'left' ? this.leftColumnItems() : this.rightColumnItems();
-    
-    items.forEach(item => {
-      item[permission] = checked;
-      item.isSelected = item.view || item.add || item.edit || item.delete;
+    const sections = column === 'left' ? this.leftColumnSections() : this.rightColumnSections();
+
+    this.menuSections.update(allSections => {
+      sections.forEach(section => {
+        const propName = 'all' + permission.charAt(0).toUpperCase() + permission.slice(1);
+        section[propName] = checked;
+        section.items.forEach((item: any) => {
+          item[permission] = checked;
+          item.isSelected = item.view || item.add || item.edit || item.delete;
+        });
+        section.isSelected = section.items.some((i: any) => i.isSelected);
+      });
+      return [...allSections];
     });
-    
-    this.menuSections.update(sections => [...sections]);
   }
 
-  selectAll() {
+  selectAll(): void {
     this.menuSections.update(sections => {
       sections.forEach(section => {
         section.isSelected = true;
@@ -335,7 +300,7 @@ export class AssignRoleComponent implements OnInit {
     });
   }
 
-  clearAll() {
+  clearAll(): void {
     this.menuSections.update(sections => {
       sections.forEach(section => {
         section.isSelected = false;
@@ -367,7 +332,6 @@ export class AssignRoleComponent implements OnInit {
       return;
     }
 
-    // Construct payload matching the expected nested NavMenu structure
     const payload = this.menuSections().map(section => ({
       id: section.id,
       name: section.name,

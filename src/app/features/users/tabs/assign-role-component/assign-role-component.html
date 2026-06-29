@@ -27,19 +27,6 @@
           </div>
 
           <div class="divider-v"></div>
-
-          <!-- <div class="filter-item">
-            <label for="copyFromSelect">Copy from</label>
-            <select id="copyFromSelect" class="premium-select">
-              <option value="" disabled>Select a Role</option>
-              <option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</option>
-            </select>
-          </div>
-
-          <button class="btn-copy" title="Copy configuration">
-            <i class="bi bi-arrow-repeat"></i>
-            <span>Copy</span>
-          </button> -->
         </div>
 
         <div class="status-badge">
@@ -50,6 +37,7 @@
 
     <div class="menu-distribution-container">
       <div class="distribution-columns">
+
         <!-- Left Column -->
         <div class="column">
           <div class="table-header">
@@ -73,39 +61,61 @@
               </div>
             </div>
           </div>
+
           <div class="table-body">
-            <div class="table-row" *ngFor="let item of leftColumnItems(); let i = index">
-              <div class="col-num">{{ i + 1 }}</div>
-              <div class="col-name">
-                <span class="indicator" [class.active]="item.isSelected"></span>
-                <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
-              </div>
-              <!-- <div class="col-active">
-                <label class="switch">
-                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)"
-                    [disabled]="!canUpdate()">
-                  <span class="slider round"></span>
-                </label>
-              </div> -->
-              <div class="col-actions">
-                <div class="action-icons">
-                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')"
-                    title="View Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')"
-                    title="Add Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-plus-circle"></i>
-                  </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')"
-                    title="Edit Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <!-- <button class="btn-action btn-delete-action" [class.active]="item.delete" (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-trash"></i>
-                  </button> -->
+            <div *ngFor="let section of leftColumnSections(); let si = index" class="section-group">
+
+              <!-- Section / Parent Row -->
+              <div class="section-row" (click)="toggleSection(section)">
+                <div class="col-num">
+                  <i class="bi" [class.bi-chevron-down]="section.isOpen" [class.bi-chevron-right]="!section.isOpen"></i>
+                </div>
+                <div class="col-name">
+                  <span class="section-name" [class.active]="section.isSelected">{{ section.title }}</span>
+                  <span class="section-badge">{{ section.items.length }}</span>
+                </div>
+                <div class="col-actions" (click)="$event.stopPropagation()">
+                  <div class="action-checkboxes">
+                    <div class="checkbox-wrapper">
+                      <input type="checkbox" [checked]="section.allView" (change)="onPermissionToggle(section, 'view', $event)" class="premium-checkbox" aria-label="Select all view for section" [disabled]="!canUpdate()">
+                    </div>
+                    <div class="checkbox-wrapper">
+                      <input type="checkbox" [checked]="section.allAdd" (change)="onPermissionToggle(section, 'add', $event)" class="premium-checkbox" aria-label="Select all add for section" [disabled]="!canUpdate()">
+                    </div>
+                    <div class="checkbox-wrapper">
+                      <input type="checkbox" [checked]="section.allEdit" (change)="onPermissionToggle(section, 'edit', $event)" class="premium-checkbox" aria-label="Select all edit for section" [disabled]="!canUpdate()">
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <!-- Child Rows -->
+              <div *ngIf="section.isOpen">
+                <div class="table-row" *ngFor="let item of section.items; let i = index">
+                  <div class="col-num">{{ i + 1 }}</div>
+                  <div class="col-name">
+                    <span class="indicator" [class.active]="item.isSelected"></span>
+                    <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
+                  </div>
+                  <div class="col-actions">
+                    <div class="action-icons">
+                      <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view', section)"
+                        title="View Permission" [disabled]="!canUpdate()">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add', section)"
+                        title="Add Permission" [disabled]="!canUpdate()">
+                        <i class="bi bi-plus-circle"></i>
+                      </button>
+                      <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit', section)"
+                        title="Edit Permission" [disabled]="!canUpdate()">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -133,43 +143,65 @@
               </div>
             </div>
           </div>
+
           <div class="table-body">
-            <div class="table-row" *ngFor="let item of rightColumnItems(); let i = index">
-              <div class="col-num">{{ leftColumnItems().length + i + 1 }}</div>
-              <div class="col-name">
-                <span class="indicator" [class.active]="item.isSelected"></span>
-                <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
-              </div>
-              <!-- <div class="col-active">
-                <label class="switch">
-                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="onItemToggle(null, item)"
-                    [disabled]="!canUpdate()">
-                  <span class="slider round"></span>
-                </label>
-              </div> -->
-              <div class="col-actions">
-                <div class="action-icons">
-                  <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view')"
-                    title="View Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add')"
-                    title="Add Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-plus-circle"></i>
-                  </button>
-                  <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit')"
-                    title="Edit Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <!-- <button class="btn-action btn-delete-action" [class.active]="item.delete"
-                    (click)="togglePermission(item, 'delete')" title="Delete Permission" [disabled]="!canUpdate()">
-                    <i class="bi bi-trash"></i>
-                  </button> -->
+            <div *ngFor="let section of rightColumnSections(); let si = index" class="section-group">
+
+              <!-- Section / Parent Row -->
+              <div class="section-row" (click)="toggleSection(section)">
+                <div class="col-num">
+                  <i class="bi" [class.bi-chevron-down]="section.isOpen" [class.bi-chevron-right]="!section.isOpen"></i>
+                </div>
+                <div class="col-name">
+                  <span class="section-name" [class.active]="section.isSelected">{{ section.title }}</span>
+                  <span class="section-badge">{{ section.items.length }}</span>
+                </div>
+                <div class="col-actions" (click)="$event.stopPropagation()">
+                  <div class="action-checkboxes">
+                    <div class="checkbox-wrapper">
+                      <input type="checkbox" [checked]="section.allView" (change)="onPermissionToggle(section, 'view', $event)" class="premium-checkbox" aria-label="Select all view for section" [disabled]="!canUpdate()">
+                    </div>
+                    <div class="checkbox-wrapper">
+                      <input type="checkbox" [checked]="section.allAdd" (change)="onPermissionToggle(section, 'add', $event)" class="premium-checkbox" aria-label="Select all add for section" [disabled]="!canUpdate()">
+                    </div>
+                    <div class="checkbox-wrapper">
+                      <input type="checkbox" [checked]="section.allEdit" (change)="onPermissionToggle(section, 'edit', $event)" class="premium-checkbox" aria-label="Select all edit for section" [disabled]="!canUpdate()">
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <!-- Child Rows -->
+              <div *ngIf="section.isOpen">
+                <div class="table-row" *ngFor="let item of section.items; let i = index">
+                  <div class="col-num">{{ i + 1 }}</div>
+                  <div class="col-name">
+                    <span class="indicator" [class.active]="item.isSelected"></span>
+                    <span class="name-text" [class.active]="item.isSelected">{{ item.name }}</span>
+                  </div>
+                  <div class="col-actions">
+                    <div class="action-icons">
+                      <button class="btn-action" [class.active]="item.view" (click)="togglePermission(item, 'view', section)"
+                        title="View Permission" [disabled]="!canUpdate()">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn-action" [class.active]="item.add" (click)="togglePermission(item, 'add', section)"
+                        title="Add Permission" [disabled]="!canUpdate()">
+                        <i class="bi bi-plus-circle"></i>
+                      </button>
+                      <button class="btn-action" [class.active]="item.edit" (click)="togglePermission(item, 'edit', section)"
+                        title="Edit Permission" [disabled]="!canUpdate()">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Sticky Footer -->
