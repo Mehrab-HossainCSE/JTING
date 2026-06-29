@@ -1,111 +1,204 @@
-<!-- CARD 1: Filters -->
-<div class="card params-card shadow-sm border-0 rounded-3 mb-3">
-  <div class="card-body p-4">
-    <h3 class="mb-4 results-title d-flex align-items-center gap-2">
-      <span class="title-underline-main"></span>
-      Search GRN Receives
-    </h3>
+<div class="cancellation-container">
+  <div class="cancellation-grid">
+    
+    <!-- Left Operations Panel -->
+    <div class="panel-left card">
+      <div class="card-body">
+        
+        <!-- SKU Selection -->
+        <div class="form-group-custom">
+          <label for="skuSelect">SKU</label>
+          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event); onDropdownChange()">
+            <option value="">Select SKU...</option>
+            @for (sku of skus(); track sku.code) {
+              <option [value]="sku.code">{{ sku.code }} - {{ sku.name }}</option>
+            }
+          </select>
+        </div>
 
-    <div class="delivery-filters-row">
-      <!-- From Date -->
-      <div class="filter-group">
-        <label for="fromDateInput">From Date</label>
-        <input id="fromDateInput" type="date" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
-      </div>
+        <!-- Box Name Selection -->
+        <div class="form-group-custom">
+          <label for="boxSelect">Box Name</label>
+          <select id="boxSelect" class="form-select-custom" [ngModel]="selectedBox()" (ngModelChange)="selectedBox.set($event); onDropdownChange()">
+            <option value="">Select Box...</option>
+            @for (box of boxes(); track box) {
+              <option [value]="box">{{ box }}</option>
+            }
+          </select>
+        </div>
 
-      <!-- To Date -->
-      <div class="filter-group">
-        <label for="toDateInput">To Date</label>
-        <input id="toDateInput" type="date" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
-      </div>
+        <!-- Pallet No Selection -->
+        <div class="form-group-custom">
+          <label for="palletSelect">Pallet No</label>
+          <select id="palletSelect" class="form-select-custom" [ngModel]="selectedPallet()" (ngModelChange)="selectedPallet.set($event); onDropdownChange()">
+            <option value="">Select Pallet...</option>
+            @for (plt of pallets(); track plt) {
+              <option [value]="plt">{{ plt }}</option>
+            }
+          </select>
+        </div>
 
-      <!-- SKU -->
-      <div class="filter-group">
-        <label for="skuSelect">SKU Code</label>
-        <select id="skuSelect" class="custom-select w-100" [ngModel]="skuCode()" (ngModelChange)="skuCode.set($event)">
-          <option value="">All SKUs</option>
-          @for (sku of skus(); track sku.code) {
-            <option [value]="sku.code">{{ sku.code }} - {{ sku.name }}</option>
-          }
-        </select>
-      </div>
+        <!-- Metadata Summary Readout -->
+        <div class="metadata-summary-section">
+          <div class="meta-row">
+            <span class="meta-label">SKU:</span>
+            <span class="meta-value">{{ skuDisplay() }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Batch:</span>
+            <span class="meta-value">{{ batchDisplay() }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Pallet No:</span>
+            <span class="meta-value text-truncate" [title]="palletDisplay()">{{ palletDisplay() }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Recv. Date:</span>
+            <span class="meta-value">{{ recvDateDisplay() }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Shift:</span>
+            <span class="meta-value">{{ shiftDisplay() }}</span>
+          </div>
+        </div>
 
-      <!-- Actions -->
-      <div class="filter-actions-right d-flex gap-2 ms-auto">
-        <button type="button" class="btn btn-manual-action" (click)="onReset()">Reset</button>
-        <button type="button" class="btn btn-save-main-compact" (click)="onSearch()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          Search Receives
-        </button>
+        <!-- Checkbox: All Select & Sequences Table -->
+        <div class="left-table-header-row">
+          <div class="checkbox-wrapper">
+            <input id="allSelectCheckbox" type="checkbox" [checked]="allSelectChecked()" (change)="toggleAllSelect($event)" />
+            <label for="allSelectCheckbox">All Select</label>
+          </div>
+        </div>
+
+        <!-- Left Table: Sequence List -->
+        <div class="left-table-card">
+          <div class="table-scroll-container">
+            <table class="cancellation-table">
+              <thead>
+                <tr>
+                  <th>Sequence No</th>
+                  <th class="text-center" style="width: 70px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of sequenceList(); track item.seqNo) {
+                  <tr>
+                    <td>{{ item.seqNo }}</td>
+                    <td class="text-center">
+                      <input type="checkbox" aria-label="Select sequence record" [(ngModel)]="item.isChecked" />
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="2" class="empty-state">No sequences generated. Select SKU, Box and Pallet.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Add Button -->
+        <div class="left-action-row">
+          <button type="button" class="btn-green btn-add" (click)="onAdd()" [disabled]="sequenceList().length === 0">
+            Add
+          </button>
+        </div>
+
       </div>
     </div>
-  </div>
-</div>
 
-<!-- CARD 2: Receive List -->
-<div class="card results-card shadow-sm border-0 rounded-3 overflow-hidden flex-grow-1 d-flex flex-column">
-  <div class="card-header border-0 bg-white pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-    <h3 class="mb-0 results-title d-flex align-items-center gap-2">
-      <span class="title-underline-main"></span>
-      Received Goods Receipts (GRN)
-    </h3>
-    <div class="table-actions">
-      <span class="count-pill-green">{{ receiveList().length }} GRNs</span>
-    </div>
-  </div>
+    <!-- Right Grid & Main Table Panel -->
+    <div class="panel-right card">
+      <div class="card-body flex-column-body">
+        
+        <!-- Top Controls: Quantity & Cancellation Date -->
+        <div class="right-top-filters-row">
+          <div class="form-group-custom compact-filter">
+            <label for="qtySelect">Quantity</label>
+            <select id="qtySelect" class="form-select-custom" [ngModel]="selectedQty()" (ngModelChange)="selectedQty.set($event)">
+              <option value="">Select Qty...</option>
+              @for (opt of qtyOptions(); track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+          </div>
 
-  <div class="results-table-outer standard-padding flex-grow-1 mt-3">
-    <table class="premium-table">
-      <thead>
-        <tr>
-          <th>GRN No</th>
-          <th>SKU Code</th>
-          <th>Description</th>
-          <th>Batch No</th>
-          <th>Pallet No</th>
-          <th>Location</th>
-          <th class="text-center">Qty</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th class="text-right">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of receiveList(); track item.grnNo) {
-          <tr class="table-row">
-            <td><span class="id-pill-light">{{ item.grnNo }}</span></td>
-            <td><span class="id-pill-light">{{ item.skuCode }}</span></td>
-            <td><div class="text-truncate sku-name-cell">{{ item.skuDescription }}</div></td>
-            <td><span class="batch-badge-pill">{{ item.batchNo }}</span></td>
-            <td><span class="batch-badge-pill">{{ item.palletNo }}</span></td>
-            <td><span class="loc-pill">{{ item.location }}</span></td>
-            <td class="text-center fw-bold">{{ item.qty }}</td>
-            <td>{{ item.date }}</td>
-            <td>
-              <span class="status-badge" [class.status-completed]="item.status === 'Completed'" [class.status-cancelled]="item.status === 'Cancelled'">
-                {{ item.status }}
-              </span>
-            </td>
-            <td class="text-right">
-              <div class="row-actions justify-content-end">
-                <button type="button" class="btn btn-cancel-action" (click)="onCancelGRN(item)" [disabled]="item.status === 'Cancelled'">
-                  Cancel Receive
-                </button>
+          <div class="form-group-custom compact-filter">
+            <label for="cancelDateInput">Cancellation Date</label>
+            <input id="cancelDateInput" type="date" class="form-input-custom" [ngModel]="cancellationDate()" (ngModelChange)="cancellationDate.set($event)" />
+          </div>
+        </div>
+
+        <!-- Right Main Table: Cancellation Data List -->
+        <div class="right-table-card">
+          <div class="table-scroll-container">
+            <table class="cancellation-table">
+              <thead>
+                <tr>
+                  <th>Sku Name</th>
+                  <th>Sequence No</th>
+                  <th class="text-end" style="width: 90px;">Qty</th>
+                  <th class="text-center" style="width: 80px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of cancelItems(); track item.seqNo) {
+                  <tr>
+                    <td>{{ item.skuName }}</td>
+                    <td>{{ item.seqNo }}</td>
+                    <td class="text-end fw-bold">{{ item.qty }}</td>
+                    <td class="text-center">
+                      <button type="button" class="btn-table-delete" aria-label="Remove item" (click)="onRemoveItem(item.seqNo)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="empty-state">No items added to cancellation. Check sequences on the left and click Add.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Remarks, Totals & Action Buttons Footer -->
+        <div class="right-footer-container">
+          
+          <div class="remarks-and-totals-row">
+            <!-- Remarks Textarea -->
+            <div class="form-group-custom remarks-field-wrapper">
+              <label for="remarksTextarea">Remarks</label>
+              <textarea id="remarksTextarea" class="form-textarea-custom" rows="3" placeholder="Enter cancellation remarks..." [ngModel]="remarks()" (ngModelChange)="remarks.set($event)"></textarea>
+            </div>
+
+            <!-- Totals Readout -->
+            <div class="totals-summary-card">
+              <div class="total-row">
+                <span class="total-label">Total Case:</span>
+                <span class="total-value">{{ totalCase() }}</span>
               </div>
-            </td>
-          </tr>
-        }
-        @if (receiveList().length === 0) {
-          <tr>
-            <td colspan="10" class="empty-row text-center py-5">
-              <p class="text-muted mb-0">No GRN transactions found. Run search.</p>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+              <div class="total-row">
+                <span class="total-label">Total Qty:</span>
+                <span class="total-value">{{ totalQty() }}</span>
+                <span class="total-unit">KU</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons Footer -->
+          <div class="right-action-buttons-row">
+            <button type="button" class="btn-green btn-footer-action" (click)="onCancel()">Cancel</button>
+            <button type="button" class="btn-green btn-footer-action" (click)="onSave()" [disabled]="cancelItems().length === 0">Save</button>
+            <button type="button" class="btn-green btn-footer-action" (click)="onPrint()">Print</button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>

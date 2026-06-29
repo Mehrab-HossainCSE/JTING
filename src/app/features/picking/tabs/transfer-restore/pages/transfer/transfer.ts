@@ -48,6 +48,8 @@ export class Transfer implements OnInit {
   private loaderService = inject(LoaderService);
 
   isLoading = signal(false);
+  isEditMode = signal(false);
+  editTransferNo = signal('');
 
   // Common setups
   blocks = signal<Block[]>([]);
@@ -92,6 +94,10 @@ export class Transfer implements OnInit {
       this.selectedPicker.set(loggedInUser);
     }
 
+    const state = window.history.state as { editData?: any; transferNo?: string };
+    if (state?.editData) {
+      this.populateEditData(state.editData, state.transferNo ?? '');
+    }
   }
 
   // Load Initial Shared Data
@@ -123,6 +129,130 @@ export class Transfer implements OnInit {
       },
       error: (err) => this.errorHandler.handleErrorWithToster(err)
     });
+  }
+
+  private populateEditData(editData: any, transferNo: string): void {
+    this.isEditMode.set(true);
+    this.editTransferNo.set(transferNo);
+
+    const firstItem = editData.transferList?.[0];
+    const boxData = editData.boxData;
+
+    const pickerName = boxData?.pickerName || firstItem?.pickerName || '';
+    this.selectedPicker.set(pickerName);
+
+    if (!boxData) return;
+
+    // Load Left (Source) Panel cascading filters
+    const srcBlockId = boxData.sourceBlockId || '';
+    const srcArchId = boxData.sourceArchId || '';
+    const srcLineId = boxData.sourceLineId || '';
+
+    this.sourceSelectedBlock.set(srcBlockId);
+    if (srcBlockId) {
+      this.archService.getByBlockId(srcBlockId).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.sourceArchs.set(res.data);
+            this.sourceSelectedArch.set(srcArchId);
+
+            if (srcArchId) {
+              this.lineService.getByArchId(srcArchId).subscribe({
+                next: (lineRes) => {
+                  if (lineRes.success && lineRes.data) {
+                    this.sourceLines.set(lineRes.data);
+                    this.sourceSelectedLine.set(srcLineId);
+
+                    if (srcLineId) {
+                      this.loaderService.show('Loading source locations...');
+                      this.transferRestoreService.getSourceLocations(
+                        Number(srcLineId),
+                        Number(srcArchId),
+                        transferNo
+                      ).subscribe({
+                        next: (locRes) => {
+                          this.loaderService.hide();
+                          if (locRes.success && locRes.data) {
+                            // Map source locations, checking the ones that match palletNo in transferList
+                            this.sourcePallets.set(locRes.data.map((p: any) => {
+                              const isChecked = editData.transferList?.some((t: any) => t.palletNo === p.palletNo) ?? false;
+                              return {
+                                ...p,
+                                controlName: p.controlName || p.sourceBoxLocation || '--',
+                                checked: isChecked
+                              };
+                            }));
+                          }
+                        },
+                        error: (err) => {
+                          this.loaderService.hide();
+                          this.errorHandler.handleErrorWithToster(err);
+                        }
+                      });
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+
+    // Load Right (Destination) Panel cascading filters
+    const destBlockId = boxData.destinationBlockId || '';
+    const destArchId = boxData.destinationArchId || '';
+    const destLineId = boxData.destinationLineId || '';
+
+    this.destSelectedBlock.set(destBlockId);
+    if (destBlockId) {
+      this.archService.getByBlockId(destBlockId).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.destArchs.set(res.data);
+            this.destSelectedArch.set(destArchId);
+
+            if (destArchId) {
+              this.lineService.getByArchId(destArchId).subscribe({
+                next: (lineRes) => {
+                  if (lineRes.success && lineRes.data) {
+                    this.destLines.set(lineRes.data);
+                    this.destSelectedLine.set(destLineId);
+
+                    if (destLineId) {
+                      this.loaderService.show('Loading destination locations...');
+                      this.transferRestoreService.getDestinationLocations(
+                        Number(destLineId),
+                        Number(destArchId),
+                        transferNo
+                      ).subscribe({
+                        next: (locRes) => {
+                          this.loaderService.hide();
+                          if (locRes.success && locRes.data) {
+                            // Map dest locations, checking the ones that match destinationBoxLocation in transferList
+                            this.destLocations.set(locRes.data.map((l: any) => {
+                              const isChecked = editData.transferList?.some((t: any) => t.destinationBoxLocation === l.controlName) ?? false;
+                              return {
+                                ...l,
+                                checked: isChecked
+                              };
+                            }));
+                          }
+                        },
+                        error: (err) => {
+                          this.loaderService.hide();
+                          this.errorHandler.handleErrorWithToster(err);
+                        }
+                      });
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    }
   }
 
   // Cascading Logic - Left (Source) Panel
@@ -336,8 +466,8 @@ export class Transfer implements OnInit {
         return rest as TransferRestoreItem;
       }),
       pickerName: this.selectedPicker(),
-      transferNo: '',
-      isUpdate: false
+      transferNo: this.isEditMode() ? this.editTransferNo() : '',
+      isUpdate: this.isEditMode()
     };
 
     this.transferRestoreService.saveTransfer(payload).subscribe({
@@ -360,6 +490,9 @@ export class Transfer implements OnInit {
   }
 
   onReset() {
+    this.isEditMode.set(false);
+    this.editTransferNo.set('');
+    
     this.sourceSelectedBlock.set('');
     this.sourceSelectedArch.set('');
     this.sourceSelectedLine.set('');
@@ -374,6 +507,11 @@ export class Transfer implements OnInit {
     this.destLines.set([]);
     this.destLocations.set([]);
 
-    this.selectedPicker.set('');
+    const loggedInUser = this.authService.getLocalStorageUserName();
+    if (loggedInUser) {
+      this.selectedPicker.set(loggedInUser);
+    } else {
+      this.selectedPicker.set('');
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { TransferRestoreService } from '../../../../../../core/services/pickingServices/transfer-restore.service';
@@ -20,6 +21,7 @@ export class ListOfTransfer implements OnInit {
   private loaderService = inject(LoaderService);
   private errorHandler = inject(ErrorHandlerService);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   fromDate = signal(new Date().toISOString().split('T')[0]);
   toDate = signal(new Date().toISOString().split('T')[0]);
@@ -107,6 +109,8 @@ export class ListOfTransfer implements OnInit {
   onActionButtonClick(buttonName: string, item: RelocationLog): void {
     if (buttonName === 'Done') {
       this.confirmComplete(item.id);
+    } else if (buttonName === 'Edit') {
+      this.onEditItem(item.relocationId);
     } else if (buttonName === 'Delete') {
       this.confirmDelete(item.id);
     } else if (buttonName === 'Print') {
@@ -114,6 +118,28 @@ export class ListOfTransfer implements OnInit {
     } else {
       this.toastr.info(`Action "${buttonName}" clicked for Relocation: ${item.relocationId}`, 'Info');
     }
+  }
+
+  onEditItem(transferNo: string): void {
+    const isRestore = transferNo.startsWith('RS');
+    const targetRoute = isRestore
+      ? '/picking/transfer-restore/restore-from-pa'
+      : '/picking/transfer-restore/transfer';
+
+    this.loaderService.show('Loading transfer data...');
+    this.transferRestoreService.getTransferListWithBoxData(transferNo).subscribe({
+      next: (res) => {
+        this.loaderService.hide();
+        if (res.success && res.data) {
+          console.log("Hello I need this data: ", res.data);
+          this.router.navigate([targetRoute], { state: { editData: res.data, transferNo } });
+        }
+      },
+      error: (err) => {
+        this.loaderService.hide();
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
   }
 
   confirmComplete(id: number): void {

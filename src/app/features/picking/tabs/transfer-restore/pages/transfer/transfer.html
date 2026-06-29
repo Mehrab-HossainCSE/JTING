@@ -179,13 +179,13 @@
         <button type="button" class="btn-action-main btn-transfer-action" (click)="onConfirmTransfer()" [disabled]="isLoading()">
           @if (isLoading()) {
             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Transferring...
+            {{ isEditMode() ? 'Updating...' : 'Transferring...' }}
           } @else {
-            Transfer
+            {{ isEditMode() ? 'Update Transfer' : 'Transfer' }}
           }
         </button>
         <button type="button" class="btn-action-secondary btn-cancel-action" (click)="onReset()">
-          Cancel Transfer
+          {{ isEditMode() ? 'Cancel Edit' : 'Cancel Transfer' }}
         </button>
       </div>
     </div>

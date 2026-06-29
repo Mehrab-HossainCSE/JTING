@@ -170,14 +170,14 @@
         <button type="button" class="btn-action-main btn-restore-action" (click)="onConfirmRestore()"
           [disabled]="isLoading()">
           @if (isLoading()) {
-          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Restoring...
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ isEditMode() ? 'Updating...' : 'Restoring...' }}
           } @else {
-          Restore
+            {{ isEditMode() ? 'Update Restore' : 'Restore' }}
           }
         </button>
         <button type="button" class="btn-action-secondary btn-cancel-action" (click)="onReset()">
-          Cancel Restore
+          {{ isEditMode() ? 'Cancel Edit' : 'Cancel Restore' }}
         </button>
       </div>
     </div>

@@ -3,13 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import Swal, { SweetAlertResult } from 'sweetalert2';
-import { ApiResponse } from '../../../../../../core/models/ApiResponse.model';
 
 // Service Imports
 import { BlockService } from '../../../../../../core/services/setupServices/block-service';
 import { ArchService } from '../../../../../../core/services/setupServices/arch-service';
 import { LineService } from '../../../../../../core/services/setupServices/line-service';
-import { BoxService } from '../../../../../../core/services/setupServices/box-service';
 import { UserService } from '../../../../../../core/services/userManageServices/user-service';
 import { SkuService } from '../../../../../../core/services/skuServices/sku-service';
 import { TransferRestoreService } from '../../../../../../core/services/pickingServices/transfer-restore.service';
@@ -36,7 +34,6 @@ export class RestoreFromPa implements OnInit {
   private blockService = inject(BlockService);
   private archService = inject(ArchService);
   private lineService = inject(LineService);
-  private boxService = inject(BoxService);
   private userService = inject(UserService);
   private skuService = inject(SkuService);
   private transferRestoreService = inject(TransferRestoreService);
@@ -45,6 +42,8 @@ export class RestoreFromPa implements OnInit {
   private loaderService = inject(LoaderService);
 
   isLoading = signal(false);
+  isEditMode = signal(false);
+  editTransferNo = signal('');
 
   // Selected filter values
   selectedSku = signal('');
@@ -88,6 +87,99 @@ export class RestoreFromPa implements OnInit {
     const loggedInUser = this.authService.getLocalStorageUserName();
     if (loggedInUser) {
       this.selectedPicker.set(loggedInUser);
+    }
+
+    const state = window.history.state as { editData?: any; transferNo?: string };
+    if (state?.editData) {
+      this.populateEditData(state.editData, state.transferNo ?? '');
+    }
+  }
+
+  private populateEditData(editData: any, transferNo: string): void {
+    this.isEditMode.set(true);
+    this.editTransferNo.set(transferNo);
+
+    const firstItem = editData.transferList?.[0];
+    const boxData = editData.boxData;
+
+    const skuCode = boxData?.skucode || firstItem?.skucode || '';
+    const batchNo = boxData?.batchNo || firstItem?.batchNo || '';
+    const pickerName = boxData?.pickerName || firstItem?.pickerName || '';
+
+    this.selectedSku.set(skuCode);
+    this.selectedBatch.set(batchNo);
+    this.selectedPicker.set(pickerName);
+
+    // Bind batchList directly with the selected batch so the dropdown renders it correctly
+    if (batchNo) {
+      this.batchList.set([batchNo]);
+    }
+
+    // Bind sourcePallets directly from transferList
+    if (editData.transferList) {
+      this.sourcePallets.set(editData.transferList.map((p: any) => ({
+        ...p,
+        controlName: p.sourceBoxLocation || '--',
+        skuCode: p.skucode || skuCode,
+        skuName: p.skuname || '',
+        checked: true
+      })));
+    }
+
+    if (!boxData) return;
+
+    const blockId = boxData.destinationBlockId || '';
+    const archId = boxData.destinationArchId || '';
+    const lineId = boxData.destinationLineId || '';
+
+    this.selectedBlock.set(blockId);
+    if (blockId) {
+      this.archService.getByBlockId(blockId).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.archList.set(res.data);
+            this.selectedArch.set(archId);
+
+            if (archId) {
+              this.lineService.getByArchId(archId).subscribe({
+                next: (lineRes) => {
+                  if (lineRes.success && lineRes.data) {
+                    this.lineList.set(lineRes.data);
+                    this.selectedLine.set(lineId);
+
+                    if (lineId && skuCode) {
+                      this.loaderService.show('Loading destination locations...');
+                      this.transferRestoreService.getRestoreDestinationLocations(
+                        Number(lineId),
+                        Number(archId),
+                        skuCode,
+                        transferNo
+                      ).subscribe({
+                        next: (locRes) => {
+                          this.loaderService.hide();
+                          if (locRes.success && locRes.data) {
+                            this.destLocations.set(locRes.data.map((l: any) => {
+                              const isChecked = editData.transferList?.some((t: any) => t.destinationBoxLocation === l.controlName) ?? false;
+                              return {
+                                ...l,
+                                checked: isChecked
+                              };
+                            }));
+                          }
+                        },
+                        error: (err) => {
+                          this.loaderService.hide();
+                          this.errorHandler.handleErrorWithToster(err);
+                        }
+                      });
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
     }
   }
 
@@ -248,7 +340,6 @@ export class RestoreFromPa implements OnInit {
       const numericLineId = Number(lineId) || 0;
       const numericArchId = Number(this.selectedArch()) || 0;
       const skuCode = this.selectedSku() || '';
-      const batchNo = this.selectedBatch() || '';
       const restoreNo = '';
 
       this.transferRestoreService.getRestoreDestinationLocations(numericLineId, numericArchId, skuCode, restoreNo).subscribe({
@@ -348,11 +439,11 @@ export class RestoreFromPa implements OnInit {
         return rest as TransferRestoreItem;
       }),
       pickerName: this.selectedPicker(),
-      restoreNo: '',
+      restoreNo: this.isEditMode() ? this.editTransferNo() : '',
       batchNo: this.selectedBatch(),
       skuCode: this.selectedSku(),
       skuName: activeSku?.skuName || '',
-      isUpdate: false
+      isUpdate: this.isEditMode()
     };
 
     this.transferRestoreService.saveRestore(payload).subscribe({
@@ -375,6 +466,9 @@ export class RestoreFromPa implements OnInit {
   }
 
   onReset() {
+    this.isEditMode.set(false);
+    this.editTransferNo.set('');
+    
     this.selectedSku.set('');
     this.selectedBatch.set('');
     this.selectedBlock.set('');

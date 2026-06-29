@@ -2,15 +2,22 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-export interface DeliveryItem {
-  deliveryId: string;
+export interface SummaryItem {
+  batchId: string;
   skuCode: string;
-  skuDescription: string;
-  batchNo: string;
-  palletNo: string;
-  location: string;
+  skuName: string;
+  uom: string;
   qty: number;
-  isSelected: boolean;
+  remarks: string;
+}
+
+export interface DataItem {
+  barcode: string;
+  skuCode: string;
+  skuName: string;
+  uom: string;
+  qty: number;
+  editQty: number;
 }
 
 @Component({
@@ -21,81 +28,139 @@ export interface DeliveryItem {
   styleUrl: './delivery.scss'
 })
 export class Delivery implements OnInit {
-  deliveryDate = signal(new Date().toISOString().split('T')[0]);
-  selectedTruck = signal('');
-  selectedDriver = signal('');
-  selectedShift = signal('');
-  isLoading = signal(false);
-  deliveryList = signal<DeliveryItem[]>([]);
+  // Left Panel Inputs
+  forwarder = signal('');
+  poNo = signal('');
+  carrier = signal('');
+  containerNo = signal('');
+  bookingNo = signal('');
+  contactNo = signal('');
+  candf = signal('');
+  lockNo = signal('');
+  dcNo = signal('');
 
-  trucks = signal<string[]>(['TRK-1002', 'TRK-2041', 'TRK-4412']);
-  drivers = signal<string[]>(['Alex Rodriguez', 'John Smith', 'Michael Jordan']);
-  shifts = signal<string[]>(['Day Shift', 'Night Shift']);
+  // Middle Panel Inputs
+  challanNo = signal('');
+  salesOrder = signal('');
+  truck = signal('');
+  driver = signal('');
+  destination = signal('');
+  barcode = signal('');
+  batchNo = signal('');
+  
+  // Tab Selection
+  activeTab = signal('details'); // 'details' | 'barcode'
+
+  // Counters
+  scannedCount = signal(0);
+
+  // Table Data Lists
+  summaryList = signal<SummaryItem[]>([]);
+  dataList = signal<DataItem[]>([]);
+
+  isLoading = signal(false);
 
   ngOnInit(): void {
-    this.onSearch();
+    this.loadMockData();
   }
 
-  onSearch() {
-    this.isLoading.set(true);
-    // Mock loading delivery items
-    setTimeout(() => {
-      this.deliveryList.set([
-        {
-          deliveryId: 'DL-2026-101',
-          skuCode: 'SKU-001',
-          skuDescription: 'Item Alpha Premium',
-          batchNo: 'B-1002',
-          palletNo: 'PLT-551',
-          location: 'A-01-A',
-          qty: 24,
-          isSelected: false
-        },
-        {
-          deliveryId: 'DL-2026-102',
-          skuCode: 'SKU-002',
-          skuDescription: 'Item Beta Standard',
-          batchNo: 'B-2041',
-          palletNo: 'PLT-612',
-          location: 'C-04-B',
-          qty: 12,
-          isSelected: false
-        },
-        {
-          deliveryId: 'DL-2026-103',
-          skuCode: 'SKU-003',
-          skuDescription: 'Item Gamma Deluxe',
-          batchNo: 'B-4412',
-          palletNo: 'PLT-987',
-          location: 'D-02-C',
-          qty: 48,
-          isSelected: false
-        }
-      ]);
-      this.isLoading.set(false);
-    }, 600);
+  loadMockData(): void {
+    // Populate some default mock items to showcase the layout design
+    this.summaryList.set([
+      {
+        batchId: '41744516',
+        skuCode: '15109093',
+        skuName: 'K-2 Filter Kings 10s',
+        uom: 'Pcs',
+        qty: 120,
+        remarks: 'Direct Dispatch'
+      },
+      {
+        batchId: '41744517',
+        skuCode: '15109094',
+        skuName: 'K-2 Gold Kings 10s',
+        uom: 'Pcs',
+        qty: 80,
+        remarks: 'Fragile handling'
+      }
+    ]);
+
+    this.dataList.set([
+      {
+        barcode: '15109096100326000088256',
+        skuCode: '15109093',
+        skuName: 'K-2 Filter Kings 10s',
+        uom: 'Pcs',
+        qty: 60,
+        editQty: 60
+      },
+      {
+        barcode: '15109096100326000088265',
+        skuCode: '15109094',
+        skuName: 'K-2 Gold Kings 10s',
+        uom: 'Pcs',
+        qty: 40,
+        editQty: 40
+      }
+    ]);
+
+    // Set big red counter value based on sum of data items quantity
+    this.updateScannedCount();
   }
 
-  onDispatchSelected() {
-    const selected = this.deliveryList().filter(item => item.isSelected);
-    console.log('Dispatching items:', selected, {
-      truck: this.selectedTruck(),
-      driver: this.selectedDriver(),
-      date: this.deliveryDate(),
-      shift: this.selectedShift()
+  updateScannedCount(): void {
+    const total = this.dataList().reduce((sum, item) => sum + item.qty, 0);
+    this.scannedCount.set(total);
+  }
+
+  onSearch(): void {
+    console.log('Searching with params:', {
+      challanNo: this.challanNo(),
+      salesOrder: this.salesOrder(),
+      truck: this.truck(),
+      driver: this.driver(),
+      destination: this.destination(),
+      barcode: this.barcode(),
+      batchNo: this.batchNo(),
+      activeTab: this.activeTab()
     });
   }
 
-  toggleAll(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.deliveryList.update(list => list.map(item => ({ ...item, isSelected: checked })));
+  onRePrint(): void {
+    console.log('Re-printing DC No:', this.dcNo());
   }
 
-  onReset() {
-    this.deliveryDate.set(new Date().toISOString().split('T')[0]);
-    this.selectedTruck.set('');
-    this.selectedDriver.set('');
-    this.selectedShift.set('');
-    this.deliveryList.set([]);
+  onPreview(): void {
+    console.log('Previewing Delivery. Form data:', this.getFormData());
+  }
+
+  onSave(): void {
+    console.log('Saving Delivery. Form data:', this.getFormData());
+  }
+
+  onClose(): void {
+    console.log('Closing Delivery Tab.');
+  }
+
+  getFormData() {
+    return {
+      forwarder: this.forwarder(),
+      poNo: this.poNo(),
+      carrier: this.carrier(),
+      containerNo: this.containerNo(),
+      bookingNo: this.bookingNo(),
+      contactNo: this.contactNo(),
+      candf: this.candf(),
+      lockNo: this.lockNo(),
+      dcNo: this.dcNo(),
+      challanNo: this.challanNo(),
+      salesOrder: this.salesOrder(),
+      truck: this.truck(),
+      driver: this.driver(),
+      destination: this.destination(),
+      barcode: this.barcode(),
+      batchNo: this.batchNo(),
+      scannedCount: this.scannedCount()
+    };
   }
 }

@@ -1,197 +1,265 @@
-@use "/styles/abstracts/variables" as *;
+@use "/styles/componets/master-setup.scss" as *;
 
 :host {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: #f4f7f6;
 }
 
-.params-card {
-  background: white;
-}
-
-.delivery-filters-row {
+.history-container {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  align-items: flex-end;
+  flex-direction: column;
   width: 100%;
+}
 
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-    min-width: 150px;
+.table-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #eef2f5;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-    label {
-      font-size: 0.65rem;
-      font-weight: 800;
-      color: #8395a7;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 0;
-    }
+/* Integrated filters in the header */
+.card-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1.5px solid #f1f5f9;
+  background: white;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-    .custom-select, .form-control {
-      height: 40px;
-      border: 1.5px solid #eef2f5;
-      border-radius: 10px;
-      background: #f8fafc;
-      font-weight: 600;
-      font-size: 0.8rem;
-      transition: all 0.2s;
+.card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
-      &:focus {
-        background: white;
-        border-color: $primary-green;
-        box-shadow: 0 0 0 4px rgba($primary-green, 0.1);
-      }
-    }
-  }
+.header-filters-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-  .filter-actions-right {
-    margin-left: auto;
-    align-items: flex-end;
+/* Custom form fields */
+.form-group-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #8395a7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0;
   }
 }
 
-.btn-manual-action {
+.form-input-custom {
+  padding: 6px 12px;
   background: #f8fafc;
-  color: #475569;
-  height: 40px;
-  padding: 0 20px;
-  border-radius: 10px;
+  border: 1.5px solid #eef2f5;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: #2d3436;
+  font-weight: 600;
+  height: 35px;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #00bb31;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 187, 49, 0.1);
+  }
+}
+
+.form-select-custom {
+  padding: 6px 12px;
+  background: #f8fafc;
+  border: 1.5px solid #eef2f5;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: #2d3436;
+  font-weight: 600;
+  height: 35px;
+  min-width: 120px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23b2bec3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #00bb31;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(0, 187, 49, 0.1);
+  }
+}
+
+/* Green Action Button */
+.btn-green {
+  background: #00bb31;
+  color: white;
+  border: none;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 0.75rem;
-  border: 1.5px solid #e2e8f0;
+  padding: 8px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 187, 49, 0.15);
   transition: all 0.2s;
-  &:hover {
-    background: #f1f5f9;
-    color: #1e293b;
-  }
-}
-
-.btn-save-main-compact {
-  background: $primary-green;
-  color: white;
-  padding: 0 28px;
-  height: 40px;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 0.75rem;
-  display: flex;
+  height: 35px;
+  display: inline-flex;
   align-items: center;
-  border: none;
-  box-shadow: 0 4px 12px rgba($primary-green, 0.2);
-  transition: all 0.2s;
+  justify-content: center;
+
   &:hover {
-    background: $primary-dark;
-    transform: translateY(-1.5px);
-    box-shadow: 0 8px 20px rgba($primary-green, 0.3);
-    color: white;
+    background: #009e29;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 187, 49, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
-// Table UI
-.results-card {
-  flex: 1;
-  min-height: 0;
-  background: white;
+.btn-search {
+  min-width: 90px;
 }
 
-.results-table-outer {
-  flex: 1;
-  min-height: 0;
+/* History table scroll container */
+.table-scroll-container {
   overflow-y: auto;
-  padding: 0 1.5rem 1.5rem;
+  max-height: 480px;
 
-  .premium-table {
-    width: 100%;
-    thead th {
-      background: #f8fafc;
-      color: #64748b;
-      font-weight: 700;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      padding: 12px 10px;
-      border-bottom: 2px solid #edf2f7;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .table-row:hover { background: #f0fdf4 !important; }
-
-    .id-pill-light {
-      background: #f1f5f9;
-      color: #475569;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-
-    .type-badge {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-
-      &.type-receive {
-        background: #e0f2fe;
-        color: #0369a1;
-      }
-      &.type-delivery {
-        background: #faf5ff;
-        color: #6b21a8;
-      }
-    }
-
-    .loc-pill {
-      background: #fef3c7;
-      color: #92400e;
-      padding: 2px 10px;
-      border-radius: 8px;
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-
-    .status-badge {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-
-      &.status-completed {
-        background: #e6f7ec;
-        color: $primary-green;
-      }
-      &.status-cancelled {
-        background: #f1f5f9;
-        color: #64748b;
-      }
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    &:hover {
+      background: #94a3b8;
     }
   }
 }
 
-.sku-name-cell {
-  max-width: 220px;
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 16px;
+    border-bottom: 1.5px solid #edf2f7;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  tbody td {
+    padding: 10px 16px;
+    font-size: 0.75rem;
+    color: #334155;
+    font-weight: 500;
+    vertical-align: middle;
+  }
+
+  .cancel-no-badge {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.7rem;
+  }
+
+  .user-pill {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.7rem;
+  }
+
+  .remarks-cell {
+    max-width: 320px;
+    color: #64748b;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #94a3b8;
+    font-weight: 500;
+    padding: 4rem 1rem !important;
+  }
 }
 
-.title-underline-main {
-  width: 4px;
-  height: 18px;
-  background: $primary-green;
-  border-radius: 2px;
-}
-
-.count-pill-green {
-  background: #e6f7ec;
-  color: $primary-green;
-  padding: 4px 12px;
-  border-radius: 20px;
+/* Action view details button */
+.btn-details-view {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #00bb31;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 0.7rem;
   font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    background: #f0fdf4;
+    border-color: #00bb31;
+    color: #009e29;
+    box-shadow: 0 2px 6px rgba(0, 187, 49, 0.1);
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
 }

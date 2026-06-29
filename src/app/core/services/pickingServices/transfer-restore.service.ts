@@ -79,4 +79,10 @@ export class TransferRestoreService {
   getProgress(id: string | number): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/Progress/${id}`);
   }
+
+  getTransferListWithBoxData(transferNo: string): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/TransferListWithBoxData`, {
+      params: { transferNo },
+    });
+  }
 }
