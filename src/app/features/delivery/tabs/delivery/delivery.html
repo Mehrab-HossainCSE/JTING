@@ -1,13 +1,7 @@
 <div class="delivery-container">
-  
-  <!-- Header Title -->
-  <div class="delivery-header-title">
-    <h2>Product Delivery (SKU)</h2>
-  </div>
-
   <!-- Top Three-Column Section -->
   <div class="top-row-grid">
-    
+
     <!-- Left Operations Panel -->
     <div class="delivery-card">
       <div class="delivery-card-header">
@@ -17,47 +11,53 @@
         <div class="inputs-grid-two-cols">
           <div class="form-group-custom">
             <label for="forwarderInput">Forwarder</label>
-            <input id="forwarderInput" type="text" class="form-input-custom" [ngModel]="forwarder()" (ngModelChange)="forwarder.set($event)" />
+            <input id="forwarderInput" type="text" class="form-input-custom" [ngModel]="forwarder()"
+              (ngModelChange)="forwarder.set($event)" />
           </div>
           <div class="form-group-custom">
-            <label for="poInput">PO.:</label>
-            <input id="poInput" type="text" class="form-input-custom" [ngModel]="poNo()" (ngModelChange)="poNo.set($event)" />
+            <label for="poInput">PO No</label>
+            <input id="poInput" type="text" class="form-input-custom" [ngModel]="poNo()"
+              (ngModelChange)="poNo.set($event)" />
           </div>
-          
           <div class="form-group-custom">
             <label for="carrierInput">Carrier</label>
-            <input id="carrierInput" type="text" class="form-input-custom" [ngModel]="carrier()" (ngModelChange)="carrier.set($event)" />
+            <input id="carrierInput" type="text" class="form-input-custom" [ngModel]="carrier()"
+              (ngModelChange)="carrier.set($event)" />
           </div>
           <div class="form-group-custom">
             <label for="containerNoInput">Container No</label>
-            <input id="containerNoInput" type="text" class="form-input-custom" [ngModel]="containerNo()" (ngModelChange)="containerNo.set($event)" />
+            <input id="containerNoInput" type="text" class="form-input-custom" [ngModel]="containerNo()"
+              (ngModelChange)="containerNo.set($event)" />
           </div>
-          
           <div class="form-group-custom">
             <label for="bookingNoInput">Booking No</label>
-            <input id="bookingNoInput" type="text" class="form-input-custom" [ngModel]="bookingNo()" (ngModelChange)="bookingNo.set($event)" />
+            <input id="bookingNoInput" type="text" class="form-input-custom" [ngModel]="bookingNo()"
+              (ngModelChange)="bookingNo.set($event)" />
           </div>
           <div class="form-group-custom">
             <label for="contactNoInput">Contact No</label>
-            <input id="contactNoInput" type="text" class="form-input-custom" [ngModel]="contactNo()" (ngModelChange)="contactNo.set($event)" />
+            <input id="contactNoInput" type="text" class="form-input-custom" [ngModel]="contactNo()"
+              (ngModelChange)="contactNo.set($event)" />
           </div>
-          
           <div class="form-group-custom">
             <label for="candfInput">C And F</label>
-            <input id="candfInput" type="text" class="form-input-custom" [ngModel]="candf()" (ngModelChange)="candf.set($event)" />
+            <input id="candfInput" type="text" class="form-input-custom" [ngModel]="candf()"
+              (ngModelChange)="candf.set($event)" />
           </div>
           <div class="form-group-custom">
             <label for="lockNoInput">Lock No</label>
-            <input id="lockNoInput" type="text" class="form-input-custom" [ngModel]="lockNo()" (ngModelChange)="lockNo.set($event)" />
+            <input id="lockNoInput" type="text" class="form-input-custom" [ngModel]="lockNo()"
+              (ngModelChange)="lockNo.set($event)" />
           </div>
         </div>
 
-        <div class="reprint-divider">Operations</div>
+        <div class="reprint-divider">Reprint</div>
 
         <div class="reprint-operation-row">
           <div class="form-group-custom reprint-input-wrapper">
             <label for="dcNoInput">DC No</label>
-            <input id="dcNoInput" type="text" class="form-input-custom" [ngModel]="dcNo()" (ngModelChange)="dcNo.set($event)" />
+            <input id="dcNoInput" type="text" class="form-input-custom" [ngModel]="dcNo()"
+              (ngModelChange)="dcNo.set($event)" />
           </div>
           <button type="button" class="btn-green btn-reprint" (click)="onRePrint()">
             Re Print
@@ -72,70 +72,69 @@
         <h3>Operations</h3>
       </div>
       <div class="delivery-card-body">
-        <div class="middle-inputs-stack">
+        <div class="middle-inputs-grid">
+
           <div class="form-group-custom">
             <label for="challanNoInput">Challan No</label>
-            <input id="challanNoInput" type="text" class="form-input-custom" [ngModel]="challanNo()" (ngModelChange)="challanNo.set($event)" />
+            <input id="challanNoInput" type="text" class="form-input-custom" [ngModel]="challanNo()"
+              (ngModelChange)="challanNo.set($event)" />
           </div>
-          
+
           <div class="form-group-custom">
             <label for="salesOrderInput">Sales Order</label>
-            <input id="salesOrderInput" type="text" class="form-input-custom" [ngModel]="salesOrder()" (ngModelChange)="salesOrder.set($event)" />
+            <input id="salesOrderInput" type="text" class="form-input-custom" [ngModel]="salesOrder()"
+              (ngModelChange)="salesOrder.set($event)" />
           </div>
 
-          <!-- Truck Field with suggestion box -->
           <div class="form-group-custom">
             <label for="truckInput">Truck</label>
-            <input id="truckInput" type="text" class="form-input-custom" [ngModel]="truck()" (ngModelChange)="truck.set($event)" />
-            <div class="display-name-box dashed-border">Truck Name</div>
+            <input id="truckInput" type="text" class="form-input-custom" [ngModel]="truck()"
+              (ngModelChange)="truck.set($event)" />
           </div>
 
-          <!-- Driver Field with suggestion box -->
           <div class="form-group-custom">
             <label for="driverInput">Driver</label>
-            <input id="driverInput" type="text" class="form-input-custom" [ngModel]="driver()" (ngModelChange)="driver.set($event)" />
-            <div class="display-name-box solid-border">Driver Name</div>
+            <input id="driverInput" type="text" class="form-input-custom" [ngModel]="driver()"
+              (ngModelChange)="driver.set($event)" />
           </div>
 
-          <!-- Destination Field with suggestion box -->
-          <div class="form-group-custom">
+          <div class="form-group-custom col-span-2">
             <label for="destinationInput">Destination</label>
-            <input id="destinationInput" type="text" class="form-input-custom" [ngModel]="destination()" (ngModelChange)="destination.set($event)" />
-            <div class="display-name-box dashed-border">Destination Name</div>
+            <input id="destinationInput" type="text" class="form-input-custom" [ngModel]="destination()"
+              (ngModelChange)="destination.set($event)" />
           </div>
 
-          <!-- Barcode, Tabs, Dropdown & Batch No area -->
-          <div class="barcode-search-section">
-            <div class="form-group-custom">
-              <label for="barcodeInput">Barcode</label>
-              <input id="barcodeInput" type="text" class="form-input-custom" [ngModel]="barcode()" (ngModelChange)="barcode.set($event)" />
-            </div>
+          <div class="form-group-custom">
+            <label for="barcodeInput">Barcode</label>
+            <input id="barcodeInput" type="text" class="form-input-custom" [ngModel]="barcode()"
+              (ngModelChange)="barcode.set($event)" />
+          </div>
 
-            <!-- Small details/barcode Tab Bar -->
+          <div class="form-group-custom">
+            <label for="batchNoInput">Batch No</label>
+            <input id="batchNoInput" type="text" class="form-input-custom" [ngModel]="batchNo()"
+              (ngModelChange)="batchNo.set($event)" />
+          </div>
+
+          <div class="bottom-action-row col-span-2">
             <div class="small-tab-bar">
-              <button type="button" class="small-tab-btn" [class.active]="activeTab() === 'details'" (click)="activeTab.set('details')">details</button>
-              <button type="button" class="small-tab-btn" [class.active]="activeTab() === 'barcode'" (click)="activeTab.set('barcode')">barcode</button>
+              <button type="button" class="small-tab-btn" [class.active]="activeTab() === 'details'"
+                (click)="activeTab.set('details')">Details</button>
+              <button type="button" class="small-tab-btn" [class.active]="activeTab() === 'barcode'"
+                (click)="activeTab.set('barcode')">Barcode</button>
             </div>
-
-            <!-- Select Dropdown -->
-            <div class="form-group-custom dropdown-spacing">
-              <label for="detailsDropdownSelect" aria-label="Select details or barcode options" class="visually-hidden">Options</label>
-              <select id="detailsDropdownSelect" class="form-select-custom">
+            <div class="form-group-custom flex-1">
+              <label for="detailsDropdownSelect" class="visually-hidden">Options</label>
+              <select id="detailsDropdownSelect" class="form-select-custom"
+                aria-label="Select details or barcode option">
                 <option value="">Select Option...</option>
                 <option value="option1">Option 1</option>
                 <option value="option2">Option 2</option>
               </select>
             </div>
-
-            <div class="form-group-custom">
-              <label for="batchNoInput">Batch No</label>
-              <input id="batchNoInput" type="text" class="form-input-custom" [ngModel]="batchNo()" (ngModelChange)="batchNo.set($event)" />
-            </div>
-
-            <button type="button" class="btn-green w-100 mt-2 btn-search-mid" (click)="onSearch()">
-              Search
-            </button>
+            <button type="button" class="btn-green btn-search-mid" (click)="onSearch()">Search</button>
           </div>
+
         </div>
       </div>
     </div>
@@ -153,7 +152,7 @@
 
   <!-- Bottom Tables Section -->
   <div class="bottom-tables-grid">
-    
+
     <!-- Summary List Table -->
     <div class="table-card">
       <div class="table-card-header">
@@ -173,18 +172,18 @@
           </thead>
           <tbody>
             @for (item of summaryList(); track item.batchId) {
-              <tr>
-                <td>{{ item.batchId }}</td>
-                <td><span class="sku-pill">{{ item.skuCode }}</span></td>
-                <td>{{ item.skuName }}</td>
-                <td>{{ item.uom }}</td>
-                <td class="text-end fw-bold">{{ item.qty }}</td>
-                <td>{{ item.remarks }}</td>
-              </tr>
+            <tr>
+              <td>{{ item.batchId }}</td>
+              <td><span class="sku-pill">{{ item.skuCode }}</span></td>
+              <td>{{ item.skuName }}</td>
+              <td>{{ item.uom }}</td>
+              <td class="text-end fw-bold">{{ item.qty }}</td>
+              <td>{{ item.remarks }}</td>
+            </tr>
             } @empty {
-              <tr>
-                <td colspan="6" class="empty-state">No summary items available.</td>
-              </tr>
+            <tr>
+              <td colspan="6" class="empty-state">No summary items available.</td>
+            </tr>
             }
           </tbody>
         </table>
@@ -210,20 +209,21 @@
           </thead>
           <tbody>
             @for (item of dataList(); track item.barcode) {
-              <tr>
-                <td class="text-truncate barcode-cell" [title]="item.barcode">{{ item.barcode }}</td>
-                <td><span class="sku-pill">{{ item.skuCode }}</span></td>
-                <td>{{ item.skuName }}</td>
-                <td>{{ item.uom }}</td>
-                <td class="text-end fw-bold">{{ item.qty }}</td>
-                <td class="text-center">
-                  <input type="number" class="table-edit-input" aria-label="Edit quantity" [(ngModel)]="item.editQty" (ngModelChange)="updateScannedCount()" />
-                </td>
-              </tr>
+            <tr>
+              <td class="text-truncate barcode-cell" [title]="item.barcode">{{ item.barcode }}</td>
+              <td><span class="sku-pill">{{ item.skuCode }}</span></td>
+              <td>{{ item.skuName }}</td>
+              <td>{{ item.uom }}</td>
+              <td class="text-end fw-bold">{{ item.qty }}</td>
+              <td class="text-center">
+                <input type="number" class="table-edit-input" aria-label="Edit quantity" [(ngModel)]="item.editQty"
+                  (ngModelChange)="updateScannedCount()" />
+              </td>
+            </tr>
             } @empty {
-              <tr>
-                <td colspan="6" class="empty-state">No scan data items available.</td>
-              </tr>
+            <tr>
+              <td colspan="6" class="empty-state">No scan data items available.</td>
+            </tr>
             }
           </tbody>
         </table>
