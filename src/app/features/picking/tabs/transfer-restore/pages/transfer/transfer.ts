@@ -166,16 +166,26 @@ export class Transfer implements OnInit {
                     if (srcLineId) {
                       this.loaderService.show('Loading source locations...');
                       this.transferRestoreService.getSourceLocations(
-                        Number(srcLineId),
-                        Number(srcArchId),
+                        srcLineId,
+                        srcArchId,
                         transferNo
                       ).subscribe({
                         next: (locRes) => {
                           this.loaderService.hide();
                           if (locRes.success && locRes.data) {
-                            // Map source locations, checking the ones that match palletNo in transferList
+                            // Map source locations, checking the ones that match palletNo or sourceBoxLocation/controlName in transferList (supporting block/arch discrepancy via box suffix match)
                             this.sourcePallets.set(locRes.data.map((p: any) => {
-                              const isChecked = editData.transferList?.some((t: any) => t.palletNo === p.palletNo) ?? false;
+                              const isChecked = editData.transferList?.some((t: any) => {
+                                const palletMatch = !!(t.palletNo && p.palletNo && t.palletNo === p.palletNo);
+                                const locationMatch = !!(t.sourceBoxLocation && p.controlName && (
+                                  t.sourceBoxLocation === p.controlName || (
+                                    t.sourceBoxLocation.lastIndexOf('B') !== -1 &&
+                                    p.controlName.lastIndexOf('B') !== -1 &&
+                                    t.sourceBoxLocation.substring(t.sourceBoxLocation.lastIndexOf('B')) === p.controlName.substring(p.controlName.lastIndexOf('B'))
+                                  )
+                                ));
+                                return palletMatch || locationMatch;
+                              }) ?? false;
                               return {
                                 ...p,
                                 controlName: p.controlName || p.sourceBoxLocation || '--',
@@ -222,16 +232,24 @@ export class Transfer implements OnInit {
                     if (destLineId) {
                       this.loaderService.show('Loading destination locations...');
                       this.transferRestoreService.getDestinationLocations(
-                        Number(destLineId),
-                        Number(destArchId),
+                        destLineId,
+                        destArchId,
                         transferNo
                       ).subscribe({
                         next: (locRes) => {
                           this.loaderService.hide();
                           if (locRes.success && locRes.data) {
-                            // Map dest locations, checking the ones that match destinationBoxLocation in transferList
+                            // Map dest locations, checking the ones that match destinationBoxLocation in transferList (supporting block/arch discrepancy via box suffix match)
                             this.destLocations.set(locRes.data.map((l: any) => {
-                              const isChecked = editData.transferList?.some((t: any) => t.destinationBoxLocation === l.controlName) ?? false;
+                              const isChecked = editData.transferList?.some((t: any) =>
+                                t.destinationBoxLocation && l.controlName && (
+                                  t.destinationBoxLocation === l.controlName || (
+                                    t.destinationBoxLocation.lastIndexOf('B') !== -1 &&
+                                    l.controlName.lastIndexOf('B') !== -1 &&
+                                    t.destinationBoxLocation.substring(t.destinationBoxLocation.lastIndexOf('B')) === l.controlName.substring(l.controlName.lastIndexOf('B'))
+                                  )
+                                )
+                              ) ?? false;
                               return {
                                 ...l,
                                 checked: isChecked
@@ -302,8 +320,8 @@ export class Transfer implements OnInit {
 
     if (lineId) {
       this.loaderService.show('Loading source locations...');
-      const numericLineId = Number(lineId) || 0;
-      const numericArchId = Number(this.sourceSelectedArch()) || 0;
+      const numericLineId = lineId;
+      const numericArchId = this.sourceSelectedArch();
 
       this.transferRestoreService.getSourceLocations(numericLineId, numericArchId, '').subscribe({
         next: (res) => {
@@ -369,8 +387,8 @@ export class Transfer implements OnInit {
 
     if (lineId) {
       this.loaderService.show('Loading destination locations...');
-      const numericLineId = Number(lineId) || 0;
-      const numericArchId = Number(this.destSelectedArch()) || 0;
+      const numericLineId = lineId;
+      const numericArchId = this.destSelectedArch();
 
       this.transferRestoreService.getDestinationLocations(numericLineId, numericArchId, '').subscribe({
         next: (res) => {
@@ -459,7 +477,10 @@ export class Transfer implements OnInit {
     const payload: SaveTransferRequest = {
       sourceList: pallets.map(p => {
         const { checked, ...rest } = p;
-        return rest as TransferRestoreItem;
+        return {
+          ...rest,
+          date: p.date || p.transferDate || p.rcvDate || p.createDate || new Date().toISOString()
+        } as TransferRestoreItem;
       }),
       destinationList: locations.map(l => {
         const { checked, ...rest } = l;
@@ -492,7 +513,7 @@ export class Transfer implements OnInit {
   onReset() {
     this.isEditMode.set(false);
     this.editTransferNo.set('');
-    
+
     this.sourceSelectedBlock.set('');
     this.sourceSelectedArch.set('');
     this.sourceSelectedLine.set('');

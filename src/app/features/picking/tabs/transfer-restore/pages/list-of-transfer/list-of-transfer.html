@@ -1,36 +1,39 @@
 <div class="list-workspace-container">
   <div class="list-dashed-card">
-    
+
     <!-- Top Filter Controls Grid -->
     <div class="filter-controls-grid">
-      
+
       <!-- Left Filters: From Date, To Date, Type, Search Button -->
       <div class="filters-left-panel">
         <div class="form-group-custom">
           <label for="fromDateInput">From Date</label>
-          <input id="fromDateInput" type="date" class="form-control-custom" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+          <input id="fromDateInput" type="date" class="form-control-custom" [ngModel]="fromDate()"
+            (ngModelChange)="fromDate.set($event)" />
         </div>
-        
+
         <div class="form-group-custom">
           <label for="toDateInput">To Date :</label>
-          <input id="toDateInput" type="date" class="form-control-custom" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+          <input id="toDateInput" type="date" class="form-control-custom" [ngModel]="toDate()"
+            (ngModelChange)="toDate.set($event)" />
         </div>
-        
+
         <div class="form-group-custom">
           <label for="typeSelect">Type</label>
-          <select id="typeSelect" class="form-select-custom" [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+          <select id="typeSelect" class="form-select-custom" [ngModel]="selectedType()"
+            (ngModelChange)="selectedType.set($event)">
             <option value="All">All</option>
             <option value="Transfer">Transfer</option>
             <option value="Restore">Restore</option>
           </select>
         </div>
-        
+
         <div class="form-group-custom align-self-end">
           <button type="button" class="btn-action-main btn-search" (click)="onSearch()" [disabled]="isLoading()">
             @if (isLoading()) {
-              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             } @else {
-              Search
+            Search
             }
           </button>
         </div>
@@ -41,8 +44,9 @@
         <div class="selected-id-label">
           Selected Transfer ID: <span class="active-id-highlight">{{ selectedTransferId() }}</span>
         </div>
-        
-        <button type="button" class="btn-action-main btn-print" (click)="onPrint()" [disabled]="!selectedTransferId()">
+
+        <button type="button" class="btn-action-main btn-print" (click)="onPrintItem(selectedTransferId())"
+          [disabled]="!selectedTransferId()">
           Print
         </button>
       </div>
@@ -50,7 +54,7 @@
 
     <!-- Tables & Columns Row -->
     <div class="tables-columns-container">
-      
+
       <!-- Left Table: Relocations List -->
       <div class="table-pane-column">
         <div class="pane-table-scroll">
@@ -66,56 +70,57 @@
             </thead>
             <tbody>
               @for (item of relocations(); track item.relocationId) {
-                <tr [class.selected-row]="selectedTransferId() === item.relocationId" (click)="selectRelocation(item.relocationId)">
-                  <td><span class="id-pill-light" [title]="item.relocationId">{{ item.relocationId }}</span></td>
-                  <td>{{ item.keeper }}</td>
-                  <td>{{ item.date }}</td>
-                  <td>
-                    <span class="status-badge" [class.pending]="item.status === 'Pending'">
-                      {{ item.status }}
-                    </span>
-                  </td>
-                  <td class="text-center">
-                    <div class="actions-buttons-wrapper">
-                      @if (item.button1) {
-                        <button type="button" class="btn-action-done"
-                                (click)="onActionButtonClick(item.button1, item); $event.stopPropagation();"
-                                [title]="item.button1">
-                          <i [class]="'bi ' + getButtonIcon(item.button1)" aria-hidden="true"></i>
-                          <span class="visually-hidden">{{ item.button1 }}</span>
-                        </button>
-                      }
-                      @if (item.button2) {
-                        <button type="button" class="btn-action-edit"
-                                (click)="onActionButtonClick(item.button2, item); $event.stopPropagation();"
-                                [title]="item.button2">
-                          <i [class]="'bi ' + getButtonIcon(item.button2)" aria-hidden="true"></i>
-                          <span class="visually-hidden">{{ item.button2 }}</span>
-                        </button>
-                      }
-                      @if (item.button3) {
-                        <button type="button" class="btn-action-delete"
-                                (click)="onActionButtonClick(item.button3, item); $event.stopPropagation();"
-                                [title]="item.button3">
-                          <i [class]="'bi ' + getButtonIcon(item.button3)" aria-hidden="true"></i>
-                          <span class="visually-hidden">{{ item.button3 }}</span>
-                        </button>
-                      }
-                      @if (item.button4) {
-                        <button type="button" class="btn-action-print-row"
-                                (click)="onActionButtonClick(item.button4, item); $event.stopPropagation();"
-                                [title]="item.button4">
-                          <i [class]="'bi ' + getButtonIcon(item.button4)" aria-hidden="true"></i>
-                          <span class="visually-hidden">{{ item.button4 }}</span>
-                        </button>
-                      }
-                    </div>
-                  </td>
-                </tr>
+              <tr [class.selected-row]="selectedTransferId() === item.relocationId"
+                (click)="selectRelocation(item.relocationId)">
+                <td><span class="id-pill-light" [title]="item.relocationId">{{ item.relocationId }}</span></td>
+                <td>{{ item.keeper }}</td>
+                <td>{{ item.date }}</td>
+                <td>
+                  <span class="status-badge" [class.pending]="item.status === 'Pending'">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <div class="actions-buttons-wrapper">
+                    @if (item.button1) {
+                    <button type="button" class="btn-action-done"
+                      (click)="onActionButtonClick(item.button1, item); $event.stopPropagation();"
+                      [title]="item.button1">
+                      <i [class]="'bi ' + getButtonIcon(item.button1)" aria-hidden="true"></i>
+                      <span class="visually-hidden">{{ item.button1 }}</span>
+                    </button>
+                    }
+                    @if (item.button2) {
+                    <button type="button" class="btn-action-edit"
+                      (click)="onActionButtonClick(item.button2, item); $event.stopPropagation();"
+                      [title]="item.button2">
+                      <i [class]="'bi ' + getButtonIcon(item.button2)" aria-hidden="true"></i>
+                      <span class="visually-hidden">{{ item.button2 }}</span>
+                    </button>
+                    }
+                    @if (item.button3) {
+                    <button type="button" class="btn-action-delete"
+                      (click)="onActionButtonClick(item.button3, item); $event.stopPropagation();"
+                      [title]="item.button3">
+                      <i [class]="'bi ' + getButtonIcon(item.button3)" aria-hidden="true"></i>
+                      <span class="visually-hidden">{{ item.button3 }}</span>
+                    </button>
+                    }
+                    @if (item.button4) {
+                    <button type="button" class="btn-action-print-row"
+                      (click)="onActionButtonClick(item.button4, item); $event.stopPropagation();"
+                      [title]="item.button4">
+                      <i [class]="'bi ' + getButtonIcon(item.button4)" aria-hidden="true"></i>
+                      <span class="visually-hidden">{{ item.button4 }}</span>
+                    </button>
+                    }
+                  </div>
+                </td>
+              </tr>
               } @empty {
-                <tr>
-                  <td colspan="5" class="empty-state">No transfers found.</td>
-                </tr>
+              <tr>
+                <td colspan="5" class="empty-state">No transfers found.</td>
+              </tr>
               }
             </tbody>
           </table>
@@ -137,17 +142,19 @@
             </thead>
             <tbody>
               @for (detail of activeDetails(); track detail.sourceBox + detail.destBox + detail.skuId) {
-                <tr>
-                  <td>{{ detail.sourceBox }}</td>
-                  <td>{{ detail.destBox }}</td>
-                  <td><span class="sku-id-badge">{{ detail.skuId }}</span></td>
-                  <td><div class="text-truncate sku-desc-cell">{{ detail.skuDescription }}</div></td>
-                  <td>{{ detail.batch }}</td>
-                </tr>
+              <tr>
+                <td>{{ detail.sourceBox }}</td>
+                <td>{{ detail.destBox }}</td>
+                <td><span class="sku-id-badge">{{ detail.skuId }}</span></td>
+                <td>
+                  <div class="text-truncate sku-desc-cell">{{ detail.skuDescription }}</div>
+                </td>
+                <td>{{ detail.batch }}</td>
+              </tr>
               } @empty {
-                <tr>
-                  <td colspan="5" class="empty-state">No details available. Select a transfer relocation.</td>
-                </tr>
+              <tr>
+                <td colspan="5" class="empty-state">No details available. Select a transfer relocation.</td>
+              </tr>
               }
             </tbody>
           </table>

@@ -16,21 +16,21 @@ export class TransferRestoreService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/TransferRestore`;
 
-  getSourceLocations(lineId: number, archId: number, transferNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
+  getSourceLocations(lineId: any, archId: any, transferNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
     return this.http.get<ApiResponse<TransferRestoreItem[]>>(`${this.apiUrl}/SourceLocations`, {
       params: { lineId: lineId.toString(), archId: archId.toString(), transferNo },
     });
   }
 
-  getDestinationLocations(lineId: number, archId: number, transferNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
+  getDestinationLocations(lineId: any, archId: any, transferNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
     return this.http.get<ApiResponse<TransferRestoreItem[]>>(`${this.apiUrl}/DestinationLocations`, {
       params: { lineId: lineId.toString(), archId: archId.toString(), transferNo },
     });
   }
 
-  getRestoreDestinationLocations(lineId: number, archId: number, skuCode: string, rstoreNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
+  getRestoreDestinationLocations(lineId: any, archId: any, skuCode: any, restoreNo: string): Observable<ApiResponse<TransferRestoreItem[]>> {
     return this.http.get<ApiResponse<TransferRestoreItem[]>>(`${this.apiUrl}/RestoreDestinationLocations`, {
-      params: { lineId: lineId.toString(), archId: archId.toString(), skuCode: skuCode.toString(), rstoreNo: rstoreNo.toString() },
+      params: { lineId: lineId.toString(), archId: archId.toString(), skuCode: skuCode.toString(), restoreNo: restoreNo.toString() },
     });
   }
 
@@ -73,16 +73,19 @@ export class TransferRestoreService {
   }
 
   deleteTransferRestore(id: string | number): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/DeleteTransfer/${id}`, {});
-  }
-
-  getProgress(id: string | number): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/Progress/${id}`);
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/Progress/${id}`, {});
   }
 
   getTransferListWithBoxData(transferNo: string): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/TransferListWithBoxData`, {
       params: { transferNo },
+    });
+  }
+
+  reprintTransfer(transferNo: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/Report/Print-TransferSlip`, {
+      params: { transferNo },
+      responseType: 'blob'
     });
   }
 }

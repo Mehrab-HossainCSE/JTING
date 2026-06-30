@@ -8,6 +8,7 @@ import { TransferRestoreService } from '../../../../../../core/services/pickingS
 import { LoaderService } from '../../../../../../core/services/loader.service';
 import { ErrorHandlerService } from '../../../../../../core/services/error-handler.service';
 import { RelocationDetail, RelocationLog } from '../../../../../../core/models/picking/transfer-restore';
+import id from '@angular/common/locales/id';
 
 @Component({
   selector: 'app-list-of-transfer',
@@ -108,11 +109,11 @@ export class ListOfTransfer implements OnInit {
 
   onActionButtonClick(buttonName: string, item: RelocationLog): void {
     if (buttonName === 'Done') {
-      this.confirmComplete(item.id);
+      this.confirmComplete(item.relocationId);
     } else if (buttonName === 'Edit') {
       this.onEditItem(item.relocationId);
     } else if (buttonName === 'Delete') {
-      this.confirmDelete(item.id);
+      this.confirmDelete(item.relocationId);
     } else if (buttonName === 'Print') {
       this.onPrintItem(item.relocationId);
     } else {
@@ -131,7 +132,6 @@ export class ListOfTransfer implements OnInit {
       next: (res) => {
         this.loaderService.hide();
         if (res.success && res.data) {
-          console.log("Hello I need this data: ", res.data);
           this.router.navigate([targetRoute], { state: { editData: res.data, transferNo } });
         }
       },
@@ -142,7 +142,7 @@ export class ListOfTransfer implements OnInit {
     });
   }
 
-  confirmComplete(id: number): void {
+  confirmComplete(transferNo: string): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to mark this transfer/restore as completed?',
@@ -155,7 +155,7 @@ export class ListOfTransfer implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loaderService.show('Completing transfer...');
-        this.transferRestoreService.complete(id).subscribe({
+        this.transferRestoreService.complete(transferNo).subscribe({
           next: (res) => {
             this.loaderService.hide();
             if (res.success) {
@@ -174,7 +174,7 @@ export class ListOfTransfer implements OnInit {
     });
   }
 
-  confirmDelete(id: number): void {
+  confirmDelete(transferNo: string): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to delete this transfer/restore?',
@@ -187,7 +187,7 @@ export class ListOfTransfer implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loaderService.show('Deleting transfer...');
-        this.transferRestoreService.deleteTransferRestore(id).subscribe({
+        this.transferRestoreService.deleteTransferRestore(transferNo).subscribe({
           next: (res) => {
             this.loaderService.hide();
             if (res.success) {
@@ -206,17 +206,48 @@ export class ListOfTransfer implements OnInit {
     });
   }
 
-  onPrintItem(relocationId: string): void {
-    this.selectedTransferId.set(relocationId);
-    // Give a micro-delay for data binding before triggering print
-    setTimeout(() => {
-      window.print();
-    }, 150);
+  onPrintItem(transferNo: string): void {
+    this.loaderService.show('Generating Transfer Slip...');
+    this.transferRestoreService.reprintTransfer(transferNo).subscribe({
+      next: (blob) => {
+        this.loaderService.hide();
+        this.printBlob(blob);
+      },
+      error: (err) => {
+        this.loaderService.hide();
+        this.errorHandler.handleErrorWithToster(err);
+      }
+    });
   }
 
-  onPrint(): void {
-    if (this.selectedTransferId()) {
-      window.print();
+  private printBlob(pdfBlob: Blob): void {
+    const fileURL = window.URL.createObjectURL(pdfBlob);
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Transfer Slip</title>
+            <style>
+              body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+              iframe { width: 100%; height: 100%; border: none; }
+            </style>
+          </head>
+          <body>
+            <iframe id="pdfFrame" src="${fileURL}"></iframe>
+            <script>
+              const iframe = document.getElementById('pdfFrame');
+              iframe.onload = function() {
+                setTimeout(function() {
+                  iframe.contentWindow.focus();
+                  iframe.contentWindow.print();
+                }, 500);
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
     }
   }
 

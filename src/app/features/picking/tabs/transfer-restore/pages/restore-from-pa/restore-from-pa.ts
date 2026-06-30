@@ -150,8 +150,8 @@ export class RestoreFromPa implements OnInit {
                     if (lineId && skuCode) {
                       this.loaderService.show('Loading destination locations...');
                       this.transferRestoreService.getRestoreDestinationLocations(
-                        Number(lineId),
-                        Number(archId),
+                        lineId,
+                        archId,
                         skuCode,
                         transferNo
                       ).subscribe({
@@ -337,9 +337,9 @@ export class RestoreFromPa implements OnInit {
     if (lineId) {
       this.isLoading.set(true);
       this.loaderService.show('Loading destination locations...');
-      const numericLineId = Number(lineId) || 0;
-      const numericArchId = Number(this.selectedArch()) || 0;
-      const skuCode = this.selectedSku() || '';
+      const numericLineId = lineId;
+      const numericArchId = this.selectedArch();
+      const skuCode = this.selectedSku();
       const restoreNo = '';
 
       this.transferRestoreService.getRestoreDestinationLocations(numericLineId, numericArchId, skuCode, restoreNo).subscribe({
@@ -432,7 +432,10 @@ export class RestoreFromPa implements OnInit {
     const payload: SaveRestoreRequest = {
       sourceList: pallets.map(p => {
         const { checked, ...rest } = p;
-        return rest as TransferRestoreItem;
+        return {
+          ...rest,
+          date: p.date || p.transferDate || p.rcvDate || p.createDate || new Date().toISOString()
+        } as TransferRestoreItem;
       }),
       destinationList: locations.map(l => {
         const { checked, ...rest } = l;
@@ -468,7 +471,7 @@ export class RestoreFromPa implements OnInit {
   onReset() {
     this.isEditMode.set(false);
     this.editTransferNo.set('');
-    
+
     this.selectedSku.set('');
     this.selectedBatch.set('');
     this.selectedBlock.set('');

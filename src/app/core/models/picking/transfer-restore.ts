@@ -7,6 +7,7 @@ export interface TransferRestoreItem {
   skuCode: string;
   skuname: string;
   rcvDate: string;
+  date?: string;
   fullPaletQty: number;
   restQty: number;
   requiredQty: number;
