@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse } from '../../models/ApiResponse.model';
 import {
-  DeliveryMasterData,
-  DeliveryTempItem,
+  DeliveryTempProgress,
   ScanBarcodeRequest,
   UpdateQtyRequest,
   UpdateRemarksRequest,
   SaveDeliveryRequest,
+  ScanBarcodeResponse,
 } from '../../models/delivery/delivery.model';
 
 @Injectable({
@@ -19,20 +19,14 @@ export class DeliveryService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/Delivery`;
 
-  getMasterData(search?: string): Observable<ApiResponse<DeliveryMasterData[]>> {
-    const params: Record<string, string> = {};
-    if (search) params['search'] = search;
-    return this.http.get<ApiResponse<DeliveryMasterData[]>>(`${this.apiUrl}/MasterData`, { params });
-  }
-
-  getTempProgress(settingQty: number, settingText: string): Observable<ApiResponse<DeliveryTempItem[]>> {
-    return this.http.get<ApiResponse<DeliveryTempItem[]>>(`${this.apiUrl}/TempProgress`, {
-      params: { settingQty: settingQty.toString(), settingText },
+  getTempProgress(settingQty: number, settingText: string): Observable<ApiResponse<DeliveryTempProgress>> {
+    return this.http.get<ApiResponse<DeliveryTempProgress>>(`${this.apiUrl}/TempProgress`, {
+      params: { settingQty: settingQty, settingText },
     });
   }
 
-  scan(payload: ScanBarcodeRequest): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/Scan`, payload);
+  scan(payload: ScanBarcodeRequest): Observable<ApiResponse<ScanBarcodeResponse>> {
+    return this.http.post<ApiResponse<ScanBarcodeResponse>>(`${this.apiUrl}/Scan`, payload);
   }
 
   updateQty(payload: UpdateQtyRequest): Observable<ApiResponse<any>> {

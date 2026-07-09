@@ -14,7 +14,6 @@ export class DestinationService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<ApiResponse<Destination[]>> {
-    debugger;
     return this.http.get<ApiResponse<Destination[]>>(this.apiUrl);
   }
 

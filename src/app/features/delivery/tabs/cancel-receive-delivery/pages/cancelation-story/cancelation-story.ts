@@ -2,15 +2,13 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { CancellationService } from '../../../../../../core/services/cancellationServices/cancellation.service';
 
 export interface CancelationStoryRecord {
-  cancelId: string;
-  cancelDate: string;
-  txNo: string;
-  type: 'Receive' | 'Delivery';
-  reason: string;
-  cancelledBy: string;
-  qty: number;
+  cancelNo: string;
+  createDate: string;
+  remarks: string;
+  createBy: string;
 }
 
 @Component({
@@ -21,8 +19,10 @@ export interface CancelationStoryRecord {
   styleUrl: './cancelation-story.scss'
 })
 export class CancelationStory implements OnInit {
-  fromDate = signal('2026-06-22');
-  toDate = signal('2026-06-22');
+  private cancellationService = inject(CancellationService);
+
+  fromDate = signal(new Date().toISOString().split('T')[0]);
+  toDate = signal(new Date().toISOString().split('T')[0]);
   selectedType = signal('All');
   isLoading = signal(false);
   storyList = signal<CancelationStoryRecord[]>([]);
@@ -30,77 +30,46 @@ export class CancelationStory implements OnInit {
   types = signal<string[]>(['All', 'Receive', 'Delivery']);
 
   ngOnInit(): void {
-    // Search history automatically on init
     this.onSearch();
   }
 
   onSearch() {
     this.isLoading.set(true);
-    // Mock loading history data
-    setTimeout(() => {
-      const allRecords: CancelationStoryRecord[] = [
-        {
-          cancelId: 'CNL-2026-00018',
-          cancelDate: '06/22/2026',
-          txNo: 'GRN-2026-00124',
-          type: 'Receive',
-          reason: 'Incorrect SKU quantity input by operator',
-          cancelledBy: 'foysal',
-          qty: 100
-        },
-        {
-          cancelId: 'CNL-2026-00019',
-          cancelDate: '06/22/2026',
-          txNo: 'DLV-2026-00109',
-          type: 'Delivery',
-          reason: 'Truck assignment changed',
-          cancelledBy: 'admin',
-          qty: 24
-        },
-        {
-          cancelId: 'CNL-2026-00020',
-          cancelDate: '06/22/2026',
-          txNo: 'GRN-2026-00130',
-          type: 'Receive',
-          reason: 'Pallet allocation error on location B-01-A',
-          cancelledBy: 'foysal',
-          qty: 50
+    this.cancellationService.getDatewiseCancelList(
+      this.fromDate(),
+      this.toDate(),
+      this.selectedType()
+    ).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const list = Array.isArray(res.data) ? res.data : [];
+          this.storyList.set(list.map((item: any) => ({
+            cancelNo: item.cancelNo || '',
+            createDate: item.createDate ? item.createDate.split('T')[0] : '',
+            remarks: item.remarks || '',
+            createBy: item.createBy || ''
+          })));
+        } else {
+          this.storyList.set([]);
         }
-      ];
-
-      const filtered = allRecords.filter(item => {
-        if (this.selectedType() === 'All') return true;
-        return item.type === this.selectedType();
-      });
-
-      this.storyList.set(filtered);
-      this.isLoading.set(false);
-    }, 450);
-  }
-
-  onViewDetails(record: CancelationStoryRecord): void {
-    Swal.fire({
-      title: 'Cancellation Details',
-      html: `
-        <div style="text-align: left; font-size: 0.85rem; line-height: 1.6;">
-          <p><strong>Cancel No:</strong> ${record.cancelId}</p>
-          <p><strong>Date:</strong> ${record.cancelDate}</p>
-          <p><strong>Type:</strong> ${record.type}</p>
-          <p><strong>Reference No:</strong> ${record.txNo}</p>
-          <p><strong>Quantity:</strong> ${record.qty}</p>
-          <p><strong>Cancelled By:</strong> ${record.cancelledBy}</p>
-          <p><strong>Remarks:</strong> ${record.reason}</p>
-        </div>
-      `,
-      icon: 'info',
-      confirmButtonText: 'Close',
-      confirmButtonColor: '#00bb31'
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load cancellation story:', err);
+        this.storyList.set([]);
+        this.isLoading.set(false);
+      }
     });
   }
 
+  onPrint(record: CancelationStoryRecord): void {
+    console.log('Printing cancellation story record:', record);
+  }
+
   onReset() {
-    this.fromDate.set('2026-06-22');
-    this.toDate.set('2026-06-22');
+    const today = new Date().toISOString().split('T')[0];
+    this.fromDate.set(today);
+    this.toDate.set(today);
     this.selectedType.set('All');
     this.storyList.set([]);
   }

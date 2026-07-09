@@ -49,19 +49,19 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of storyList(); track item.cancelId) {
+          @for (item of storyList(); track item.cancelNo) {
             <tr class="table-row">
-              <td><span class="cancel-no-badge">{{ item.cancelId }}</span></td>
-              <td>{{ item.cancelDate }}</td>
+              <td><span class="cancel-no-badge">{{ item.cancelNo }}</span></td>
+              <td>{{ item.createDate }}</td>
               <td>
-                <div class="text-truncate remarks-cell" [title]="item.reason">
-                  {{ item.reason }}
+                <div class="text-truncate remarks-cell" [title]="item.remarks">
+                  {{ item.remarks }}
                 </div>
               </td>
-              <td><span class="user-pill">{{ item.cancelledBy }}</span></td>
+              <td><span class="user-pill">{{ item.createBy }}</span></td>
               <td class="text-center">
-                <button type="button" class="btn-details-view" aria-label="View cancellation details" (click)="onViewDetails(item)">
-                  <i class="bi bi-eye"></i> Details
+                <button type="button" class="btn-details-view" aria-label="Print cancellation details" (click)="onPrint(item)">
+                  <i class="bi bi-printer"></i> Print
                 </button>
               </td>
             </tr>

@@ -8,10 +8,10 @@
         <!-- SKU Selection -->
         <div class="form-group-custom">
           <label for="skuSelect">SKU</label>
-          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event); onDropdownChange()">
+          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event); onSkuChange()">
             <option value="">Select SKU...</option>
-            @for (sku of skus(); track sku.code) {
-              <option [value]="sku.code">{{ sku.code }} - {{ sku.name }}</option>
+            @for (sku of skus(); track sku.skucode) {
+              <option [value]="sku.skucode">{{ sku.skucode }} - {{ sku.skuname }}</option>
             }
           </select>
         </div>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Pallet No Selection -->
-        <div class="form-group-custom">
+        <!-- <div class="form-group-custom">
           <label for="palletSelect">Pallet No</label>
           <select id="palletSelect" class="form-select-custom" [ngModel]="selectedPallet()" (ngModelChange)="selectedPallet.set($event); onDropdownChange()">
             <option value="">Select Pallet...</option>
@@ -36,7 +36,7 @@
               <option [value]="plt">{{ plt }}</option>
             }
           </select>
-        </div>
+        </div> -->
 
         <!-- Metadata Summary Readout -->
         <div class="metadata-summary-section">
@@ -116,10 +116,10 @@
         <div class="right-top-filters-row">
           <div class="form-group-custom compact-filter">
             <label for="qtySelect">Quantity</label>
-            <select id="qtySelect" class="form-select-custom" [ngModel]="selectedQty()" (ngModelChange)="selectedQty.set($event)">
+            <select id="qtySelect" class="form-select-custom" [ngModel]="selectedQty()" (ngModelChange)="selectedQty.set($event); onQtyChange()">
               <option value="">Select Qty...</option>
-              @for (opt of qtyOptions(); track opt) {
-                <option [value]="opt">{{ opt }}</option>
+              @for (opt of qtyOptions(); track opt.id) {
+                <option [value]="opt.qty">{{ opt.name }}</option>
               }
             </select>
           </div>

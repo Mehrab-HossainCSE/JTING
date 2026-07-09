@@ -8,7 +8,7 @@
         <!-- Challan No Selection -->
         <div class="form-group-custom">
           <label for="challanSelect">Challan No</label>
-          <select id="challanSelect" class="form-select-custom" [ngModel]="selectedChallan()" (ngModelChange)="selectedChallan.set($event); onChallanOrSkuChange()">
+          <select id="challanSelect" class="form-select-custom" [ngModel]="selectedChallan()" (ngModelChange)="selectedChallan.set($event); onChallanChange()">
             <option value="">Select Challan...</option>
             @for (ch of challans(); track ch) {
               <option [value]="ch">{{ ch }}</option>
@@ -35,7 +35,7 @@
         <!-- SKU Selection -->
         <div class="form-group-custom">
           <label for="skuSelect">SKU</label>
-          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event); onChallanOrSkuChange()">
+          <select id="skuSelect" class="form-select-custom" [ngModel]="selectedSku()" (ngModelChange)="selectedSku.set($event); onSkuChange()">
             <option value="">Select SKU...</option>
             @for (sku of skus(); track sku.code) {
               <option [value]="sku.code">{{ sku.code }} - {{ sku.name }}</option>
@@ -97,10 +97,10 @@
         <div class="right-top-filters-row">
           <div class="form-group-custom compact-filter">
             <label for="qtySelect">Quantity</label>
-            <select id="qtySelect" class="form-select-custom" [ngModel]="selectedQty()" (ngModelChange)="selectedQty.set($event)">
+            <select id="qtySelect" class="form-select-custom" [ngModel]="selectedQty()" (ngModelChange)="selectedQty.set($event); onQtyChange()">
               <option value="">Select Qty...</option>
-              @for (opt of qtyOptions(); track opt) {
-                <option [value]="opt">{{ opt }}</option>
+              @for (opt of qtyOptions(); track opt.id) {
+                <option [value]="opt.qty">{{ opt.name }}</option>
               }
             </select>
           </div>

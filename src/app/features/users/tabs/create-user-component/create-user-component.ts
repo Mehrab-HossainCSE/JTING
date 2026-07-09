@@ -21,46 +21,46 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
   styleUrl: './create-user-component.scss'
 })
 export class CreateUserComponent implements OnInit {
-  private userService       = inject(UserService);
+  private userService = inject(UserService);
   private departmentService = inject(DepartmentService);
-  private roleService       = inject(RoleService);
-  private storageService    = inject(StorageService);
-  private fb                = inject(FormBuilder);
-  private toastr            = inject(ToastrService);
-  private errorHandler      = inject(ErrorHandlerService);
+  private roleService = inject(RoleService);
+  private storageService = inject(StorageService);
+  private fb = inject(FormBuilder);
+  private toastr = inject(ToastrService);
+  private errorHandler = inject(ErrorHandlerService);
 
   protected Math = Math;
 
   editingUserId = signal<number | null>(null);
-  isEditing     = computed(() => this.editingUserId() !== null);
-  userSearch    = signal('');
-  isLoading     = signal(false);
-  currentPage   = signal(1);
-  pageSize      = signal(StaticData.PAGE_SIZE);
+  isEditing = computed(() => this.editingUserId() !== null);
+  userSearch = signal('');
+  isLoading = signal(false);
+  currentPage = signal(1);
+  pageSize = signal(StaticData.PAGE_SIZE);
 
-  userList    = signal<UserManage[]>([]);
+  userList = signal<UserManage[]>([]);
   departments = signal<Department[]>([]);
-  roles       = signal<Role[]>([]);
+  roles = signal<Role[]>([]);
 
   filteredDepartments = computed(() =>
     this.departments().filter(d => d.isActive)
   );
 
   userForm: FormGroup = this.fb.group({
-    userName:        ['', [Validators.required, Validators.minLength(3)]],
-    email:           ['', [Validators.required, Validators.email]],
-    fullName:        ['', [Validators.required, Validators.minLength(2)]],
-    roleName:        ['', Validators.required],
-    departmentId:    ['', Validators.required],
-    password:        ['', [Validators.required, Validators.minLength(3)]],
+    userName: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    fullName: ['', [Validators.required, Validators.minLength(2)]],
+    roleName: ['', Validators.required],
+    departmentId: ['', Validators.required],
+    password: ['', [Validators.required, Validators.minLength(3)]],
     confirmPassword: ['', Validators.required],
-    active:          [true]
+    active: [true]
   }, { validators: this.passwordMatchValidator });
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password');
     const confirmPassword = control.get('confirmPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       return { mismatch: true };
     }
@@ -68,17 +68,17 @@ export class CreateUserComponent implements OnInit {
   }
 
   permissions = signal({
-    canView:   false,
+    canView: false,
     canCreate: false,
     canUpdate: false,
     canDelete: false
   });
 
-  canView   = computed(() => this.permissions().canView);
+  canView = computed(() => this.permissions().canView);
   canCreate = computed(() => this.permissions().canCreate);
   canUpdate = computed(() => this.permissions().canUpdate);
   canDelete = computed(() => this.permissions().canDelete);
-  canSave   = computed(() => this.isEditing() ? this.canUpdate() : this.canCreate());
+  canSave = computed(() => this.isEditing() ? this.canUpdate() : this.canCreate());
 
   filteredUserList = computed(() => {
     const q = this.userSearch().toLowerCase();
@@ -115,12 +115,12 @@ export class CreateUserComponent implements OnInit {
     const menus = this.storageService.getAngularItem<MenuResponse[]>('menus');
     const userManagementMenu = menus?.find(
       (menu) => menu.name?.toUpperCase() === 'USER_MANAGEMENT' ||
-                menu.url?.toLowerCase().includes('/users')
+        menu.url?.toLowerCase().includes('/users')
     );
 
     const userMenu = userManagementMenu?.children?.find(
       (child) => child.name?.toUpperCase() === 'CREATE_USER' ||
-                 child.url?.toLowerCase() === '/users'
+        child.url?.toLowerCase() === '/users'
     );
 
     if (!userMenu) {
@@ -129,7 +129,7 @@ export class CreateUserComponent implements OnInit {
     }
 
     this.permissions.set({
-      canView:   !!userMenu.canView,
+      canView: !!userMenu.canView,
       canCreate: !!userMenu.canCreate,
       canUpdate: !!userMenu.canUpdate,
       canDelete: !!userMenu.canDelete
@@ -194,7 +194,7 @@ export class CreateUserComponent implements OnInit {
   }
 
   private setPasswordValidators(isEditing: boolean): void {
-    const password        = this.userForm.get('password');
+    const password = this.userForm.get('password');
     const confirmPassword = this.userForm.get('confirmPassword');
     if (!password || !confirmPassword) return;
 
@@ -202,7 +202,7 @@ export class CreateUserComponent implements OnInit {
       password.clearValidators();
       confirmPassword.clearValidators();
     } else {
-      password.setValidators([Validators.required, Validators.minLength(6)]);
+      password.setValidators([Validators.required, Validators.minLength(3)]);
       confirmPassword.setValidators([Validators.required]);
     }
 
@@ -213,27 +213,27 @@ export class CreateUserComponent implements OnInit {
   isInvalid(field: string): boolean {
     const ctrl = this.userForm.get(field);
     const isFieldInvalid = !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
-    
+
     if (field === 'confirmPassword' && this.userForm.hasError('mismatch') && (ctrl?.dirty || ctrl?.touched)) {
       return true;
     }
-    
+
     return isFieldInvalid;
   }
 
   getError(field: string): string {
     const ctrl = this.userForm.get(field);
-    
+
     if (ctrl?.errors) {
-      if (ctrl.errors['required'])  return 'This field is required.';
+      if (ctrl.errors['required']) return 'This field is required.';
       if (ctrl.errors['minlength']) return `Minimum ${ctrl.errors['minlength'].requiredLength} characters.`;
-      if (ctrl.errors['email'])     return 'Invalid email format.';
+      if (ctrl.errors['email']) return 'Invalid email format.';
     }
-    
+
     if (field === 'confirmPassword' && this.userForm.hasError('mismatch')) {
       return 'Passwords do not match.';
     }
-    
+
     return '';
   }
 
@@ -251,17 +251,17 @@ export class CreateUserComponent implements OnInit {
     }
 
     const formValue = this.userForm.getRawValue();
-    const editing   = this.editingUserId();
+    const editing = this.editingUserId();
 
     if (editing) {
       const updatePayload: UserManage = {
-        id:           editing,
-        userName:     formValue.userName,
-        email:        formValue.email,
-        fullName:     formValue.fullName,
-        roleName:     formValue.roleName,
+        id: editing,
+        userName: formValue.userName,
+        email: formValue.email,
+        fullName: formValue.fullName,
+        roleName: formValue.roleName,
         departmentId: formValue.departmentId,
-        active:       formValue.active
+        active: formValue.active
       };
 
       this.userService.update(updatePayload).subscribe({
@@ -277,22 +277,22 @@ export class CreateUserComponent implements OnInit {
             this.toastr.error(res.message, 'Error');
           }
         },
-        error: (err) => {   
-            this.errorHandler.handleErrorWithToster(err);
+        error: (err) => {
+          this.errorHandler.handleErrorWithToster(err);
         }
       });
 
     } else {
 
       const createPayload: UserManage = {
-        id:              0,  
-        userName:        formValue.userName,
-        email:           formValue.email,
-        fullName:        formValue.fullName,
-        departmentId:    formValue.departmentId,
-        roleName:        formValue.roleName,
-        active:          true,  
-        password:        formValue.password,
+        id: 0,
+        userName: formValue.userName,
+        email: formValue.email,
+        fullName: formValue.fullName,
+        departmentId: formValue.departmentId,
+        roleName: formValue.roleName,
+        active: true,
+        password: formValue.password,
         confirmPassword: formValue.confirmPassword
       };
 
@@ -306,8 +306,8 @@ export class CreateUserComponent implements OnInit {
             this.toastr.error(res.message, 'Error');
           }
         },
-        error: (err) => {   
-            this.errorHandler.handleErrorWithToster(err);
+        error: (err) => {
+          this.errorHandler.handleErrorWithToster(err);
         }
       });
     }
@@ -322,13 +322,13 @@ export class CreateUserComponent implements OnInit {
     this.editingUserId.set(user.id);
     this.setPasswordValidators(true);
     this.userForm.patchValue({
-      userName:        user.userName,
-      email:           user.email,
-      fullName:        user.fullName,
-      roleName:        user.roleName,
-      departmentId:    user.departmentId,
-      active:          user.active,
-      password:        '',
+      userName: user.userName,
+      email: user.email,
+      fullName: user.fullName,
+      roleName: user.roleName,
+      departmentId: user.departmentId,
+      active: user.active,
+      password: '',
       confirmPassword: ''
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });

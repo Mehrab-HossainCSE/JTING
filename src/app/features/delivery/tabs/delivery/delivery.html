@@ -1,4 +1,10 @@
 <div class="delivery-container">
+
+  <!-- Page Title -->
+  <div class="page-title">
+    <h2>Product Delivery (SKU)</h2>
+  </div>
+
   <!-- Top Three-Column Section -->
   <div class="top-row-grid">
 
@@ -15,7 +21,7 @@
               (ngModelChange)="forwarder.set($event)" />
           </div>
           <div class="form-group-custom">
-            <label for="poInput">PO No</label>
+            <label for="poInput">PO. :</label>
             <input id="poInput" type="text" class="form-input-custom" [ngModel]="poNo()"
               (ngModelChange)="poNo.set($event)" />
           </div>
@@ -51,7 +57,7 @@
           </div>
         </div>
 
-        <div class="reprint-divider">Reprint</div>
+        <div class="reprint-divider">Operations</div>
 
         <div class="reprint-operation-row">
           <div class="form-group-custom reprint-input-wrapper">
@@ -71,71 +77,115 @@
       <div class="delivery-card-header">
         <h3>Operations</h3>
       </div>
-      <div class="delivery-card-body">
-        <div class="middle-inputs-grid">
+      <div class="delivery-card-body middle-card-body">
 
-          <div class="form-group-custom">
-            <label for="challanNoInput">Challan No</label>
-            <input id="challanNoInput" type="text" class="form-input-custom" [ngModel]="challanNo()"
-              (ngModelChange)="challanNo.set($event)" />
+        <div class="form-row-inline">
+          <label for="challanNoInput">Challan No</label>
+          <input id="challanNoInput" type="text" class="form-input-custom" [ngModel]="challanNo()"
+            (ngModelChange)="challanNo.set($event)" />
+        </div>
+
+        <div class="form-row-inline">
+          <label for="salesOrderInput">Sales Order</label>
+          <input id="salesOrderInput" type="text" class="form-input-custom" [ngModel]="salesOrder()"
+            (ngModelChange)="salesOrder.set($event)" />
+        </div>
+
+        <div class="form-row-inline">
+          <label for="truckInput">Truck</label>
+          <div class="sd-wrapper">
+            <input id="truckInput" type="text" class="form-input-custom sd-input" autocomplete="off"
+              [ngModel]="truck()" (ngModelChange)="truck.set($event)"
+              (focus)="truckOpen.set(true)"
+              (blur)="closeDropdownLater(truckOpen)" />
+            <i class="bi bi-chevron-down sd-caret"></i>
+            @if (truckOpen() && filteredTrucks().length > 0) {
+              <div class="sd-list">
+                @for (opt of filteredTrucks(); track opt.truckId) {
+                  <div class="sd-item" (mousedown)="selectTruck(opt)">{{ opt.truckName }}</div>
+                }
+              </div>
+            }
           </div>
+        </div>
 
-          <div class="form-group-custom">
-            <label for="salesOrderInput">Sales Order</label>
-            <input id="salesOrderInput" type="text" class="form-input-custom" [ngModel]="salesOrder()"
-              (ngModelChange)="salesOrder.set($event)" />
+        <div class="form-row-inline">
+          <label for="driverInput">Driver</label>
+          <div class="sd-wrapper">
+            <input id="driverInput" type="text" class="form-input-custom sd-input" autocomplete="off"
+              [ngModel]="driver()" (ngModelChange)="driver.set($event)"
+              (focus)="driverOpen.set(true)"
+              (blur)="closeDropdownLater(driverOpen)" />
+            <i class="bi bi-chevron-down sd-caret"></i>
+            @if (driverOpen() && filteredDrivers().length > 0) {
+              <div class="sd-list">
+                @for (opt of filteredDrivers(); track opt.driverId) {
+                  <div class="sd-item" (mousedown)="selectDriver(opt)">{{ opt.driverName }}</div>
+                }
+              </div>
+            }
           </div>
+        </div>
 
-          <div class="form-group-custom">
-            <label for="truckInput">Truck</label>
-            <input id="truckInput" type="text" class="form-input-custom" [ngModel]="truck()"
-              (ngModelChange)="truck.set($event)" />
+        <div class="form-row-inline">
+          <label for="destinationInput">Destination</label>
+          <div class="sd-wrapper">
+            <input id="destinationInput" type="text" class="form-input-custom sd-input" autocomplete="off"
+              [ngModel]="destination()" (ngModelChange)="destination.set($event)"
+              (focus)="destinationOpen.set(true)"
+              (blur)="closeDropdownLater(destinationOpen)" />
+            <i class="bi bi-chevron-down sd-caret"></i>
+            @if (destinationOpen() && filteredDestinations().length > 0) {
+              <div class="sd-list">
+                @for (opt of filteredDestinations(); track opt.destinationId) {
+                  <div class="sd-item" (mousedown)="selectDestination(opt)">{{ opt.destinationName }}</div>
+                }
+              </div>
+            }
           </div>
+        </div>
 
-          <div class="form-group-custom">
-            <label for="driverInput">Driver</label>
-            <input id="driverInput" type="text" class="form-input-custom" [ngModel]="driver()"
-              (ngModelChange)="driver.set($event)" />
-          </div>
-
-          <div class="form-group-custom col-span-2">
-            <label for="destinationInput">Destination</label>
-            <input id="destinationInput" type="text" class="form-input-custom" [ngModel]="destination()"
-              (ngModelChange)="destination.set($event)" />
-          </div>
-
-          <div class="form-group-custom">
+        <!-- Barcode (large) + Qty (small) -->
+        <div class="barcode-qty-row">
+          <div class="form-group-custom barcode-group">
             <label for="barcodeInput">Barcode</label>
             <input id="barcodeInput" type="text" class="form-input-custom" [ngModel]="barcode()"
-              (ngModelChange)="barcode.set($event)" />
+              (ngModelChange)="barcode.set($event)" (keyup.enter)="onBarcodeEnter()" />
           </div>
+          <div class="form-group-custom qty-group">
+            <label for="barcodeQtyInput">Qty</label>
+            <input id="barcodeQtyInput" type="number" class="form-input-custom text-center" [ngModel]="qty()"
+              (ngModelChange)="qty.set($event)" />
+          </div>
+        </div>
 
+        <!-- UOM Select + Batch No + Batch Qty -->
+        <div class="uom-batch-row">
+          <select id="uomSelectInput" class="form-select-custom uom-select" aria-label="Unit of measure"
+            [ngModel]="uomSelectId()" (ngModelChange)="onUomChange($event)">
+            @for (s of skuSettings(); track s.id) {
+              <option [ngValue]="s.id">{{ s.name }}</option>
+            }
+          </select>
           <div class="form-group-custom">
             <label for="batchNoInput">Batch No</label>
             <input id="batchNoInput" type="text" class="form-input-custom" [ngModel]="batchNo()"
               (ngModelChange)="batchNo.set($event)" />
           </div>
-
-          <div class="bottom-action-row col-span-2">
-            <div class="small-tab-bar">
-              <button type="button" class="small-tab-btn" [class.active]="activeTab() === 'details'"
-                (click)="activeTab.set('details')">Details</button>
-              <button type="button" class="small-tab-btn" [class.active]="activeTab() === 'barcode'"
-                (click)="activeTab.set('barcode')">Barcode</button>
-            </div>
-            <div class="form-group-custom flex-1">
-              <label for="detailsDropdownSelect" class="visually-hidden">Options</label>
-              <select id="detailsDropdownSelect" class="form-select-custom"
-                aria-label="Select details or barcode option">
-                <option value="">Select Option...</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-              </select>
-            </div>
-            <button type="button" class="btn-green btn-search-mid" (click)="onSearch()">Search</button>
+          <div class="form-group-custom">
+            <label for="batchQtyInput">Batch Qty</label>
+            <input id="batchQtyInput" type="text" class="form-input-custom" [ngModel]="batchQty()"
+              (ngModelChange)="batchQty.set($event)" />
           </div>
-
         </div>
+
+        <!-- Search -->
+        <div class="form-group-custom">
+          <label for="searchInput">Search</label>
+          <input id="searchInput" type="text" class="form-input-custom" [ngModel]="searchText()"
+            (ngModelChange)="onSearchTextChange($event)" (keyup.enter)="onSearch()" />
+        </div>
+
       </div>
     </div>
 
@@ -171,11 +221,11 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of summaryList(); track item.batchId) {
+            @for (item of summaryList(); track item.id) {
             <tr>
-              <td>{{ item.batchId }}</td>
-              <td><span class="sku-pill">{{ item.skuCode }}</span></td>
-              <td>{{ item.skuName }}</td>
+              <td>{{ item.id }}</td>
+              <td><span class="sku-pill">{{ item.skucode }}</span></td>
+              <td class="sku-name-cell">{{ item.skuname }}</td>
               <td>{{ item.uom }}</td>
               <td class="text-end fw-bold">{{ item.qty }}</td>
               <td>{{ item.remarks }}</td>
@@ -205,24 +255,30 @@
               <th>Unit Of Measure</th>
               <th class="text-end">Qty</th>
               <th class="text-center">Edit Qty</th>
+              <th class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
             @for (item of dataList(); track item.barcode) {
-            <tr>
-              <td class="text-truncate barcode-cell" [title]="item.barcode">{{ item.barcode }}</td>
-              <td><span class="sku-pill">{{ item.skuCode }}</span></td>
-              <td>{{ item.skuName }}</td>
+            <tr [id]="'row-' + item.barcode" [class.selected-row]="item.barcode === selectedBarcode()">
+              <td class="barcode-cell" [title]="item.barcode">{{ item.barcode }}</td>
+              <td><span class="sku-pill">{{ item.skucode }}</span></td>
+              <td class="sku-name-cell">{{ item.skuname }}</td>
               <td>{{ item.uom }}</td>
               <td class="text-end fw-bold">{{ item.qty }}</td>
               <td class="text-center">
                 <input type="number" class="table-edit-input" aria-label="Edit quantity" [(ngModel)]="item.editQty"
-                  (ngModelChange)="updateScannedCount()" />
+                  (ngModelChange)="updateScannedCount()" (keyup.enter)="onUpdateQty(item)" (blur)="onUpdateQty(item)" />
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn-delete-action" aria-label="Delete item" (click)="onDelete(item)">
+                  <i class="bi bi-trash"></i>
+                </button>
               </td>
             </tr>
             } @empty {
             <tr>
-              <td colspan="6" class="empty-state">No scan data items available.</td>
+              <td colspan="7" class="empty-state">No scan data items available.</td>
             </tr>
             }
           </tbody>

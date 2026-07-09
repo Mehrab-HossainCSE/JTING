@@ -8,23 +8,40 @@ export interface DeliveryMasterData {
 }
 
 export interface DeliveryTempItem {
-  barcode: string;
-  batchNo: string;
-  batchQty: number;
-  skuCode: string;
-  skuName: string;
-  qty: number;
-  remarks: string;
-  driverId: string;
+  slno: number;
+  driverID: string;
   driverName: string;
-  truckId: string;
+  truckID: string;
   truckName: string;
-  destinationId: string;
+  destinationID: string;
   destinationName: string;
-  challanNo: string;
-  salesOrder: string;
-  settingQty: number;
-  settingText: string;
+  barcode: string | null;
+  chln: string | null;
+  chlnQty: number | null;
+  qty: number;
+  oldQty: number | null;
+  brandId: string | null;
+  brandName: string | null;
+  subBrandId: string | null;
+  subBrandName: string | null;
+  userId: string;
+  barcodeType: string | null;
+  skuname: string;
+  skucode: string;
+  id: string;
+  isWithoutPicking: boolean;
+  dcdt: string | null;
+  pTimeA: string | null;
+  remarks: string | null;
+  healthWarningName: string | null;
+  challanNo: string | null;
+  salesOrder: string | null;
+  uom: string;
+}
+
+export interface DeliveryTempProgress {
+  details: DeliveryTempItem[];
+  summary: DeliveryTempItem[];
 }
 
 export interface ScanBarcodeRequest {
@@ -77,4 +94,30 @@ export interface SaveDeliveryRequest {
   containerNo: string;
   contactNo: string;
   lockNo: string;
+}
+
+export interface ScanBarcodeResponse {
+  isSuccess: boolean;
+  message: string;
+  requiresPickingOverride: boolean;
+  details: DeliveryTempItem[];
+  summary: DeliveryTempItem[];
+}
+
+export interface SummaryItem {
+  id: string;
+  skucode: string;
+  skuname: string;
+  uom: string;
+  qty: number;
+  remarks: string | null;
+}
+
+export interface DataItem {
+  barcode: string;
+  skucode: string;
+  skuname: string;
+  uom: string;
+  qty: number;
+  editQty: number;
 }

@@ -24,8 +24,15 @@ src/app/
   core/          # App-wide singletons
     guards/        # auth.guard.ts — protects all non-auth routes
     interceptors/  # auth.interceptor.ts — attaches Bearer token to every request
-    models/        # Shared interfaces (ApiResponse, auth models, etc.)
-    services/      # Global services (AuthService, LoaderService, StorageService, MenuService...)
+    models/        # Shared interfaces (ApiResponse, auth models, etc.), plus per-feature
+                   # subfolders mirroring domains (models/setups/<entity>/, models/receives/<entity>/,
+                   # models/picking/, models/delivery/, models/cancellation/, ...)
+    services/      # Global services (AuthService, LoaderService, StorageService, MenuService...),
+                   # plus per-feature subfolders named <domain>Services/ (setupServices/,
+                   # receiveServices/, pickingServices/, deliveryServices/, cancellationServices/,
+                   # roleManageServices/, userManageServices/, navMenusServices/, skuServices/).
+                   # New feature work should follow this per-domain subfolder pattern, not add
+                   # flat files alongside the older global services/models.
   features/      # Feature modules (lazy-loaded)
     auth/          # Login (public, no layout)
     dashboard/
@@ -93,7 +100,7 @@ Use `inject()` for all dependency injection (not constructor injection).
 
 ## Coding Standards
 
-**File naming:** `kebab-case.type.ts` for most files. Tab-level sub-components in `tabs/` subdirectories use just `kebab-case.ts` (e.g., `transfer-restore.ts`, `picking.ts`).
+**File naming:** `kebab-case.type.ts` for most files. Tab-level sub-components in `tabs/` subdirectories use just `kebab-case.ts` (e.g., `transfer-restore.ts`, `picking.ts`). Exception: per-feature service/model subfolder names use camelCase, not kebab-case (e.g., `setupServices/`, `deliveryServices/`, `cancellationServices/`) — this is existing convention, don't "fix" it to kebab-case.
 
 **Accessibility:** Every form input must have a static `for`/`id` pair on its label. Controls without visible labels need `aria-label`.
 

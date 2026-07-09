@@ -1,16 +1,27 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { SkuService } from '../../../../../../core/services/skuServices/sku-service';
+import { CancellationService } from '../../../../../../core/services/cancellationServices/cancellation.service';
+import { Sku } from '../../../../../../core/models/setups/sku/sku';
+import { SkuSetting } from '../../../../../../core/models/setups/sku/sku-setting';
+import { ToastrService } from 'ngx-toastr';
+import { LoaderService } from '../../../../../../core/services/loader.service';
+import { ReceiveCancellationSaveRequest } from '../../../../../../core/models/cancellation/cancellation.model';
+import { ErrorHandlerService } from '../../../../../../core/services/error-handler.service';
 
 export interface SequenceRecord {
   seqNo: string;
   isChecked: boolean;
+  barcode?: string;
 }
 
 export interface CancelItem {
   skuName: string;
   seqNo: string;
   qty: number;
+  barcode?: string;
 }
 
 @Component({
@@ -21,7 +32,13 @@ export interface CancelItem {
   styleUrl: './receive-cancelation.scss'
 })
 export class ReceiveCancelation implements OnInit {
-  // Select Dropdowns
+
+  private skuService = inject(SkuService);
+  private cancellationService = inject(CancellationService);
+  private toastr = inject(ToastrService);
+  private loader = inject(LoaderService);
+  private errorHandler = inject(ErrorHandlerService);
+
   selectedSku = signal('');
   selectedBox = signal('');
   selectedPallet = signal('');
@@ -29,63 +46,216 @@ export class ReceiveCancelation implements OnInit {
   cancellationDate = signal(new Date().toISOString().split('T')[0]);
   remarks = signal('');
 
-  // Dropdown Lists
-  skus = signal<{ code: string; name: string }[]>([
-    { code: 'SKU-001', name: 'Item Alpha Premium' },
-    { code: 'SKU-002', name: 'Item Beta Standard' },
-    { code: 'SKU-003', name: 'Item Gamma Deluxe' }
-  ]);
-  boxes = signal<string[]>(['Box-A01', 'Box-B02', 'Box-C03', 'Box-D04']);
-  pallets = signal<string[]>(['15109096100326000088256', '15109096100326000088265', '15109096100326000088274']);
-  qtyOptions = signal<number[]>([10, 20, 50, 100, 150]);
+  skus = signal<Sku[]>([]);
+  boxes = signal<string[]>([]);
+  pallets = signal<string[]>([]);
+  qtyOptions = signal<SkuSetting[]>([]);
 
-  // Metadata labels
   skuDisplay = signal('0');
   batchDisplay = signal('0');
   palletDisplay = signal('0');
   recvDateDisplay = signal('0');
   shiftDisplay = signal('0');
 
-  // Left List (Sequence list)
   sequenceList = signal<SequenceRecord[]>([]);
   allSelectChecked = signal(false);
 
-  // Right List (Cancellation list)
   cancelItems = signal<CancelItem[]>([]);
 
-  // Totals
   totalCase = signal(0);
   totalQty = signal(0);
 
   isLoading = signal(false);
 
   ngOnInit(): void {
-    // Set initial date
     this.cancellationDate.set(new Date().toISOString().split('T')[0]);
+    this.loadDropdownData();
   }
 
-  // Trigger when Sku, Box, or Pallet changes
-  onDropdownChange(): void {
-    if (this.selectedSku() && this.selectedBox() && this.selectedPallet()) {
-      const skuObj = this.skus().find(s => s.code === this.selectedSku());
-      
-      // Update metadata displays
-      this.skuDisplay.set(this.selectedSku());
-      this.batchDisplay.set('41744516');
-      this.palletDisplay.set(this.selectedPallet());
-      this.recvDateDisplay.set('06/22/2026');
-      this.shiftDisplay.set('Day Shift');
+  loadDropdownData(): void {
+    this.isLoading.set(true);
+    forkJoin({
+      skus: this.skuService.getAll(),
+      skuSettings: this.skuService.getSetting()
+    }).subscribe({
+      next: ({ skus, skuSettings }) => {
+        if (skus.success) this.skus.set(skus.data);
+        if (skuSettings.success) {
+          this.qtyOptions.set(skuSettings.data);
+          const kuOption = skuSettings.data.find(opt => opt.name?.toUpperCase() === 'KU');
+          if (kuOption) {
+            this.selectedQty.set(String(kuOption.qty));
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load SKU dropdown data:', err);
+        this.isLoading.set(false);
+      },
+      complete: () => this.isLoading.set(false)
+    });
+  }
 
-      // Generate sequence list
-      this.sequenceList.set([
-        { seqNo: 'SEQ-100201', isChecked: false },
-        { seqNo: 'SEQ-100202', isChecked: false },
-        { seqNo: 'SEQ-100203', isChecked: false },
-        { seqNo: 'SEQ-100204', isChecked: false }
-      ]);
+  onSkuChange(): void {
+    const skuCode = this.selectedSku();
+    if (!skuCode) {
+      this.resetMetadata();
+      this.sequenceList.set([]);
+      this.boxes.set([]);
+      this.pallets.set([]);
+      this.selectedBox.set('');
+      this.selectedPallet.set('');
       this.allSelectChecked.set(false);
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.cancellationService.getSkuCancelDetails(skuCode).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.skuDisplay.set(skuCode);
+
+          const boxList = res.data.boxes ? res.data.boxes.filter(box => box !== null && box !== undefined && box.trim() !== '') : [];
+          this.boxes.set(boxList);
+
+          const palletList = res.data.pallets ? res.data.pallets.filter(plt => plt !== null && plt !== undefined && plt.trim() !== '') : [];
+          this.pallets.set(palletList);
+
+          this.sequenceList.set([]);
+          this.selectedBox.set('');
+          this.selectedPallet.set('');
+          this.allSelectChecked.set(false);
+        }
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load SKU cancel details:', err);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  onDropdownChange(): void {
+    const boxName = this.selectedBox();
+    const palletNo = this.selectedPallet();
+
+    if (boxName) {
+      this.loadBoxDetails(boxName);
+    } else if (palletNo) {
+      this.loadPalletDetails(palletNo);
     } else {
       this.resetMetadata();
+      this.sequenceList.set([]);
+      this.allSelectChecked.set(false);
+    }
+  }
+
+  loadBoxDetails(boxName: string): void {
+    this.isLoading.set(true);
+    this.cancellationService.getReceiveBoxDetails(boxName).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const details: any[] = Array.isArray(res.data) ? res.data : [];
+          if (details.length > 0) {
+            const first = details[0];
+            this.skuDisplay.set(first.skuCode || this.selectedSku());
+            this.batchDisplay.set(first.batchNo || '0');
+            this.palletDisplay.set(first.palletNo || '0');
+
+            this.recvDateDisplay.set(this.formatRcvDate(first.rcvDate));
+
+            this.shiftDisplay.set(first.shift || '0');
+
+            this.sequenceList.set(details.map(item => ({
+              seqNo: item.sequenceNo || item.barcode || '',
+              isChecked: false,
+              barcode: item.barcode || ''
+            })).filter(s => s.seqNo !== ''));
+          } else {
+            this.sequenceList.set([]);
+          }
+          this.allSelectChecked.set(false);
+        }
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load box details:', err);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  loadPalletDetails(palletNo: string): void {
+    this.isLoading.set(true);
+    this.cancellationService.getReceivePalletDetails(palletNo).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const details: any[] = Array.isArray(res.data) ? res.data : [];
+          if (details.length > 0) {
+            const first = details[0];
+            this.skuDisplay.set(first.skuCode || this.selectedSku());
+            this.batchDisplay.set(first.batchNo || '0');
+            this.palletDisplay.set(first.palletNo || palletNo);
+
+            this.recvDateDisplay.set(this.formatRcvDate(first.rcvDate));
+
+            this.shiftDisplay.set(first.shift || '0');
+
+            this.sequenceList.set(details.map(item => ({
+              seqNo: item.sequenceNo || item.barcode || '',
+              isChecked: false,
+              barcode: item.barcode || ''
+            })).filter(s => s.seqNo !== ''));
+          } else {
+            this.sequenceList.set([]);
+          }
+          this.allSelectChecked.set(false);
+        }
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load pallet details:', err);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  private formatRcvDate(dateStr: string | null | undefined): string {
+    if (!dateStr) return '0';
+
+    const normalizedStr = dateStr.replace(/\s+/g, ' ').trim();
+    const date = new Date(normalizedStr);
+    if (!isNaN(date.getTime())) {
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      const yyyy = date.getFullYear();
+      return `${mm}/${dd}/${yyyy}`;
+    }
+
+    const parts = normalizedStr.split(' ');
+    if (parts.length >= 3) {
+      const months: { [key: string]: string } = {
+        jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+        jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12'
+      };
+      const monthKey = parts[0].toLowerCase().substring(0, 3);
+      const mm = months[monthKey];
+      const dd = parts[1].padStart(2, '0');
+      const yyyy = parts[2];
+
+      if (mm && !isNaN(Number(dd)) && !isNaN(Number(yyyy)) && yyyy.length === 4) {
+        return `${mm}/${dd}/${yyyy}`;
+      }
+    }
+
+    return dateStr;
+  }
+
+  onQtyChange(): void {
+    const qtyVal = Number(this.selectedQty());
+    if (qtyVal > 0) {
+      this.cancelItems.update(list => list.map(item => ({ ...item, qty: qtyVal })));
+      this.updateTotals();
     }
   }
 
@@ -96,31 +266,29 @@ export class ReceiveCancelation implements OnInit {
   }
 
   onAdd(): void {
-    const skuObj = this.skus().find(s => s.code === this.selectedSku());
+    const skuObj = this.skus().find(s => s.skucode === this.selectedSku());
     if (!skuObj) return;
 
     const checkedItems = this.sequenceList().filter(item => item.isChecked);
     if (checkedItems.length === 0) return;
 
-    const defaultQty = Number(this.selectedQty()) || 30; // default to 30 or selected qty
+    const defaultQty = Number(this.selectedQty()) || 30;
 
     const newCancelItems: CancelItem[] = checkedItems.map(item => ({
-      skuName: skuObj.name,
+      skuName: skuObj.skuname,
       seqNo: item.seqNo,
-      qty: defaultQty
+      qty: defaultQty,
+      barcode: item.barcode
     }));
 
-    // Add to right list, preventing duplicates
     this.cancelItems.update(list => {
       const filtered = list.filter(l => !newCancelItems.some(n => n.seqNo === l.seqNo));
       return [...filtered, ...newCancelItems];
     });
 
-    // Remove added items from left list
     this.sequenceList.update(list => list.filter(item => !item.isChecked));
     this.allSelectChecked.set(false);
 
-    // Update Totals
     this.updateTotals();
   }
 
@@ -128,13 +296,14 @@ export class ReceiveCancelation implements OnInit {
     const itemToRemove = this.cancelItems().find(item => item.seqNo === seqNo);
     if (!itemToRemove) return;
 
-    // Remove from right list
     this.cancelItems.update(list => list.filter(item => item.seqNo !== seqNo));
 
-    // Return to left list
-    this.sequenceList.update(list => [...list, { seqNo: itemToRemove.seqNo, isChecked: false }]);
+    this.sequenceList.update(list => [...list, {
+      seqNo: itemToRemove.seqNo,
+      isChecked: false,
+      barcode: itemToRemove.barcode
+    }]);
 
-    // Update Totals
     this.updateTotals();
   }
 
@@ -152,6 +321,8 @@ export class ReceiveCancelation implements OnInit {
     this.remarks.set('');
     this.cancelItems.set([]);
     this.sequenceList.set([]);
+    this.boxes.set([]);
+    this.pallets.set([]);
     this.resetMetadata();
     this.updateTotals();
   }
@@ -165,12 +336,37 @@ export class ReceiveCancelation implements OnInit {
   }
 
   onSave(): void {
-    console.log('Saving Cancellation details:', {
-      cancellationDate: this.cancellationDate(),
-      remarks: this.remarks(),
-      totalCase: this.totalCase(),
-      totalQty: this.totalQty(),
-      items: this.cancelItems()
+    const barcodesList = this.cancelItems()
+      .map(item => item.barcode)
+      .filter((b): b is string => !!b);
+
+    if (barcodesList.length === 0) {
+      this.toastr.warning('No items added to cancellation.', 'Warning');
+      return;
+    }
+
+    const payload: ReceiveCancellationSaveRequest = {
+      barcodes: barcodesList,
+      pallets: [],
+      remarks: this.remarks() || null
+    };
+
+    this.loader.show('Saving cancellation...');
+    this.cancellationService.saveReceiveCancellation(payload).subscribe({
+      next: (res) => {
+        this.loader.hide();
+        if (res.success) {
+          this.toastr.success(res.message || 'Cancellation saved successfully!', 'Success');
+          this.onCancel();
+        } else {
+          this.errorHandler.handleErrorWithToster({ error: res });
+        }
+      },
+      error: (err) => {
+        this.loader.hide();
+        console.error('Error saving cancellation:', err);
+        this.errorHandler.handleErrorWithToster(err);
+      }
     });
   }
 
