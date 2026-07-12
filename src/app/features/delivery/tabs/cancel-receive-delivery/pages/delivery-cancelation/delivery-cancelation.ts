@@ -248,20 +248,15 @@ export class DeliveryCancelation implements OnInit {
       barcode: item.barcode
     }));
 
-    // Add to right list, preventing duplicates
     this.cancelItems.update(list => {
       const filtered = list.filter(l => !newCancelItems.some(n => n.seqNo === l.seqNo));
       return [...filtered, ...newCancelItems];
     });
 
-    // Remove added items from left sequence list
     this.sequenceList.update(list => list.filter(item => !item.isChecked));
     this.allSelectChecked.set(false);
 
-    // Update Totals
     this.updateTotals();
-
-    // Fetch locations for selected barcodes
     this.fetchLocationsForSelectedBarcodes();
   }
 
@@ -269,20 +264,15 @@ export class DeliveryCancelation implements OnInit {
     const itemToRemove = this.cancelItems().find(item => item.seqNo === seqNo);
     if (!itemToRemove) return;
 
-    // Remove from right list
     this.cancelItems.update(list => list.filter(item => item.seqNo !== seqNo));
 
-    // Return to left list
     this.sequenceList.update(list => [...list, {
       seqNo: itemToRemove.seqNo,
       isChecked: false,
       barcode: itemToRemove.barcode
     }]);
 
-    // Update Totals
     this.updateTotals();
-
-    // Fetch locations for selected barcodes
     this.fetchLocationsForSelectedBarcodes();
   }
 
