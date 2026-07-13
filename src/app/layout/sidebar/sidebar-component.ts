@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { MenuService } from '../../core/services/menu.service';
 import { UIStateService } from '../../core/services/ui-state.service';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MenuResponse } from '../../core/models/MenuResponse';
@@ -20,7 +20,21 @@ export class SidebarComponent {
   menuService = inject(MenuService);
   authService = inject(AuthService);
   sanitizer = inject(DomSanitizer);
+  router = inject(Router);
   isCollapsed = this.uiService.isSidebarCollapsed;
+  expandedMenus = signal<Record<number, boolean>>({});
+
+  warehouseMenus = computed(() => {
+    return this.menuService.menus().filter(
+      (m) => m.moduleId !== '2' && m.moduleId !== 2
+    );
+  });
+
+  regionalMenus = computed(() => {
+    return this.menuService.menus().filter(
+      (m) => m.moduleId === '2' || m.moduleId === 2
+    );
+  });
 
   toggleSidebar() {
     this.uiService.toggleSidebar();
@@ -70,6 +84,8 @@ export class SidebarComponent {
     switch (menu.name?.toUpperCase()) {
       case 'MASTER_SETUP':
         return '/master';
+      case 'R_MASTER_SETUP':
+        return '/r-master';
       case 'DASHBOARD':
         return '/dashboard';
       case 'REPORT':
@@ -85,12 +101,84 @@ export class SidebarComponent {
       case 'USERS':
       case 'USER_MANAGEMENT':
         return '/users';
-      default:
-        return menu.children?.find((child) => !!child.url)?.url ?? '/dashboard';
+      default: {
+        const childUrl = menu.children?.find((child) => !!child.url)?.url;
+        if (childUrl) return childUrl;
+        
+        if (menu.subMenus?.length) {
+          for (const sub of menu.subMenus) {
+            const subChildUrl = sub.children?.find((child) => !!child.url)?.url;
+            if (subChildUrl) return subChildUrl;
+          }
+        }
+        return '/dashboard';
+      }
     }
   }
 
   logout() {
     this.authService.logout();
+  }
+
+  hasNonGeneralSubMenus(menu: MenuResponse): boolean {
+    return !!(menu.subMenus && menu.subMenus.length > 0 &&
+      menu.subMenus.some(sub => sub.subMenuName?.toUpperCase() !== 'GENERAL'));
+  }
+
+  getSubMenuRoute(menu: MenuResponse, subMenu: any): string {
+    const parentRoute = this.getParentRoute(menu);
+    const firstChild = subMenu.children?.find((child: any) => !!child.url);
+    if (!firstChild) return parentRoute;
+
+    const childUrl = firstChild.url;
+    if (childUrl.startsWith(parentRoute)) {
+      return childUrl;
+    }
+    return `${parentRoute.replace(/\/+$/, '')}/${childUrl.replace(/^\/+/, '')}`;
+  }
+
+  isSubMenuActive(menu: MenuResponse, subMenu: any): boolean {
+    const currentUrl = this.router.url;
+    return !!subMenu.children?.some((child: any) => {
+      if (!child.url) return false;
+      const parentRoute = this.getParentRoute(menu);
+      const resolvedUrl = child.url.startsWith(parentRoute)
+        ? child.url
+        : `${parentRoute.replace(/\/+$/, '')}/${child.url.replace(/^\/+/, '')}`;
+      return currentUrl === resolvedUrl || currentUrl.startsWith(resolvedUrl + '/');
+    });
+  }
+
+  isMenuRouteActive(menu: MenuResponse): boolean {
+    const currentUrl = this.router.url;
+    const parentRoute = this.getParentRoute(menu);
+    if (currentUrl === parentRoute || currentUrl.startsWith(parentRoute + '/')) {
+      return true;
+    }
+    if (menu.children?.some(child => child.url && (currentUrl === child.url || currentUrl.startsWith(child.url + '/')))) {
+      return true;
+    }
+    return false;
+  }
+
+  isMenuExpanded(menu: MenuResponse): boolean {
+    if (this.isCollapsed()) return false;
+    
+    const explicitState = this.expandedMenus()[menu.id];
+    if (explicitState !== undefined) {
+      return explicitState;
+    }
+    
+    return this.isMenuRouteActive(menu);
+  }
+
+  toggleMenu(menuId: number, event: MouseEvent, menu: MenuResponse): void {
+    if (this.hasNonGeneralSubMenus(menu)) {
+      const currentExpanded = this.isMenuExpanded(menu);
+      this.expandedMenus.update(state => ({
+        ...state,
+        [menuId]: !currentExpanded
+      }));
+    }
   }
 }

@@ -8,11 +8,17 @@ export interface MenuResponse {
   visible: boolean;
   controllerName?: string;
   actionUrl?: string;
-  moduleId?: number | null;
+  moduleId?: number | string | null;
   canView?: boolean;
   canCreate?: boolean;
   canUpdate?: boolean;
   canDelete?: boolean;
+  children?: MenuResponse[];
+  subMenus?: SubMenu[];
+}
+
+export interface SubMenu {
+  subMenuName: string;
   children?: MenuResponse[];
 }
 

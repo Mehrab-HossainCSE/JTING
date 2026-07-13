@@ -41,6 +41,10 @@ export const routes: Routes = [
         path: 'master',
         loadChildren: () => import('./features/master/master.routes').then(m => m.MASTER_ROUTES),
       },
+      {
+        path: 'r-master',
+        loadChildren: () => import('./features/r-master/r-master.routes').then(m => m.R_MASTER_ROUTES),
+      },
       { 
         path: 'receive', 
         loadChildren: () => import('./features/receive/receive-route').then(m => m.RECEIVE_ROUTES),

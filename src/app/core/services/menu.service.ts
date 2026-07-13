@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { MenuResponse, ApiMenuResponse } from '../models/MenuResponse';
+import { MenuResponse, ApiMenuResponse, SubMenu } from '../models/MenuResponse';
 import { NavMenuService } from './navMenusServices/nav-menu-service';
 import { StorageService } from './storage.service';
 import { finalize } from 'rxjs';
@@ -52,15 +52,26 @@ export class MenuService {
     .subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          const sortedMenus = [...res.data].sort((a, b) => a.displayOrder - b.displayOrder);
+          const sortedMenus = (res.data as any[]).sort((a, b) => a.displayOrder - b.displayOrder);
 
-          sortedMenus.forEach((menu) => {
-            if (menu.children?.length) {
+          sortedMenus.forEach((menu: any) => {
+            if (menu.subMenus && menu.subMenus.length > 0) {
+              const flattened: any[] = [];
+              menu.subMenus.forEach((sub: any) => {
+                if (sub.children && sub.children.length > 0) {
+                  const sortedSubChildren = [...sub.children].sort((a, b) => a.displayOrder - b.displayOrder);
+                  sub.children = sortedSubChildren;
+                  flattened.push(...sortedSubChildren);
+                }
+              });
+              flattened.sort((a, b) => a.displayOrder - b.displayOrder);
+              menu.children = flattened;
+            } else if (menu.children?.length) {
               menu.children = [...menu.children].sort((a, b) => a.displayOrder - b.displayOrder);
             }
           });
 
-          this._menus.set(sortedMenus);
+          this._menus.set(sortedMenus as MenuResponse[]);
           this.storageService.setAngularItem('menus', sortedMenus);
         } else {
           console.warn('Menu API returned unsuccessful response', res.message);

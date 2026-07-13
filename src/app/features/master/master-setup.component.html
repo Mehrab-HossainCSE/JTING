@@ -1,4 +1,5 @@
 <div class="master-setup-container">
+
   <!-- Tabs -->
   <div class="card tabs-card">
     <div class="tabs-header">
@@ -11,7 +12,7 @@
       </div>
     </div>
     <div class="tabs-grid">
-      @for (tab of tabs(); track tab.id) {
+      @for (tab of visibleTabs(); track tab.id) {
         <button
           class="tab-btn"
           [class.active]="activeTabId() === tab.id"

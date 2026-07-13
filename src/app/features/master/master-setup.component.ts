@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, NavigationEnd, RouterOutlet } from '@angular/router';
@@ -33,6 +33,17 @@ export class MasterSetupComponent implements OnInit, OnDestroy {
 
   activeTabId = signal(0);
   tabs = signal<MasterTab[]>([]);
+  subMenus = signal<{ name: string; tabs: MasterTab[] }[]>([]);
+  activeSubMenuName = signal<string | null>(null);
+
+  visibleTabs = computed(() => {
+    const subName = this.activeSubMenuName();
+    if (subName && this.subMenus().length > 0) {
+      const matched = this.subMenus().find((sub) => sub.name === subName);
+      return matched ? matched.tabs : [];
+    }
+    return this.tabs();
+  });
 
   ngOnInit(): void {
     this.loadTabsFromStorage();
@@ -49,21 +60,71 @@ export class MasterSetupComponent implements OnInit, OnDestroy {
       (menu) => menu.name?.toUpperCase() === 'MASTER_SETUP' || menu.url?.toLowerCase() === '/master'
     );
 
-    if (!masterMenu?.children?.length) {
+    if (!masterMenu) {
       this.tabs.set([]);
+      this.subMenus.set([]);
       return;
     }
 
-    const dynamicTabs = masterMenu.children
-      .filter((child): child is MenuResponse => !!child.url && !!child.displayName)
-      .map((child) => ({
-        id: child.id,
-        path: child.url.replace(/^[\/]+/, ''),
-        label: child.displayName,
-        icon: child.navIcon || ''
-      }));
+    // Check if there are subMenus with names other than 'General'
+    const dynamicSubMenus: { name: string; tabs: MasterTab[] }[] = [];
+    let hasNonGeneralSubMenu = false;
 
-    this.tabs.set(dynamicTabs);
+    if (masterMenu.subMenus && masterMenu.subMenus.length > 0) {
+      masterMenu.subMenus.forEach((sub) => {
+        const subName = sub.subMenuName || 'General';
+        if (subName.toUpperCase() !== 'GENERAL') {
+          hasNonGeneralSubMenu = true;
+        }
+
+        const subTabs = (sub.children || [])
+          .filter((child): child is MenuResponse => !!child.url && !!child.displayName)
+          .map((child) => ({
+            id: child.id,
+            path: child.url.replace(/^[\/]+/, ''),
+            label: child.displayName,
+            icon: child.navIcon || ''
+          }));
+
+        if (subTabs.length > 0) {
+          dynamicSubMenus.push({
+            name: subName,
+            tabs: subTabs
+          });
+        }
+      });
+    }
+
+    if (hasNonGeneralSubMenu) {
+      this.subMenus.set(dynamicSubMenus);
+      // Default active submenu to first one
+      if (dynamicSubMenus.length > 0 && !this.activeSubMenuName()) {
+        this.activeSubMenuName.set(dynamicSubMenus[0].name);
+      }
+      // Set all tabs (flat) for routing lookup
+      const allTabs = dynamicSubMenus.flatMap((sub) => sub.tabs);
+      this.tabs.set(allTabs);
+    } else {
+      this.subMenus.set([]);
+      this.activeSubMenuName.set(null);
+
+      // Fallback to children or flat subMenus children
+      let childrenSource = masterMenu.children || [];
+      if (!childrenSource.length && masterMenu.subMenus?.length) {
+        childrenSource = masterMenu.subMenus.flatMap(sub => sub.children || []);
+      }
+
+      const dynamicTabs = childrenSource
+        .filter((child): child is MenuResponse => !!child.url && !!child.displayName)
+        .map((child) => ({
+          id: child.id,
+          path: child.url.replace(/^[\/]+/, ''),
+          label: child.displayName,
+          icon: child.navIcon || ''
+        }));
+
+      this.tabs.set(dynamicTabs);
+    }
   }
 
   ngOnDestroy(): void {
@@ -76,6 +137,15 @@ export class MasterSetupComponent implements OnInit, OnDestroy {
     const match = this.tabs().find((t) => t.path === path);
     if (match) {
       this.activeTabId.set(match.id);
+      // Find parent submenu and activate it
+      if (this.subMenus().length > 0) {
+        const parentSubMenu = this.subMenus().find(sub =>
+          sub.tabs.some(t => t.id === match.id)
+        );
+        if (parentSubMenu) {
+          this.activeSubMenuName.set(parentSubMenu.name);
+        }
+      }
     }
   }
 
@@ -83,4 +153,17 @@ export class MasterSetupComponent implements OnInit, OnDestroy {
     this.activeTabId.set(tab.id);
     this.router.navigate([tab.path], { relativeTo: this.route });
   }
-}
+
+  selectSubMenu(name: string): void {
+    this.activeSubMenuName.set(name);
+    
+    // Automatically navigate to the first tab of the selected submenu if the current tab is not in it
+    const subMenu = this.subMenus().find((sub) => sub.name === name);
+    if (subMenu && subMenu.tabs.length > 0) {
+      const isCurrentTabInSubMenu = subMenu.tabs.some((t) => t.id === this.activeTabId());
+      if (!isCurrentTabInSubMenu) {
+        this.navigateToTab(subMenu.tabs[0]);
+      }
+    }
+  }
+}

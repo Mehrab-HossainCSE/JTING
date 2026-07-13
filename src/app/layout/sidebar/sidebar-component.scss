@@ -208,3 +208,134 @@
     }
   }
 }
+
+// ── Submenus in Leftbar/Sidebar ───────────────────────────────────────────
+.sidebar-submenus {
+  position: relative;
+  padding-left: 54px; // Align nicely under the parent label
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  // The vertical connector guide line
+  &::before {
+    content: '';
+    position: absolute;
+    left: 27.5px; // Centered under parent icon (10px padding + 17.5px half-width of icon box)
+    top: -4px; // Connects up to parent icon
+    bottom: 18px; // Stops at the level of the last submenu item
+    width: 1.5px;
+    background: #e2e8f0; // Light gray line
+  }
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: #64748b; // Muted slate color
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  outline: none;
+
+  // Horizontal branch lines
+  &::before {
+    content: '';
+    position: absolute;
+    left: -26.5px; // Extends out to meet the vertical tree line (54px padding - 27.5px left line)
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26.5px; // Reaches from vertical line to submenu item card
+    height: 1.5px;
+    background: #e2e8f0;
+    transition: background 0.2s ease;
+  }
+
+  .submenu-label {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: #1e293b;
+    background: #f8fafc;
+    
+    &::before {
+      background: #cbd5e1;
+    }
+    
+    .submenu-label {
+      transform: translateX(3px); // Subtle slide-right micro-animation
+    }
+  }
+
+  &.active {
+    color: #009639; // JTI Green
+    font-weight: 600;
+    background: #f0fdf4; // Soft green backdrop
+
+    &::before {
+      background: #009639; // Highlight the branch line in green
+    }
+    
+    // Left edge green bar indicator
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 25%;
+      bottom: 25%;
+      width: 3px;
+      background: #009639;
+      border-radius: 99px;
+    }
+  }
+}
+
+// ── Chevron Arrow Styling ──────────────────────────────────────────────────
+.menu-arrow {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #888;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.5; // Thicker for crisp look
+  }
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.nav-item.active {
+  .menu-arrow {
+    color: white;
+  }
+}
+
+// ── Sidebar Section Header ─────────────────────────────────────────────────
+.sidebar-section-header {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8; // Slate-400
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 1.5rem 12px 0.5rem 12px;
+  user-select: none;
+  
+  &:first-of-type {
+    padding-top: 0.75rem;
+  }
+}
+
+

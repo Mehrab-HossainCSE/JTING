@@ -14,21 +14,100 @@
   </div>
 
   <nav class="sidebar-nav">
-    @for (menu of menuService.menus(); track menu.id) {
-      <div class="nav-item-wrapper">
-        <a
-          class="nav-item"
-          [routerLink]="getParentRoute(menu)"
-          routerLinkActive="active"
-          [title]="isCollapsed() ? menu.displayName : ''"
-          [routerLinkActiveOptions]="{
-            exact: getParentRoute(menu) === '/dashboard' || getParentRoute(menu) === '/dashboard/main'
-          }"
-        >
-          <span class="nav-icon" [innerHTML]="getIcon(menu.navIcon || menu.name)"></span>
-          <span class="nav-label" *ngIf="!isCollapsed()">{{ menu.displayName }}</span>
-        </a>
+    <!-- Warehouse Section -->
+    @if (warehouseMenus().length > 0) {
+      <div class="sidebar-section-header" *ngIf="!isCollapsed()">
+        <span>Warehouse</span>
       </div>
+      @for (menu of warehouseMenus(); track menu.id) {
+        <div class="nav-item-wrapper">
+          <a
+            class="nav-item"
+            [routerLink]="getParentRoute(menu)"
+            routerLinkActive="active"
+            [title]="isCollapsed() ? menu.displayName : ''"
+            [routerLinkActiveOptions]="{
+              exact: getParentRoute(menu) === '/dashboard' || getParentRoute(menu) === '/dashboard/main'
+            }"
+            (click)="toggleMenu(menu.id, $event, menu)"
+          >
+            <span class="nav-icon" [innerHTML]="getIcon(menu.navIcon || menu.name)"></span>
+            <span class="nav-label" *ngIf="!isCollapsed()">{{ menu.displayName }}</span>
+
+            <!-- Chevron Expand/Collapse Arrow -->
+            @if (hasNonGeneralSubMenus(menu) && !isCollapsed()) {
+              <span class="menu-arrow" [class.rotated]="isMenuExpanded(menu)">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            }
+          </a>
+
+          <!-- Render submenus if they exist, are not General, and are expanded -->
+          @if (hasNonGeneralSubMenus(menu) && isMenuExpanded(menu)) {
+            <div class="sidebar-submenus">
+              @for (subMenu of menu.subMenus; track subMenu.subMenuName) {
+                <a
+                  class="submenu-item"
+                  [routerLink]="getSubMenuRoute(menu, subMenu)"
+                  [class.active]="isSubMenuActive(menu, subMenu)"
+                >
+                  <span class="submenu-label">{{ subMenu.subMenuName }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- Regional Warehouse Section -->
+    @if (regionalMenus().length > 0) {
+      <div class="sidebar-section-header" *ngIf="!isCollapsed()">
+        <span>Regional Warehouse</span>
+      </div>
+      @for (menu of regionalMenus(); track menu.id) {
+        <div class="nav-item-wrapper">
+          <a
+            class="nav-item"
+            [routerLink]="getParentRoute(menu)"
+            routerLinkActive="active"
+            [title]="isCollapsed() ? menu.displayName : ''"
+            [routerLinkActiveOptions]="{
+              exact: getParentRoute(menu) === '/dashboard' || getParentRoute(menu) === '/dashboard/main'
+            }"
+            (click)="toggleMenu(menu.id, $event, menu)"
+          >
+            <span class="nav-icon" [innerHTML]="getIcon(menu.navIcon || menu.name)"></span>
+            <span class="nav-label" *ngIf="!isCollapsed()">{{ menu.displayName }}</span>
+
+            <!-- Chevron Expand/Collapse Arrow -->
+            @if (hasNonGeneralSubMenus(menu) && !isCollapsed()) {
+              <span class="menu-arrow" [class.rotated]="isMenuExpanded(menu)">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            }
+          </a>
+
+          <!-- Render submenus if they exist, are not General, and are expanded -->
+          @if (hasNonGeneralSubMenus(menu) && isMenuExpanded(menu)) {
+            <div class="sidebar-submenus">
+              @for (subMenu of menu.subMenus; track subMenu.subMenuName) {
+                <a
+                  class="submenu-item"
+                  [routerLink]="getSubMenuRoute(menu, subMenu)"
+                  [class.active]="isSubMenuActive(menu, subMenu)"
+                >
+                  <span class="submenu-label">{{ subMenu.subMenuName }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
     }
   </nav>
 
