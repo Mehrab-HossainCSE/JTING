@@ -45,3 +45,7 @@ Thumbs.db
 
 .gemini/
 gha-creds-*.json
+
+# Credentials / Secrets
+.env
+
