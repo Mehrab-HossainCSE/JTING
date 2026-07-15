@@ -104,6 +104,8 @@ JTING is a modern warehouse/inventory management application built with **Angula
 - **Global Loading Spinner:** Use `LoaderService` and `LoaderComponent` to show a screen-blocking loading overlay during long-running tasks.
   *   **Setup**: Declared globally once in `AppComponent` (`app.component.ts` and `app.html`).
   *   **Usage**: Sub-components do NOT need to import `LoaderComponent` or place `<app-loader />` in their templates. Simply inject `LoaderService` and call `show(message?)` to show the loader, and `hide()` to dismiss it.
+- **Runtime Configuration (.env):** The API URL (`apiUrl`) is loaded dynamically at startup from `public/assets/.env` (fetched as `assets/.env`) in [main.ts](file:///d:/MSDSL%20Project%202026/JTING/src/main.ts) to support post-build configuration changes without requiring a rebuild. The value defined in [environment.ts](file:///d:/MSDSL%20Project%202026/JTING/src/environments/environment.ts) is only a fallback.
+
 
 ## VS Code Integration & Troubleshooting
 

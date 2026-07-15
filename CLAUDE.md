@@ -77,6 +77,12 @@ interface ApiResponse<T> {
 
 The `authInterceptor` automatically appends `Authorization: Bearer <token>` to all outbound requests. The token is read from `localStorage` via `StorageService`.
 
+### Runtime Config (.env)
+
+`apiUrl` is not baked into the build. `public/assets/.env` holds a single `API_URL=<url>` line and is copied into `dist/**/assets/.env` on every `ng build`. Before bootstrap, `src/main.ts` fetches `assets/.env` and, if it parses an `API_URL` line, overwrites `environment.apiUrl` with it. `src/environments/environment.ts` only holds a fallback value used when the fetch fails or the file has no `API_URL` line.
+
+This means the backend URL can be repointed after a build/deploy by editing the deployed `assets/.env` file directly — no rebuild needed. When changing it for local dev, edit `public/assets/.env` (not `environment.ts`).
+
 ### State Management
 
 Use Angular Signals exclusively — no NgRx or BehaviorSubject patterns. In services, keep internal state private and expose read-only signals:
